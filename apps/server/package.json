@@ -1,0 +1,18 @@
+{
+	"name": "server",
+	"version": "1.0.0",
+	"main": "src/index.js",
+	"scripts": {
+		"dev": "node src/index.js"
+	},
+	"dependencies": {
+		"@fastify/cors": "^11.2.0",
+		"@fastify/static": "^9.0.0",
+		"fastify": "^5.7.4",
+		"module-alias": "^2.3.4",
+		"recursive-readdir": "^2.2.3"
+	},
+	"_moduleAliases": {
+		"@": "src"
+	}
+}
