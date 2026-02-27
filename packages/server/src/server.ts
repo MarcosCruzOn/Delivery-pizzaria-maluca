@@ -1,15 +1,14 @@
 import express from 'express'
+import cors from 'cors'
+
+import { router } from './routes/index.js'
 
 const app = express()
-const route = express.Router()
 
 app.use(express.json())
 
-route.get('/', (req, res) => {
-	res.json({ message: 'hello world with Typescript' })
-})
-
-app.use(route)
+app.use(router)
+app.use(cors())
 
 app.listen(3333, () => {
 	console.log('Server is running on port 3333')
