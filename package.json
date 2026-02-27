@@ -1,15 +1,31 @@
 {
-	"name": "pizzaria",
+	"name": "delivery_pizzaria_maluca",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
 	"private": true,
-	"workspaces": [
-		"apps/*"
-	],
-	"scripts": {
-		"dev": "concurrently \"npm run dev --workspace=server\" \"npm run dev --workspace=client\"",
-		"dev:server": "npm run dev --workspace=server",
-		"dev:client": "npm run dev --workspace=client"
+	"workspaces": {
+		"packages": [
+			"packages/*"
+		]
 	},
+	"scripts": {
+		"dev:server": "npm -w @delivery/server run dev",
+		"build:server": "npm -w @delivery/server run build",
+		"start:server": "npm -w @delivery/server run start"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/MarcosCruzOn/Delivery-pizzaria-maluca.git"
+	},
+	"keywords": [],
+	"author": "Marcos Cruz",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/MarcosCruzOn/Delivery-pizzaria-maluca/issues"
+	},
+	"homepage": "https://github.com/MarcosCruzOn/Delivery-pizzaria-maluca#readme",
 	"devDependencies": {
-		"concurrently": "^9.0.0"
+		"typescript": "^5.9.3"
 	}
 }
