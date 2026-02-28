@@ -17,6 +17,7 @@ export function addCartItem(req: Request, res: Response) {
 	}
 
 	if (!productId || !Number.isFinite(productId)) {
+		// validação simples ainda fica aqui
 		return res.status(400).json({ error: 'productId é obrigatório' })
 	}
 
@@ -25,15 +26,8 @@ export function addCartItem(req: Request, res: Response) {
 		return res.status(400).json({ error: 'quantity deve ser > 0' })
 	}
 
-	try {
-		const item = addToCart(productId, q)
-		// se já existia, foi update (200). se não existia, foi create (201).
-		// Aqui vamos decidir pelo retorno simples:
-		return res.status(201).json(item)
-	} catch (e: any) {
-		const status = e?.statusCode ?? 500
-		return res.status(status).json({ error: e?.message ?? 'Erro interno' })
-	}
+	const item = addToCart(productId, q)
+	res.status(201).json(item)
 }
 
 export function updateCartItem(req: Request, res: Response) {
@@ -45,23 +39,12 @@ export function updateCartItem(req: Request, res: Response) {
 		return res.status(400).json({ error: 'quantity deve ser > 0' })
 	}
 
-	try {
-		const item = updateCartItemQuantity(id, q)
-		res.json(item)
-	} catch (e: any) {
-		const status = e?.statusCode ?? 500
-		res.status(status).json({ error: e?.message ?? 'Erro interno' })
-	}
+	const item = updateCartItemQuantity(id, q)
+	res.json(item)
 }
 
 export function deleteCartItem(req: Request, res: Response) {
 	const id = Number(req.params.id)
-
-	try {
-		removeCartItem(id)
-		res.status(204).send()
-	} catch (e: any) {
-		const status = e?.statusCode ?? 500
-		res.status(status).json({ error: e?.message ?? 'Erro interno' })
-	}
+	removeCartItem(id)
+	res.status(204).send()
 }

@@ -1,4 +1,5 @@
 import type { Order } from '../types/order.js'
+import { AppError } from '../errors/AppError.js'
 import { clearCart, getCart } from './cart.services.js'
 
 let orders: Order[] = []
@@ -6,12 +7,7 @@ let orderId = 1
 
 export function createOrderFromCart(): Order {
 	const cart = getCart()
-	if (cart.length === 0) {
-		const err = new Error('Carrinho vazio')
-		// @ts-ignore
-		err.statusCode = 400
-		throw err
-	}
+	if (cart.length === 0) throw new AppError('Carrinho vazio', 400)
 
 	const order: Order = {
 		id: orderId++,

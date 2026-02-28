@@ -1,4 +1,5 @@
 import type { CartItem } from '../types/cart.js'
+import { AppError } from '../errors/AppError.js'
 import { getMenuItemById } from './menu.services.js'
 
 let cart: CartItem[] = []
@@ -9,12 +10,7 @@ export function getCart(): CartItem[] {
 
 export function addToCart(productId: number, quantity: number): CartItem {
 	const product = getMenuItemById(productId)
-	if (!product) {
-		const err = new Error('Produto não encontrado')
-		// @ts-ignore
-		err.statusCode = 404
-		throw err
-	}
+	if (!product) throw new AppError('Produto não encontrado', 404)
 
 	const existing = cart.find((ci) => ci.productId === productId)
 	if (existing) {
@@ -36,12 +32,7 @@ export function addToCart(productId: number, quantity: number): CartItem {
 
 export function updateCartItemQuantity(id: number, quantity: number): CartItem {
 	const item = cart.find((ci) => ci.id === id)
-	if (!item) {
-		const err = new Error('Item do carrinho não encontrado')
-		// @ts-ignore
-		err.statusCode = 404
-		throw err
-	}
+	if (!item) throw new AppError('Item do carrinho não encontrado', 404)
 
 	item.quantity = quantity
 	return item
@@ -50,13 +41,8 @@ export function updateCartItemQuantity(id: number, quantity: number): CartItem {
 export function removeCartItem(id: number): void {
 	const before = cart.length
 	cart = cart.filter((ci) => ci.id !== id)
-
-	if (cart.length === before) {
-		const err = new Error('Item do carrinho não encontrado')
-		// @ts-ignore
-		err.statusCode = 404
-		throw err
-	}
+	if (cart.length === before)
+		throw new AppError('Item do carrinho não encontrado', 404)
 }
 
 export function clearCart(): void {
