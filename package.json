@@ -1,18 +1,19 @@
 {
-	"name": "delivery_pizzaria_maluca",
+	"name": "delivery",
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
 	"private": true,
-	"workspaces": {
-		"packages": [
-			"packages/*"
-		]
-	},
+	"workspaces": [
+		"packages/*"
+	],
 	"scripts": {
 		"dev:server": "npm -w @delivery/server run dev",
 		"build:server": "npm -w @delivery/server run build",
-		"start:server": "npm -w @delivery/server run start"
+		"start:server": "npm -w @delivery/server run start",
+		"dev:web": "npm -w @delivery/web run dev",
+		"build:web": "npm -w @delivery/web run build",
+		"preview:web": "npm -w @delivery/web run preview"
 	},
 	"repository": {
 		"type": "git",
