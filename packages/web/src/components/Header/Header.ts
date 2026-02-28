@@ -1,10 +1,10 @@
 import './style.css'
 
 export function Header(): HTMLElement {
-	const header = document.createElement('header')
-	header.className = 'width-fix mt-5'
+	const Header = document.createElement('header')
+	Header.className = 'width-fix mt-5'
 
-	header.innerHTML = `
+	Header.innerHTML = `
     <div class="card">
       <div class="d-flex">
         <div class="container-img"></div>
@@ -26,5 +26,5 @@ export function Header(): HTMLElement {
     </div>
   `
 
-	return header
+	return Header
 }
