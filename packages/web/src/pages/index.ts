@@ -1,6 +1,8 @@
 import { mount } from '../utils/dom'
 import { Header } from '../components/Header/Header'
 import { Categories } from '../components/Categories/Categories'
+import { BottomMenu } from '../components/BottomMenu/BottomMenu'
+
 import {
 	MenuItemCard,
 	type MenuItem,
@@ -48,6 +50,7 @@ function renderMenuList() {
 function Home() {
 	mount('#app-header', Header())
 	mount('#app-categories', Categories())
+	mount('#app-bottom-menu', BottomMenu({ active: 'cardapio', cartCount: 0 }))
 	renderMenuList()
 }
 
