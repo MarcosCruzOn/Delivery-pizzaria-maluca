@@ -28,7 +28,7 @@ export function MenuItemCard(item: MenuItem): HTMLDivElement {
 
 	// depois a gente liga isso na página de detalhes
 	card.addEventListener('click', () => {
-		console.log('clicou no produto:', item.id)
+		window.location.hash = `#/item/${item.id}`
 	})
 
 	return card

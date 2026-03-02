@@ -17,7 +17,7 @@ export function Header(): HTMLElement {
               <i class="fa fa-clock"></i> Aberta
             </p>
 
-            <a href="/sobre.html" class="link">
+            <a href="#/about" class="link">
               ver mais
             </a>
           </div>
