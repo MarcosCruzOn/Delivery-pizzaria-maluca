@@ -1,4 +1,8 @@
-/* MenuItemCard (tirado do seu main.css e deixado local) */
+.container-group .card {
+	padding: 15px;
+	cursor: pointer;
+}
+
 .img-produto {
 	width: 100px;
 	height: 100px;

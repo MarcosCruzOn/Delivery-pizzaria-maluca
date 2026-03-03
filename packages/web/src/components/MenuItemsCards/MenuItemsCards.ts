@@ -13,16 +13,15 @@ export function MenuItemCard(item: MenuItem): HTMLDivElement {
 	card.className = 'card mb-2 item-cardapio'
 
 	card.innerHTML = `
-    <div class="d-flex">
-      <div class="container-img-produto">
-         <img class="img-produto" src="${item.imageUrl}" alt="${item.name}">
-    </div>
-
-      <div class="infos-produto">
-        <p class="name"><b>${item.name}</b></p>
-        <p class="description">${item.description}</p>
-        <p class="price"><b>${item.priceText}</b></p>
-      </div>
+    <div class="d-flex container-group">
+    	
+		<img class="img-produto" src="${item.imageUrl}" alt="${item.name}">
+		
+		<div class="infos-produto">
+			<p class="name"><b>${item.name}</b></p>
+			<p class="description">${item.description}</p>
+			<p class="price"><b>${item.priceText}</b></p>
+		</div>
     </div>
   `
 

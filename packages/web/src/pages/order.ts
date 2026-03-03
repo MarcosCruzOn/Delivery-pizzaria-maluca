@@ -1,4 +1,5 @@
 import './style.css'
+import { TitleHeader } from '../components/TitleHeader/TitleHeader'
 import { BottomMenu } from '../components/BottomMenu/BottomMenu'
 import { mount } from '../utils/dom'
 
@@ -10,19 +11,7 @@ export function renderOrder(root: HTMLElement) {
 
 	root.innerHTML = `
     
-    <header class="width-fix mt-3">
-      <div class="card">
-        <div class="d-flex">
-          <a href="#/" class="container-voltar">
-            <i class="fas fa-arrow-left"></i>
-          </a>
-
-          <div class="infos text-center">
-            <h1 class="mb-0"><b>Acompanhar pedido</b></h1>
-          </div>
-        </div>
-      </div>
-    </header>
+    <div id="app-title-header"></div>
 
     <main class="width-fix mt-4 order-wrap">
       <div class="order-top-card">
@@ -81,6 +70,7 @@ export function renderOrder(root: HTMLElement) {
 		'#app-bottom-menu',
 		BottomMenu({ isOpen: true, active: 'pedido', cartCount: 2 })
 	)
+	mount('#app-title-header', TitleHeader({ title: 'Acompanhar pedido' }))
 
 	// Botão Mensagem (bem simples)
 	const btnMsg = root.querySelector<HTMLAnchorElement>('#btn-msg')

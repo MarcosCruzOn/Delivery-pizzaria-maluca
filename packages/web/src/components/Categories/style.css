@@ -41,13 +41,18 @@ section.categoria {
 	box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
+.btn-sm {
+	padding: 8px 13px;
+	border-radius: 15px;
+	font-size: 16px;
+}
+
 .btn-white:hover,
 .btn-white.active {
 	background-color: var(--color-primary);
 }
 
-.btn-sm {
-	padding: 8px 13px;
-	border-radius: 15px;
-	font-size: 16px;
+.title-categoria {
+	color: var(--color-black);
+	margin-left: 5px;
 }

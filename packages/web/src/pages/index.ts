@@ -4,7 +4,7 @@ import { BottomMenu } from '../components/BottomMenu/BottomMenu'
 import {
 	MenuItemCard,
 	type MenuItem,
-} from '../components/MenuItemCard/MenuItemCard'
+} from '../components/MenuItemsCards/MenuItemsCards'
 import { mount } from '../utils/dom'
 
 export function renderHome(root: HTMLElement) {
@@ -20,6 +20,10 @@ export function renderHome(root: HTMLElement) {
 
 	mount('#app-header', Header())
 	mount('#app-categories', Categories())
+	mount(
+		'#app-bottom-menu',
+		BottomMenu({ isOpen: true, active: 'cardapio', cartCount: 2 })
+	)
 
 	// mock simples por enquanto
 	const items: MenuItem[] = [
@@ -49,9 +53,4 @@ export function renderHome(root: HTMLElement) {
 	`
 	const group = list.querySelector('.container-group')!
 	items.forEach((i) => group.appendChild(MenuItemCard(i)))
-
-	mount(
-		'#app-bottom-menu',
-		BottomMenu({ isOpen: true, active: 'cardapio', cartCount: 2 })
-	)
 }

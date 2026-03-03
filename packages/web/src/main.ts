@@ -22,19 +22,17 @@ function router() {
 	if (route === '/cart') return renderCart(app)
 	if (route === '/order') return renderOrder(app)
 
-	// rota dinâmica: /item/123
+	//rota dinâmica: /item/123
 	if (route.startsWith('/item/')) {
 		const idText = route.replace('/item/', '')
 		const id = Number(idText)
 		if (!Number.isFinite(id)) {
-			app.innerHTML = `<h1 style="padding:20px;">Item inválido</h1>`
+			app.innerHTML = `<h1 style="padding:20px;">404</h1>`
 			return
 		}
 		renderItem(app, id)
 		return
 	}
-
-	app.innerHTML = `<h1 style="padding:20px;">404</h1>`
 }
 
 // roda ao abrir e ao mudar o hash

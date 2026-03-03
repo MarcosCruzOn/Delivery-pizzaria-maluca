@@ -1,23 +1,11 @@
 import { mount } from '../utils/dom'
+import { TitleHeader } from '../components/TitleHeader/TitleHeader'
 import { BottomMenu } from '../components/BottomMenu/BottomMenu'
 
 export function renderCart(root: HTMLElement) {
 	root.innerHTML = `
     
-    <header class="width-fix mt-3">
-      <div class="card">
-        <div class="d-flex">
-          <!-- SPA: volta para #/ -->
-          <a href="#/" class="container-voltar">
-            <i class="fas fa-arrow-left"></i>
-          </a>
-
-          <div class="infos text-center">
-            <h1 class="mb-0"><b>Seu carrinho</b></h1>
-          </div>
-        </div>
-      </div>
-    </header>
+    <div id="app-title-header"></div>
 
     <!-- ESTADO: carrinho vazio (no seu HTML ele existe) -->
     <section class="carrinho width-fix mt-4" id="cart-empty">
@@ -224,6 +212,8 @@ export function renderCart(root: HTMLElement) {
 		'#app-bottom-menu',
 		BottomMenu({ isOpen: true, active: 'carrinho', cartCount: 2 })
 	)
+
+	mount('#app-title-header', TitleHeader({ title: 'Meu carrinho' }))
 
 	// EXTRA simples: “comportamento de radio” para as duas opções (entrega/retirada)
 	const checks = Array.from(

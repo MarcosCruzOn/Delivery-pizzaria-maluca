@@ -1,26 +1,16 @@
-import { BottomMenu } from '../components/BottomMenu/BottomMenu'
 import { mount } from '../utils/dom'
+import { TitleHeader } from '../components/TitleHeader/TitleHeader'
+import { BottomMenu } from '../components/BottomMenu/BottomMenu'
 
 export function renderAbout(root: HTMLElement) {
 	root.innerHTML = `
     
-    <header class="width-fix mt-3">
-      <div class="card">
-        <div class="d-flex">
-          <a href="#/" class="container-voltar">
-            <i class="fas fa-arrow-left"></i>
-          </a>
-          <div class="infos text-center">
-            <h1 class="mb-0"><b>Sobre a loja</b></h1>
-          </div>
-        </div>
-      </div>
-    </header>
+    <div id="app-title-header"></div>
 
     <section class="width-fix mt-5 mb-4">
       <div class="card">
         <div class="d-flex">
-          <div class="container-img-sobre"
+          <div class="logo-sobre">
            <img src="./logo.png" alt="Logo da Pizzaria Maluca">
           </div>
 
@@ -48,5 +38,6 @@ export function renderAbout(root: HTMLElement) {
   `
 
 	// no sobre.html original você usa o menu fechado (disabled hidden) :contentReference[oaicite:4]{index=4}
+	mount('#app-title-header', TitleHeader({ title: 'Sobre a loja' }))
 	mount('#app-bottom-menu', BottomMenu({ isOpen: false }))
 }
