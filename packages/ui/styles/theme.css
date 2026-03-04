@@ -60,6 +60,7 @@ b {
 	color: var(--color-primary) !important;
 }
 
+/* Botões */
 .btn-white {
 	color: var(--color-black);
 	background-color: var(--color-white);
