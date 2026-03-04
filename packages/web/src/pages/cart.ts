@@ -1,6 +1,5 @@
 import { mount } from '../utils/dom'
 import { TitleHeader } from '../components/TitleHeader/TitleHeader'
-import { BottomMenu } from '../components/BottomMenu/BottomMenu'
 
 export function renderCart(root: HTMLElement) {
 	root.innerHTML = `
@@ -203,15 +202,11 @@ export function renderCart(root: HTMLElement) {
       Fazer pedido <span>R$ 105,50</span>
     </a>
 
-    <div id="app-bottom-menu"></div>
+    
   `
 
 	// O carrinho tem o botão grande "Fazer pedido", então o BottomMenu pode ficar oculto (opcional).
 	// Se você quiser manter, deixamos ativo:
-	mount(
-		'#app-bottom-menu',
-		BottomMenu({ isOpen: true, active: 'carrinho', cartCount: 2 })
-	)
 
 	mount('#app-title-header', TitleHeader({ title: 'Meu carrinho' }))
 
