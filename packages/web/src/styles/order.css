@@ -1,0 +1,119 @@
+/* Estilos só da tela de acompanhar pedido */
+
+.order-wrap {
+	padding-bottom: 110px; /* espaço pro bottom menu */
+}
+
+.order-top-card {
+	background: #fff;
+	border-radius: 18px;
+	padding: 14px;
+}
+
+.order-top-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.order-total {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.order-total .label {
+	font-weight: 700;
+	color: #111;
+}
+
+.order-total .value {
+	font-weight: 900;
+	color: #f6a21a;
+}
+
+.order-actions {
+	display: flex;
+	gap: 14px;
+	align-items: center;
+}
+
+.order-action {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	text-decoration: none;
+	color: #111;
+	font-weight: 600;
+	min-width: 86px;
+}
+
+.order-action i {
+	font-size: 18px;
+}
+
+.order-divider {
+	width: 1px;
+	height: 42px;
+	background: rgba(0, 0, 0, 0.12);
+}
+
+.order-status-highlight {
+	background: #ffe08a;
+	border-radius: 18px;
+	padding: 14px;
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	margin-top: 14px;
+}
+
+.order-status-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 12px;
+	display: grid;
+	place-items: center;
+	background: rgba(255, 255, 255, 0.55);
+}
+
+.order-status-title {
+	font-weight: 900;
+	margin: 0;
+	color: #111;
+}
+
+.order-status-sub {
+	margin: 2px 0 0 0;
+	color: #333;
+	opacity: 0.9;
+}
+
+.order-step {
+	background: rgba(255, 255, 255, 0.7);
+	border-radius: 18px;
+	padding: 16px;
+	margin-top: 12px;
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	color: #111;
+}
+
+.order-step.disabled {
+	opacity: 0.35;
+}
+
+.order-step-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 12px;
+	display: grid;
+	place-items: center;
+	background: rgba(0, 0, 0, 0.04);
+}
+
+.order-step-text {
+	font-weight: 800;
+}

@@ -35,14 +35,13 @@ export function renderItem(root: HTMLElement, id: number) {
 		root.innerHTML = `<h1 style="padding:20px;">Produto não encontrado</h1>`
 		return
 	}
-	root.className = 'width-fix pb-5'
 
 	root.innerHTML = `
 
 		<div id="app-title-header"></div>
 		
-		<img class="img-item" src="${item.imageUrl}" alt="${item.name}" 
-		<section class="opcionais mt-5 pb-5">
+		<section class="width-fix opcionais mb-4 mt-5 pb-5">
+			<img class="img-item" src="${item.imageUrl}" alt="${item.name}" 
 
 			<div class="container-group mb-5">
 				<span class="badge">Obrigatório</span>

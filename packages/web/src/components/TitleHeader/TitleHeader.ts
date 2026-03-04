@@ -5,7 +5,7 @@ export function TitleHeader({ title }: { title: string }) {
 	header.className = 'width-fix mt-3'
 
 	header.innerHTML = `
-        <header class="">
+        <header>
             <div class="card">
                 <div class="d-flex">
                 <a href="#/" class="container-voltar">

@@ -1,4 +1,4 @@
-import './style.css'
+import '../styles/order.css'
 import { TitleHeader } from '../components/TitleHeader/TitleHeader'
 import { BottomMenu } from '../components/BottomMenu/BottomMenu'
 import { mount } from '../utils/dom'
@@ -13,7 +13,7 @@ export function renderOrder(root: HTMLElement) {
     
     <div id="app-title-header"></div>
 
-    <main class="width-fix mt-4 order-wrap">
+    <main class="width-fix mt-5 order-wrap">
       <div class="order-top-card">
         <div class="order-top-row">
           <div class="order-total">
