@@ -1,6 +1,6 @@
 import { mount } from '../utils/dom'
 import { TitleHeader } from '../components/TitleHeader/TitleHeader'
-import { BottomMenu } from '../components/BottomMenu/BottomMenu'
+// import { BottomMenu } from '../components/BottomMenu/BottomMenu'
 
 type Item = {
 	id: number
