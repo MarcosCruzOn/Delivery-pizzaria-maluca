@@ -38,10 +38,11 @@ export function renderItem(root: HTMLElement, id: number) {
 
 	root.innerHTML = `
 
+		<div class="bg-top pedido"></div>
 		<div id="app-title-header"></div>
 		
-		<section class="width-fix opcionais mb-4 mt-5 pb-5">
-			<img class="img-item" src="${item.imageUrl}" alt="${item.name}" 
+		<section class="width-fix opcionais mb-4 mt-4 pb-5">
+			<img class="img-item" src="${item.imageUrl}" alt="${item.name}">
 
 			<div class="container-group mb-5">
 				<span class="badge">Obrigatório</span>

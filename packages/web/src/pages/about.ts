@@ -4,7 +4,7 @@ import { TitleHeader } from '../components/TitleHeader/TitleHeader'
 export function renderAbout(root: HTMLElement) {
 	root.innerHTML = `
 
-    <div class="bg-top sobre"></div>    
+    <div class="bg-top sobre"></div>  
     <div id="app-title-header"></div>
 
     <section class="width-fix mt-5 mb-4">

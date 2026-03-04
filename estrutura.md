@@ -61,21 +61,26 @@
                     └── 📁Header
                         ├── Header.ts
                         ├── style.css
-                    └── 📁MenuItemCard
-                        ├── MenuItemCard.ts
+                    └── 📁MenuItemsCards
+                        ├── MenuItemsCards.ts
                         ├── style.css
-                    └── 📁ModalDetail
-                        ├── ModalDetails.ts
+                    └── 📁Order
+                    └── 📁TitleHeader
                         ├── style.css
+                        ├── TitleHeader.ts
                 └── 📁pages
-                    ├── abaout.ts
+                    ├── about.ts
                     ├── cart.ts
                     ├── index.ts
+                    ├── item.ts
                     ├── order.ts
                 └── 📁styles
+                    ├── cart.css
                     ├── main.css
+                    ├── order.css
                 └── 📁utils
                     ├── dom.ts
+                ├── main.ts
                 ├── typescript.svg
             ├── .gitignore
             ├── index.html

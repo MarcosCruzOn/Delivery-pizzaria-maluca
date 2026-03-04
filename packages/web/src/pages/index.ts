@@ -9,7 +9,7 @@ import { mount } from '../utils/dom'
 
 export function renderHome(root: HTMLElement) {
 	root.innerHTML = `
-    <div class="bg-top"></div>
+    
     <header id="app-header"></header>
     <div id="app-categories"></div>
     <section class="lista width-fix mt-0 pb-5">

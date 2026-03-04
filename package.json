@@ -13,7 +13,8 @@
 		"start:server": "npm -w @delivery/server run start",
 		"dev:web": "npm -w @delivery/web run dev",
 		"build:web": "npm -w @delivery/web run build",
-		"preview:web": "npm -w @delivery/web run preview"
+		"preview:web": "npm -w @delivery/web run preview",
+		"dev:admin": "npm -w @delivery/admin run dev"
 	},
 	"repository": {
 		"type": "git",

@@ -1,3 +1,5 @@
+import '../../ui/styles/theme.css'
+
 import { renderHome } from './pages/index'
 import { renderAbout } from './pages/about'
 import { renderCart } from './pages/cart'
