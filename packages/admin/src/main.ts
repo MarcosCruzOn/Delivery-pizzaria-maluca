@@ -6,6 +6,7 @@ import { renderDashboard } from './pages/dashboard'
 import { renderOrders } from './pages/orders'
 import { renderMenuAdmin } from './pages/menu'
 import { renderSettings } from './pages/settings'
+import { renderCompany } from './pages/company'
 
 function getRoute() {
 	return (window.location.hash || '#/login').replace('#', '')
@@ -42,6 +43,8 @@ function router() {
 	if (route === '/menu') return renderMenuAdmin(app)
 
 	if (route === '/settings') return renderSettings(app)
+
+	if (route === '/company') return renderCompany(app)
 
 	app.innerHTML = `<div style="padding:20px;">404</div>`
 }
