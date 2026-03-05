@@ -1,4 +1,5 @@
-import { mount } from '../utils/dom'
+import { mount } from '@delivery/shared/dom'
+;('../utils/dom')
 import { TitleHeader } from '../components/TitleHeader/TitleHeader'
 
 export function renderAbout(root: HTMLElement) {

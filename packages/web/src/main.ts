@@ -1,4 +1,4 @@
-import '../../ui/styles/theme.css'
+import '@delivery/ui/styles/theme.css'
 
 import { renderHome } from './pages/index'
 import { renderAbout } from './pages/about'

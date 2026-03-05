@@ -26,7 +26,7 @@ export function AdminLayout(props: LayoutProps): string {
       <div class="menu-left">
         <div class="logo">
           <!-- no Vite: coloque /logo.png em admin/public -->
-          <img src="/logo.png" width="100" />
+          <img src="img/logo.png" width="100" />
         </div>
 
         <div class="menus">

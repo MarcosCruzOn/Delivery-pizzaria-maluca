@@ -1,7 +1,8 @@
 import '../styles/order.css'
 import { TitleHeader } from '../components/TitleHeader/TitleHeader'
 import { BottomMenu } from '../components/BottomMenu/BottomMenu'
-import { mount } from '../utils/dom'
+import { mount } from '@delivery/shared/dom'
+;('../utils/dom')
 
 export function renderOrder(root: HTMLElement) {
 	// valores mockados por enquanto (depois vem da API)

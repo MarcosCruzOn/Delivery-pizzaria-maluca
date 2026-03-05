@@ -43,6 +43,17 @@ b {
 	border: none !important;
 }
 
+.container-img-produto {
+	width: 100px;
+	height: 100px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: var(--color-secondary);
+	border-radius: 15px;
+	margin-right: 20px;
+	flex: none;
+}
+
 .form-control {
 	background-color: var(--color-white);
 	color: var(--color-black) !important;

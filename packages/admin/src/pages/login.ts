@@ -4,7 +4,7 @@ export function renderLogin(root: HTMLElement) {
       <div class="card card-login">
 
         <!-- em Vite: coloque a logo em packages/admin/public/logo.png e use /logo.png -->
-        <img src="/logo.png" width="100" />
+        <img src="img/logo.png" width="100" />
 
         <div class="form-group mb-2">
           <span class="icon-form">
@@ -50,7 +50,7 @@ export function renderLogin(root: HTMLElement) {
 
 			// depois: POST /api/admin/login
 			localStorage.setItem('admin_token', 'fake-token')
-			window.location.hash = '#/dashboard'
+			window.location.hash = '#/home'
 		}
 	)
 }

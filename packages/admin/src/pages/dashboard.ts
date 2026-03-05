@@ -1,4 +1,4 @@
-import { AdminLayout } from '../components/AdminLayout'
+import { AdminLayout } from '../components/AdminLayout/AdminLayout'
 
 export function renderDashboard(root: HTMLElement) {
 	root.innerHTML = AdminLayout({

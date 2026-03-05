@@ -5,7 +5,8 @@ import {
 	MenuItemCard,
 	type MenuItem,
 } from '../components/MenuItemsCards/MenuItemsCards'
-import { mount } from '../utils/dom'
+import { mount } from '@delivery/shared/dom'
+;('../utils/dom')
 
 export function renderHome(root: HTMLElement) {
 	root.innerHTML = `

@@ -1,6 +1,31 @@
 ```
 └── 📁Delivery_pizzaria_maluca
     └── 📁packages
+        └── 📁admin
+            └── 📁public
+                ├── vite.svg
+            └── 📁src
+                └── 📁api
+                    ├── auth.ts
+                └── 📁components
+                    └── 📁AdminLayout
+                    ├── AdminLayout.ts
+                └── 📁pages
+                    ├── dashboard.ts
+                    ├── login.ts
+                    ├── menu.ts
+                    ├── orders.ts
+                └── 📁styles
+                    ├── painel.css
+                └── 📁utils
+                    ├── dom.ts
+                ├── main.ts
+                ├── typescript.svg
+            ├── .gitignore
+            ├── index.html
+            ├── package.json
+            ├── tsconfig.json
+            ├── vite.config.ts
         └── 📁server
             └── 📁src
                 └── 📁controllers
@@ -29,8 +54,49 @@
                 ├── server.ts
             ├── package.json
             ├── tsconfig.json
+        └── 📁ui
+            └── 📁public
+                └── 📁fonts
+                    ├── fa-brands-400.eot
+                    ├── fa-brands-400.svg
+                    ├── fa-brands-400.ttf
+                    ├── fa-brands-400.woff
+                    ├── fa-brands-400.woff2
+                    ├── fa-regular-400.eot
+                    ├── fa-regular-400.svg
+                    ├── fa-regular-400.ttf
+                    ├── fa-regular-400.woff
+                    ├── fa-regular-400.woff2
+                    ├── fa-solid-900.eot
+                    ├── fa-solid-900.svg
+                    ├── fa-solid-900.ttf
+                    ├── fa-solid-900.woff
+                    ├── fa-solid-900.woff2
+                    ├── Poppins-Medium.otf
+                    ├── Poppins-Regular.otf
+                ├── logo.png
+            └── 📁styles
+                ├── theme.css
         └── 📁web
             └── 📁public
+                └── 📁fonts
+                    ├── fa-brands-400.eot
+                    ├── fa-brands-400.svg
+                    ├── fa-brands-400.ttf
+                    ├── fa-brands-400.woff
+                    ├── fa-brands-400.woff2
+                    ├── fa-regular-400.eot
+                    ├── fa-regular-400.svg
+                    ├── fa-regular-400.ttf
+                    ├── fa-regular-400.woff
+                    ├── fa-regular-400.woff2
+                    ├── fa-solid-900.eot
+                    ├── fa-solid-900.svg
+                    ├── fa-solid-900.ttf
+                    ├── fa-solid-900.woff
+                    ├── fa-solid-900.woff2
+                    ├── Poppins-Medium.otf
+                    ├── Poppins-Regular.otf
                 └── 📁img
                     ├── calabresa.jpg
                     ├── lombo.jpg
