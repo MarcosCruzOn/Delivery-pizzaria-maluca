@@ -7,6 +7,7 @@ import { renderOrders } from './pages/orders'
 import { renderMenuAdmin } from './pages/menu'
 import { renderSettings } from './pages/settings'
 import { renderCompany } from './pages/company'
+import { renderReports } from './pages/reports'
 
 function getRoute() {
 	return (window.location.hash || '#/login').replace('#', '')
@@ -45,6 +46,8 @@ function router() {
 	if (route === '/settings') return renderSettings(app)
 
 	if (route === '/company') return renderCompany(app)
+
+	if (route === '/reports') return renderReports(app)
 
 	app.innerHTML = `<div style="padding:20px;">404</div>`
 }
