@@ -111,3 +111,7 @@ b {
 	cursor: pointer;
 	background: var(--color-primary-out);
 }
+
+.hidden {
+	display: none !important;
+}
