@@ -1,4 +1,4 @@
-import { AdminLayout } from '../components/AdminLayout/AdminLayout'
+import { AdminLayout } from '../../components/AdminLayout/AdminLayout'
 
 type Tab = 'sobre' | 'endereco' | 'horario'
 

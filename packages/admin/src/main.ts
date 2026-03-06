@@ -1,56 +1,19 @@
 import '@delivery/ui/styles/theme.css'
 import './styles/painel.css'
+import { router } from './routes/router'
 
-import { renderLogin } from './pages/login'
-import { renderDashboard } from './pages/dashboard'
-import { renderOrders } from './pages/orders'
-import { renderMenuAdmin } from './pages/menu'
-import { renderSettings } from './pages/settings'
-import { renderCompany } from './pages/company'
-import { renderReports } from './pages/reports'
+const appElement = document.querySelector<HTMLDivElement>('#app')
 
-function getRoute() {
-	return (window.location.hash || '#/login').replace('#', '')
+if (!appElement) {
+	throw new Error('Elemento #app não encontrado')
 }
 
-function isLogged() {
-	return !!localStorage.getItem('admin_token')
-}
+const app = appElement
 
-function router() {
-	const app = document.querySelector<HTMLDivElement>('#app')
-	if (!app) return
-
-	const route = getRoute()
+function render() {
 	app.innerHTML = ''
-
-	if (!isLogged() && route !== '/login') {
-		window.location.hash = '#/login'
-		return
-	}
-
-	if (route === '/login') {
-		renderLogin(app)
-		return
-	}
-
-	if (route === '/home') {
-		renderDashboard(app)
-		return
-	}
-
-	if (route === '/orders') return renderOrders(app)
-
-	if (route === '/menu') return renderMenuAdmin(app)
-
-	if (route === '/settings') return renderSettings(app)
-
-	if (route === '/company') return renderCompany(app)
-
-	if (route === '/reports') return renderReports(app)
-
-	app.innerHTML = `<div style="padding:20px;">404</div>`
+	router(app)
 }
 
-window.addEventListener('hashchange', router)
-router()
+window.addEventListener('hashchange', render)
+render()
