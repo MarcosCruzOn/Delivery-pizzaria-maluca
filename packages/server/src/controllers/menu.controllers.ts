@@ -1,14 +1,12 @@
 import type { Request, Response } from 'express'
-import { getMenuItemById, listMenu } from '../services/menu.services.js'
+import { listCategorias, listProdutos } from '../services/menu.services.js'
 
-export function getMenu(_req: Request, res: Response) {
-	res.json(listMenu())
+export async function getCategorias(_req: Request, res: Response) {
+	const categorias = await listCategorias()
+	res.json(categorias)
 }
 
-export function getMenuItem(req: Request, res: Response) {
-	const id = Number(req.params.id)
-	const item = getMenuItemById(id)
-
-	if (!item) return res.status(404).json({ error: 'Produto não encontrado' })
-	res.json(item)
+export async function getProdutos(_req: Request, res: Response) {
+	const produtos = await listProdutos()
+	res.json(produtos)
 }

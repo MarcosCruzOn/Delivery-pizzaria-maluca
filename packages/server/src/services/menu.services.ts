@@ -1,24 +1,11 @@
-import type { MenuItem } from '../types/menu.js'
+import { db } from '../database/connection.js'
 
-const menu: MenuItem[] = [
-	{
-		id: 1,
-		name: 'Pizza Calabresa',
-		description: 'Calabresa, cebola e queijo',
-		price: 45,
-	},
-	{
-		id: 2,
-		name: 'Pizza Frango c/ Catupiry',
-		description: 'Frango desfiado e catupiry',
-		price: 49,
-	},
-]
-
-export function listMenu(): MenuItem[] {
-	return menu
+export async function listCategorias() {
+	const [rows] = await db.query('SELECT * FROM categorias')
+	return rows
 }
 
-export function getMenuItemById(id: number): MenuItem | undefined {
-	return menu.find((m) => m.id === id)
+export async function listProdutos() {
+	const [rows] = await db.query('SELECT * FROM produtos')
+	return rows
 }

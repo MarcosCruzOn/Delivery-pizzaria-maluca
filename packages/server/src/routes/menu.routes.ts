@@ -1,6 +1,9 @@
 import { Router } from 'express'
-import { getMenu, getMenuItem } from '../controllers/menu.controllers.js'
+import { getCategorias, getProdutos } from '../controllers/menu.controllers.js'
 
-export const menuRoutes = Router()
-menuRoutes.get('/', getMenu)
-menuRoutes.get('/:id', getMenuItem)
+const router = Router()
+
+router.get('/categorias', getCategorias)
+router.get('/produtos', getProdutos)
+
+export default router
