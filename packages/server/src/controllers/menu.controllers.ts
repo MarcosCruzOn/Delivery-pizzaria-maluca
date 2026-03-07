@@ -1,5 +1,9 @@
 import type { Request, Response } from 'express'
-import { listCategorias, listProdutos } from '../services/menu.services.js'
+import {
+	listCategorias,
+	listMenu,
+	listProdutos,
+} from '../services/menu.services.js'
 
 export async function getCategorias(_req: Request, res: Response) {
 	const categorias = await listCategorias()
@@ -9,4 +13,9 @@ export async function getCategorias(_req: Request, res: Response) {
 export async function getProdutos(_req: Request, res: Response) {
 	const produtos = await listProdutos()
 	res.json(produtos)
+}
+
+export async function getMenu(_req: Request, res: Response) {
+	const menu = await listMenu()
+	res.json(menu)
 }
