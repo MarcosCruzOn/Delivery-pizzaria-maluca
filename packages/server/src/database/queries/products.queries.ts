@@ -1,13 +1,14 @@
 export const SQL_LIST_PRODUTOS = `
   SELECT
-    idproduto,
-    idcategoria,
+    idproduto AS id,
+    idcategoria AS categoria_id,
     nome,
     descricao,
-    valor,
-    imagem
+    valor AS preco,
+    imagem AS imagem_url
   FROM produtos
-  ORDER BY idproduto ASC
+  WHERE ATIVO = 1
+  ORDER BY ordem ASC
 `
 
 export const SQL_LIST_PRODUTOS_BY_CATEGORIA = `

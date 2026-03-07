@@ -1,6 +1,6 @@
 export const SQL_LIST_CATEGORIAS = `
-   SELECT
-    idcategoria,
+  SELECT
+    idcategoria AS id,
     nome
   FROM categorias
   ORDER BY idcategoria ASC

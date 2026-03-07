@@ -14,7 +14,8 @@
 		"dev:web": "npm -w @delivery/web run dev",
 		"build:web": "npm -w @delivery/web run build",
 		"preview:web": "npm -w @delivery/web run preview",
-		"dev:admin": "npm -w @delivery/admin run dev"
+		"dev:admin": "npm -w @delivery/admin run dev",
+		"dev": "concurrently -n server,web,admin -c yellow,cyan,magenta \"npm run dev:server\" \"npm run dev:web\" \"npm run dev:admin\""
 	},
 	"repository": {
 		"type": "git",
@@ -28,6 +29,7 @@
 	},
 	"homepage": "https://github.com/MarcosCruzOn/Delivery-pizzaria-maluca#readme",
 	"devDependencies": {
+		"concurrently": "^9.2.1",
 		"typescript": "^5.9.3"
 	}
 }

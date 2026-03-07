@@ -7,7 +7,7 @@ export type Produto = {
 	id: number
 	categoria_id: number
 	nome: string
-	descricao: string
+	descricao: string | null
 	preco: number
 	imagem_url: string | null
 }
