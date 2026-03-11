@@ -3,22 +3,38 @@
     └── 📁packages
         └── 📁admin
             └── 📁public
+                └── 📁img
+                    ├── calabresa.jpg
+                    ├── logo.png
+                    ├── lombo.jpg
                 ├── vite.svg
             └── 📁src
                 └── 📁api
                     ├── auth.ts
+                    ├── products.ts
+                    ├── upload.ts
                 └── 📁components
                     └── 📁AdminLayout
-                    ├── AdminLayout.ts
+                        ├── AdminLayout.ts
                 └── 📁pages
-                    ├── dashboard.ts
-                    ├── login.ts
-                    ├── menu.ts
-                    ├── orders.ts
+                    └── 📁company
+                        ├── index.ts
+                    └── 📁dashboard
+                        ├── index.ts
+                    └── 📁login
+                        ├── index.ts
+                    └── 📁menu
+                        ├── index.ts
+                    └── 📁orders
+                        ├── index.ts
+                    └── 📁reports
+                        ├── index.ts
+                    └── 📁settings
+                        ├── index.ts
+                └── 📁routes
+                    ├── router.ts
                 └── 📁styles
                     ├── painel.css
-                └── 📁utils
-                    ├── dom.ts
                 ├── main.ts
                 ├── typescript.svg
             ├── .gitignore
@@ -29,31 +45,42 @@
         └── 📁server
             └── 📁src
                 └── 📁controllers
-                    ├── about.controllers.ts
-                    ├── carts.controllers.ts
+                    ├── admin-products.controllers.ts
                     ├── menu.controllers.ts
-                    ├── orders.controllers.ts
+                    ├── upload.controllers.ts
+                └── 📁database
+                    └── 📁queries
+                        ├── admin-products.queries.ts
+                        ├── categories.queries.ts
+                        ├── products.queries.ts
+                    ├── connection.ts
+                    ├── testConnection.ts
                 └── 📁errors
                     ├── AppError.ts
                 └── 📁middlewares
                     ├── errorHandler.ts
+                    ├── upload.ts
                 └── 📁routes
-                    ├── about.routes.ts
-                    ├── cart.routes.ts
+                    ├── admin-products.routes.ts
                     ├── index.ts
                     ├── menu.routes.ts
-                    ├── orders.routes.ts
+                    ├── upload.routes.ts
                 └── 📁services
-                    ├── cart.services.ts
+                    ├── admin-products.services.ts
                     ├── menu.services.ts
-                    ├── orders.services.ts
                 └── 📁types
-                    ├── cart.ts
                     ├── menu.ts
-                    ├── order.ts
                 ├── server.ts
+            └── 📁uploads
+                ├── produto-1773187174463.png
+                ├── produto-1773189039601.jpg
+            ├── .env
             ├── package.json
             ├── tsconfig.json
+        └── 📁shared
+            └── 📁src
+                ├── dom.ts
+            ├── package.json
         └── 📁ui
             └── 📁public
                 └── 📁fonts
@@ -74,9 +101,9 @@
                     ├── fa-solid-900.woff2
                     ├── Poppins-Medium.otf
                     ├── Poppins-Regular.otf
-                ├── logo.png
             └── 📁styles
                 ├── theme.css
+            ├── package.json
         └── 📁web
             └── 📁public
                 └── 📁fonts
@@ -144,8 +171,6 @@
                     ├── cart.css
                     ├── main.css
                     ├── order.css
-                └── 📁utils
-                    ├── dom.ts
                 ├── main.ts
                 ├── typescript.svg
             ├── .gitignore
@@ -154,6 +179,7 @@
             ├── tsconfig.json
             ├── vite.config.ts
     ├── .gitignore
+    ├── api.http
     ├── package-lock.json
     ├── package.json
     └── tsconfig.base.json

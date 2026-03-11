@@ -1,11 +1,12 @@
 import { Router } from 'express'
-import uploadRoutes from './upload.routes.js'
 
-import menuRoutes from './menu.routes.js'
+import adminCategoriesRoutes from './admin-categories.routes.js'
+
+import uploadRoutes from './upload.routes.js'
 
 const router = Router()
 
-router.use('/menu', menuRoutes)
+router.use('/admin/categories', adminCategoriesRoutes)
 router.use('/upload', uploadRoutes)
 
 export { router }

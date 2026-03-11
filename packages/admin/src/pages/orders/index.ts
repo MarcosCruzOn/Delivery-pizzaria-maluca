@@ -130,9 +130,9 @@ function mockOrderModal() {
       <div class="modal-dialog" role="document">
         <div class="modal-content">
 
-          <div class="modal-header">
+          <div class="modal-top d-flex justify-content-between px-4 py-3 align-items-center">
             <h5 class="modal-title">#1 <span class="horario-pedido">Recebido há 33 minutos</span></h5>
-            <button class="btn btn-white btn-sm" type="button" data-bs-dismiss="modal" aria-label="Close">
+            <button class="btn btn-white btn-sm " type="button" data-bs-dismiss="modal" aria-label="Close">
               <i class="fas fa-times"></i>&nbsp; Fechar
             </button>
           </div>

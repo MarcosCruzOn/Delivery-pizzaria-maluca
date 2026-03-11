@@ -1,27 +1,35 @@
-export const SQL_LIST_CATEGORIAS = `
-  SELECT
-    idcategoria AS id,
-    nome
-  FROM categorias
-  ORDER BY idcategoria ASC
-`
+import { db } from '../connection.js'
 
-export const SQL_GET_CATEGORIA_BY_ID = `
-  SELECT * FROM categorias WHERE idcategoria = ?
-`
+export async function createCategoryQuery(
+	nome: string,
+	icone: string,
+	ordem: number
+) {
+	const [result] = await db.execute(
+		`INSERT INTO categorias (nome, icone, ordem)
+     VALUES (?, ?, ?)`,
+		[nome, icone, ordem]
+	)
 
-export const SQL_CREATE_CATEGORIA = `
-  INSERT INTO categorias (nome, icone)
-  VALUES (?, ?)
-`
+	return result
+}
 
-export const SQL_UPDATE_CATEGORIA = `
-  UPDATE categorias
-  SET nome = ?, icone = ?
-  WHERE idcategoria = ?
-`
+export async function deleteCategoryQuery(idcategoria: number) {
+	const [result] = await db.execute(
+		`DELETE FROM categorias WHERE idcategoria = ?`,
+		[idcategoria]
+	)
 
-export const SQL_DELETE_CATEGORIA = `
-  DELETE FROM categorias
-  WHERE idcategoria = ?
-`
+	return result
+}
+
+export async function getCategoriesQuery() {
+	const [rows] = await db.execute(
+		`SELECT idcategoria, nome, icone, ordem
+     FROM categorias
+     WHERE ATIVO = 1
+     ORDER BY ordem`
+	)
+
+	return rows
+}

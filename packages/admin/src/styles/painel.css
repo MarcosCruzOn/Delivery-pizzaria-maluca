@@ -280,22 +280,17 @@ h1.title-page {
 
 /* Modal detalhes */
 
-.modal-content {
-	background: transparent;
-	border: none;
-}
-
-.modal-header {
+.modal-top {
 	border-bottom: 0;
 	background-color: var(--color-background);
 	border-radius: 0px;
 }
 
-.modal-header::before {
+.modal-top::before {
 	content: '';
 	position: absolute;
 	left: 0;
-	height: 10px;
+	height: 50px;
 	width: 100%;
 	top: -8px;
 	background: radial-gradient(
@@ -311,16 +306,6 @@ h1.title-page {
 .modal-title {
 	font-size: 18px;
 	color: var(--color-black);
-}
-
-.modal-title .horario-pedido {
-	font-size: 14px;
-	color: var(--color-text);
-	padding-left: 15px;
-}
-
-.modal-body {
-	padding: 0;
 }
 
 .container-dados-pedido {
