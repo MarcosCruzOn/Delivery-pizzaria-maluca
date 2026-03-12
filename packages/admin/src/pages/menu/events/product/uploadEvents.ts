@@ -1,5 +1,5 @@
-import { uploadProductImage } from '../../../api/upload'
-import { menuState } from '../state/menuState'
+import { uploadProductImage } from '../../../../api/upload'
+import { menuState } from '../../state/menuState'
 
 export function setupUploadEvents(root: HTMLElement) {
 	root.addEventListener('change', async (event) => {

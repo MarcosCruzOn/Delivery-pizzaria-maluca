@@ -1,6 +1,6 @@
-import { menuState } from '../state/menuState'
-import { renderMenu } from '../renderMenu'
-import { createProduct, updateProduct } from '../../../api/products'
+import { menuState } from '../../state/menuState'
+import { renderMenu } from '../../renderMenu'
+import { createProduct, updateProduct } from '../../../../api/products'
 
 export function setupProductSubmit(root: HTMLElement) {
 	const btn = root.querySelector<HTMLButtonElement>('#btnSalvarNovoProduto')
@@ -24,8 +24,10 @@ export function setupProductSubmit(root: HTMLElement) {
 				?.value || 0
 		)
 
-		if (!nome || !valor || !idcategoria) {
-			alert('Preencha os campos obrigatórios')
+		const image = menuState.uploadedImageUrl || menuState.currentImageUrl
+
+		if (!nome || !valor || !idcategoria || !descricao || !image) {
+			alert('Preencha todos os campos e selecione uma imagem')
 			return
 		}
 
@@ -36,8 +38,7 @@ export function setupProductSubmit(root: HTMLElement) {
 					nome,
 					descricao,
 					valor,
-					imagem:
-						menuState.uploadedImageUrl || menuState.currentImageUrl,
+					imagem: image,
 				})
 
 				alert('Produto atualizado!')
@@ -72,6 +73,43 @@ export function setupProductSubmit(root: HTMLElement) {
 			menuState.uploadedImageUrl = ''
 			menuState.selectedProductId = null
 			menuState.currentImageUrl = null
+
+			/* limpar campos do modal */
+
+			const nomeInput =
+				root.querySelector<HTMLInputElement>('#novoProdutoNome')
+			const descricaoInput = root.querySelector<HTMLTextAreaElement>(
+				'#novoProdutoDescricao'
+			)
+			const valorInput =
+				root.querySelector<HTMLInputElement>('#novoProdutoValor')
+			const imagemInput =
+				root.querySelector<HTMLInputElement>('#novoProdutoImagem')
+			const preview = root.querySelector<HTMLImageElement>(
+				'#previewNovoProduto'
+			)
+
+			if (nomeInput) nomeInput.value = ''
+			if (descricaoInput) descricaoInput.value = ''
+			if (valorInput) valorInput.value = ''
+			if (imagemInput) imagemInput.value = ''
+
+			if (preview) {
+				preview.src = ''
+				preview.style.display = 'none'
+			}
+
+			/* fechar modal */
+
+			const modalElement = document.getElementById('modalNovoProduto')
+
+			if (modalElement) {
+				const modal =
+					(window as any).bootstrap.Modal.getInstance(modalElement) ||
+					new (window as any).bootstrap.Modal(modalElement)
+
+				modal.hide()
+			}
 		} catch {
 			alert('Erro ao salvar produto')
 		}

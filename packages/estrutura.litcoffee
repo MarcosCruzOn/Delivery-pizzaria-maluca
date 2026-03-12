@@ -11,6 +11,7 @@
             └── 📁src
                 └── 📁api
                     ├── auth.ts
+                    ├── categories.ts
                     ├── products.ts
                     ├── upload.ts
                 └── 📁components
@@ -24,7 +25,20 @@
                     └── 📁login
                         ├── index.ts
                     └── 📁menu
+                        └── 📁events
+                            ├── categoryEvents.ts
+                            ├── productEvents.ts
+                            ├── productSubmit.ts
+                            ├── uploadEvents.ts
+                        └── 📁state
+                            ├── menuState.ts
                         ├── index.ts
+                        ├── renderCategories.ts
+                        ├── renderCategory.ts
+                        ├── renderMenu.ts
+                        ├── renderProduct.ts
+                        ├── renderProductModal.ts
+                        ├── types.ts
                     └── 📁orders
                         ├── index.ts
                     └── 📁reports
@@ -45,12 +59,11 @@
         └── 📁server
             └── 📁src
                 └── 📁controllers
+                    ├── admin-categories.controllers.ts
                     ├── admin-products.controllers.ts
-                    ├── menu.controllers.ts
                     ├── upload.controllers.ts
                 └── 📁database
                     └── 📁queries
-                        ├── admin-products.queries.ts
                         ├── categories.queries.ts
                         ├── products.queries.ts
                     ├── connection.ts
@@ -61,19 +74,29 @@
                     ├── errorHandler.ts
                     ├── upload.ts
                 └── 📁routes
+                    ├── admin-categories.routes.ts
                     ├── admin-products.routes.ts
                     ├── index.ts
-                    ├── menu.routes.ts
                     ├── upload.routes.ts
                 └── 📁services
+                    ├── admin-categories.services.ts
                     ├── admin-products.services.ts
-                    ├── menu.services.ts
                 └── 📁types
                     ├── menu.ts
                 ├── server.ts
             └── 📁uploads
                 ├── produto-1773187174463.png
                 ├── produto-1773189039601.jpg
+                ├── produto-1773275933379.jpg
+                ├── produto-1773286958366.jpg
+                ├── produto-1773335685957.jpg
+                ├── produto-1773336591497.jpg
+                ├── produto-1773337425306.jpg
+                ├── produto-1773339553153.jpg
+                ├── produto-1773345519428.jpg
+                ├── produto-1773346062857.jpg
+                ├── produto-1773346062860.jpg
+                ├── produto-1773346993193.jpg
             ├── .env
             ├── package.json
             ├── tsconfig.json
