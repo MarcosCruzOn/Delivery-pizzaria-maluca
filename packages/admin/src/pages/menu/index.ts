@@ -21,13 +21,6 @@ ESTADO LOCAL
 
 let categories: Category[] = []
 
-const state = {
-	selectedCategoryId: null as number | null,
-	selectedProductId: null as number | null,
-	uploadedImageUrl: '',
-	currentImageUrl: null as string | null,
-}
-
 /*
 =====================================
 RENDER PRINCIPAL
@@ -74,9 +67,9 @@ export async function renderMenuAdmin(root: HTMLElement) {
 	})
 
 	setupCategoryEvents(root, categories.length)
-	setupProductEvents(root, state)
-	setupUploadEvents(root, state)
-	setupProductSubmit(root, state)
+	setupProductEvents(root)
+	setupUploadEvents(root)
+	setupProductSubmit(root)
 }
 
 /*

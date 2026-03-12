@@ -1,10 +1,7 @@
-import {
-	createProduct,
-	deleteProduct,
-	updateProduct,
-} from '../../../api/products'
+import { deleteProduct } from '../../../api/products'
+import { menuState } from '../state/menuState'
 
-export function setupProductEvents(root: HTMLElement, state: any) {
+export function setupProductEvents(root: HTMLElement) {
 	root.addEventListener('click', async (event) => {
 		const target = event.target as HTMLElement
 
@@ -21,7 +18,7 @@ export function setupProductEvents(root: HTMLElement, state: any) {
 				addProductBtn.getAttribute('data-category-id')
 			)
 
-			state.selectedCategoryId = categoryId
+			menuState.selectedCategoryId = categoryId
 
 			const modal = new (window as any).bootstrap.Modal(
 				document.getElementById('modalNovoProduto')
@@ -78,8 +75,8 @@ export function setupProductEvents(root: HTMLElement, state: any) {
 			if (valorInput)
 				valorInput.value = editProductBtn.dataset.price || ''
 
-			state.selectedProductId = Number(editProductBtn.dataset.id)
-			state.currentImageUrl = editProductBtn.dataset.image || null
+			menuState.selectedProductId = Number(editProductBtn.dataset.id)
+			menuState.currentImageUrl = editProductBtn.dataset.image || null
 
 			modal.show()
 		}

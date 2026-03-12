@@ -1,6 +1,6 @@
+import { menuState } from '../state/menuState'
 import { createProduct, updateProduct } from '../../../api/products'
-
-export function setupProductSubmit(root: HTMLElement, state: any) {
+export function setupProductSubmit(root: HTMLElement) {
 	const btn = root.querySelector<HTMLButtonElement>('#btnSalvarNovoProduto')
 
 	btn?.addEventListener('click', async () => {
@@ -28,13 +28,14 @@ export function setupProductSubmit(root: HTMLElement, state: any) {
 		}
 
 		try {
-			if (state.selectedProductId) {
-				await updateProduct(state.selectedProductId, {
+			if (menuState.selectedProductId) {
+				await updateProduct(menuState.selectedProductId, {
 					idcategoria,
 					nome,
 					descricao,
 					valor,
-					imagem: state.uploadedImageUrl || state.currentImageUrl,
+					imagem:
+						menuState.uploadedImageUrl || menuState.currentImageUrl,
 				})
 
 				alert('Produto atualizado!')
@@ -44,15 +45,15 @@ export function setupProductSubmit(root: HTMLElement, state: any) {
 					nome,
 					descricao,
 					valor,
-					imagem: state.uploadedImageUrl || null,
+					imagem: menuState.uploadedImageUrl || null,
 				})
 
 				alert('Produto criado!')
 			}
 
-			state.uploadedImageUrl = ''
-			state.selectedProductId = null
-			state.currentImageUrl = null
+			menuState.uploadedImageUrl = ''
+			menuState.selectedProductId = null
+			menuState.currentImageUrl = null
 
 			location.reload()
 		} catch {

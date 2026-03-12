@@ -1,6 +1,7 @@
 import { uploadProductImage } from '../../../api/upload'
+import { menuState } from '../state/menuState'
 
-export function setupUploadEvents(root: HTMLElement, state: any) {
+export function setupUploadEvents(root: HTMLElement) {
 	root.addEventListener('change', async (event) => {
 		const target = event.target as HTMLInputElement
 
@@ -21,7 +22,7 @@ export function setupUploadEvents(root: HTMLElement, state: any) {
 		try {
 			const result = await uploadProductImage(file)
 
-			state.uploadedImageUrl = result.imageUrl
+			menuState.uploadedImageUrl = result.imageUrl
 		} catch {
 			alert('Erro ao enviar imagem')
 		}
