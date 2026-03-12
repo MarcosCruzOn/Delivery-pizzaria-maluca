@@ -45,7 +45,7 @@ export function renderProduct(p: Product) {
 	    <i class="far fa-copy"></i>
 	   </a>
 
-	   <a href="#" class="icon-action">
+	   <a class="icon-action delete-product" data-id="${p.id}">
 	    <i class="fas fa-trash-alt"></i>
 	   </a>
 

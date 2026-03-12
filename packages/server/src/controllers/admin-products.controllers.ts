@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { createProductService } from '../services/admin-products.services.js'
 import { listProductsService } from '../services/admin-products.services.js'
+import { deleteProductService } from '../services/admin-products.services.js'
 
 export async function createProduct(req: Request, res: Response) {
 	try {
@@ -26,6 +27,22 @@ export async function listProducts(req, res) {
 	} catch {
 		return res.status(500).json({
 			error: 'Erro ao buscar produtos',
+		})
+	}
+}
+
+export async function deleteProduct(req, res) {
+	try {
+		const id = Number(req.params.id)
+
+		await deleteProductService(id)
+
+		return res.json({
+			message: 'Produto removido com sucesso',
+		})
+	} catch {
+		return res.status(500).json({
+			error: 'Erro ao remover produto',
 		})
 	}
 }

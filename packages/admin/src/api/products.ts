@@ -31,3 +31,15 @@ export async function getProducts() {
 
 	return response.json()
 }
+
+export async function deleteProduct(id: number) {
+	const response = await fetch(`/admin/products/${id}`, {
+		method: 'DELETE',
+	})
+
+	if (!response.ok) {
+		throw new Error('Erro ao remover produto')
+	}
+
+	return response.json()
+}

@@ -6,10 +6,10 @@ import {
 	deleteCategory,
 } from '../../api/categories'
 
-import { getProducts, createProduct } from '../../api/products'
+import { getProducts, createProduct, deleteProduct } from '../../api/products'
 import { uploadProductImage } from '../../api/upload'
-
 import { renderCategories } from './renderCategories'
+
 import type { Category } from './types'
 
 /*
@@ -85,6 +85,7 @@ function setupEvents(root: HTMLElement) {
 		const addCategoryBtn = target.closest('#btnAddCategory')
 		const deleteCategoryBtn = target.closest('.delete-category')
 		const addProductBtn = target.closest("[data-action='add-product']")
+		const deleteProductBtn = target.closest('.delete-product')
 
 		/*
 		CRIAR CATEGORIA
@@ -159,6 +160,29 @@ function setupEvents(root: HTMLElement) {
 
 			if (select) {
 				select.value = String(categoryId)
+			}
+		}
+
+		/*
+		DELETAR PRODUTO
+		*/
+
+		if (deleteProductBtn) {
+			event.preventDefault()
+
+			const id = Number(deleteProductBtn.getAttribute('data-id'))
+
+			const confirmDelete = confirm('Deseja remover esse produto?')
+
+			if (!confirmDelete) return
+
+			try {
+				await deleteProduct(id)
+
+				alert('Produto removido!')
+				location.reload()
+			} catch {
+				alert('Erro ao remover produto')
 			}
 		}
 	})

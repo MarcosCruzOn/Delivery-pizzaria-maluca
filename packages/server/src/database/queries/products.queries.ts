@@ -30,3 +30,16 @@ export async function listProductsQuery() {
 
 	return rows
 }
+
+export async function deleteProductQuery(id: number) {
+	const [result] = await db.execute(
+		`
+		UPDATE produtos
+		SET ATIVO = 0
+		WHERE idproduto = ?
+	`,
+		[id]
+	)
+
+	return result
+}
