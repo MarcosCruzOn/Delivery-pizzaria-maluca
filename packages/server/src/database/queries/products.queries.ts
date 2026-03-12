@@ -34,9 +34,7 @@ export async function listProductsQuery() {
 export async function deleteProductQuery(id: number) {
 	const [result] = await db.execute(
 		`
-		UPDATE produtos
-		SET ATIVO = 0
-		WHERE idproduto = ?
+		DELETE FROM produtos WHERE idproduto= ?
 	`,
 		[id]
 	)
