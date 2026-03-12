@@ -1,5 +1,7 @@
 import { menuState } from '../state/menuState'
+import { renderMenu } from '../renderMenu'
 import { createProduct, updateProduct } from '../../../api/products'
+
 export function setupProductSubmit(root: HTMLElement) {
 	const btn = root.querySelector<HTMLButtonElement>('#btnSalvarNovoProduto')
 
@@ -48,14 +50,28 @@ export function setupProductSubmit(root: HTMLElement) {
 					imagem: menuState.uploadedImageUrl || null,
 				})
 
-				alert('Produto criado!')
+				const newProduct = {
+					id: Date.now(),
+					name: nome,
+					description: descricao,
+					priceText: `R$ ${valor.toFixed(2)}`,
+					imageUrl: menuState.uploadedImageUrl || '',
+				}
+
+				const category = menuState.categories.find(
+					(c) => Number(c.id) === idcategoria
+				)
+
+				if (category) {
+					category.products.push(newProduct)
+				}
+
+				renderMenu(root, menuState.categories)
 			}
 
 			menuState.uploadedImageUrl = ''
 			menuState.selectedProductId = null
 			menuState.currentImageUrl = null
-
-			location.reload()
 		} catch {
 			alert('Erro ao salvar produto')
 		}

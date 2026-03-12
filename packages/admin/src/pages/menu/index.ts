@@ -11,15 +11,7 @@ import { setupProductEvents } from './events/productEvents'
 import { setupUploadEvents } from './events/uploadEvents'
 import { setupProductSubmit } from './events/productSubmit'
 
-import type { Category } from './types'
-
-/*
-=====================================
-ESTADO LOCAL
-=====================================
-*/
-
-let categories: Category[] = []
+import { menuState } from './state/menuState'
 
 /*
 =====================================
@@ -44,7 +36,7 @@ export async function renderMenuAdmin(root: HTMLElement) {
 			 <p class="title-categoria mb-0"><b>Categorias do Cardápio</b></p>
 
 			 <div class="accordion" id="categoriasMenu">
-			  ${renderCategories(categories)}
+			  ${renderCategories(menuState.categories)}
 			 </div>
 
 			 <div class="card card-select mt-3" id="btnAddCategory">
@@ -62,11 +54,11 @@ export async function renderMenuAdmin(root: HTMLElement) {
 		 </div>
 		</div>
 
-		${renderProductModal(categories)}
+		${renderProductModal(menuState.categories)}
 		`,
 	})
 
-	setupCategoryEvents(root, categories.length)
+	setupCategoryEvents(root, menuState.categories.length)
 	setupProductEvents(root)
 	setupUploadEvents(root)
 	setupProductSubmit(root)
@@ -83,7 +75,7 @@ async function loadCategories() {
 		const categoriesData = await getCategories()
 		const productsData = await getProducts()
 
-		categories = categoriesData.map((c: any) => ({
+		menuState.categories = categoriesData.map((c: any) => ({
 			id: c.idcategoria,
 			iconClass: c.icone,
 			title: c.nome,
@@ -91,7 +83,9 @@ async function loadCategories() {
 		}))
 
 		productsData.forEach((p: any) => {
-			const category = categories.find((cat) => cat.id === p.idcategoria)
+			const category = menuState.categories.find(
+				(cat) => Number(cat.id) === p.idcategoria
+			)
 
 			if (!category) return
 

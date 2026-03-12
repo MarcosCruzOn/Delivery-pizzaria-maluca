@@ -1,4 +1,8 @@
+import type { Category } from '../types'
+
 export const menuState = {
+	categories: [] as Category[],
+
 	selectedCategoryId: null as number | null,
 
 	selectedProductId: null as number | null,
