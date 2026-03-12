@@ -1,0 +1,15 @@
+import { db } from '../connection.js'
+import { CreateProductDTO } from '../../types/menu.js'
+
+export async function createProductQuery(data: CreateProductDTO) {
+	const { idcategoria, nome, descricao, valor, imagem } = data
+
+	const [result] = await db.execute(
+		`INSERT INTO produtos 
+		(idcategoria, nome, descricao, valor, imagem, ordem, ATIVO)
+		VALUES (?, ?, ?, ?, ?, 0, 1)`,
+		[idcategoria, nome, descricao || null, valor, imagem || null]
+	)
+
+	return result
+}

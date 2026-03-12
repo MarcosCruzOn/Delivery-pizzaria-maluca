@@ -245,9 +245,20 @@ EVENTOS
 */
 
 function setupEvents(root: HTMLElement) {
-	root.querySelector('#btnAddCategory')?.addEventListener(
-		'click',
-		async () => {
+	root.addEventListener('click', async (event) => {
+		const target = event.target as HTMLElement
+
+		const addProductBtn = target.closest("[data-action='add-product']")
+		const deleteCategoryBtn = target.closest('.delete-category')
+		const addCategoryBtn = target.closest('#btnAddCategory')
+
+		/*
+		========================
+		CRIAR CATEGORIA
+		========================
+		*/
+
+		if (addCategoryBtn) {
 			const nome = prompt('Nome da categoria')
 
 			if (!nome) return
@@ -264,19 +275,24 @@ function setupEvents(root: HTMLElement) {
 				})
 
 				alert('Categoria criada!')
-
 				location.reload()
-			} catch (error) {
+			} catch {
 				alert('Erro ao criar categoria')
 			}
+
+			return
 		}
-	)
 
-	root.querySelectorAll('.delete-category').forEach((btn) => {
-		btn.addEventListener('click', async (e) => {
-			e.preventDefault()
+		/*
+		========================
+		DELETAR CATEGORIA
+		========================
+		*/
 
-			const id = Number((btn as HTMLElement).dataset.id)
+		if (deleteCategoryBtn) {
+			event.preventDefault()
+
+			const id = Number(deleteCategoryBtn.getAttribute('data-id'))
 
 			const confirmDelete = confirm('Deseja remover essa categoria?')
 
@@ -286,19 +302,26 @@ function setupEvents(root: HTMLElement) {
 				await deleteCategory(id)
 
 				alert('Categoria removida')
-
 				location.reload()
 			} catch {
 				alert('Erro ao remover categoria')
 			}
-		})
-	})
 
-	root.querySelectorAll("[data-action='add-product']").forEach((el) => {
-		el.addEventListener('click', (e) => {
-			e.preventDefault()
+			return
+		}
 
-			const categoryId = Number((el as HTMLElement).dataset.categoryId)
+		/*
+		========================
+		ADICIONAR PRODUTO
+		========================
+		*/
+
+		if (addProductBtn) {
+			event.preventDefault()
+
+			const categoryId = Number(
+				addProductBtn.getAttribute('data-category-id')
+			)
 
 			selectedCategoryId = categoryId
 
@@ -315,7 +338,9 @@ function setupEvents(root: HTMLElement) {
 			if (select) {
 				select.value = String(categoryId)
 			}
-		})
+
+			return
+		}
 	})
 }
 
@@ -478,6 +503,7 @@ function setupCreateProductSubmit(root: HTMLElement) {
 			})
 
 			alert('Produto criado!')
+			location.reload()
 		} catch (error) {
 			alert('Erro ao criar produto')
 		}

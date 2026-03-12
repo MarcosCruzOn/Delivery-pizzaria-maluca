@@ -3,17 +3,25 @@ export type Categoria = {
 	nome: string
 }
 
-export type Produto = {
-	id: number
-	categoria_id: number
+export type CreateProductDTO = {
+	idcategoria: number
 	nome: string
-	descricao: string | null
-	preco: number
-	imagem_url: string | null
+	descricao?: string
+	valor: number
+	imagem?: string | null
 }
 
-export type MenuCategoria = {
-	id: number
-	nome: string
-	produtos: Produto[]
-}
+// export type Produto = {
+// 	id: number
+// 	categoria_id: number
+// 	nome: string
+// 	descricao: string | null
+// 	preco: number
+// 	imagem_url: string | null
+// }
+
+// export type MenuCategoria = {
+// 	id: number
+// 	nome: string
+// 	produtos: Produto[]
+// }
