@@ -43,3 +43,19 @@ export async function deleteProduct(id: number) {
 
 	return response.json()
 }
+
+export async function updateProduct(id: number, data: any) {
+	const response = await fetch(`/admin/products/${id}`, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(data),
+	})
+
+	if (!response.ok) {
+		throw new Error('Erro ao atualizar produto')
+	}
+
+	return response.json()
+}

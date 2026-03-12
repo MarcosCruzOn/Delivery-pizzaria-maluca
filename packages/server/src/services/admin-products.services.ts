@@ -1,7 +1,11 @@
-import { createProductQuery } from '../database/queries/products.queries.js'
+import {
+	createProductQuery,
+	listProductsQuery,
+	deleteProductQuery,
+	updateProductQuery,
+} from '../database/queries/products.queries.js'
+
 import { CreateProductDTO } from '../types/menu.js'
-import { listProductsQuery } from '../database/queries/products.queries.js'
-import { deleteProductQuery } from '../database/queries/products.queries.js'
 
 export async function createProductService(data: CreateProductDTO) {
 	if (!data.nome) {
@@ -29,4 +33,12 @@ export async function deleteProductService(id: number) {
 	}
 
 	return deleteProductQuery(id)
+}
+
+export async function updateProductService(id: number, data: any) {
+	if (!id) {
+		throw new Error('Produto inválido')
+	}
+
+	return updateProductQuery(id, data)
 }

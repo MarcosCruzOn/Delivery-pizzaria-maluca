@@ -43,3 +43,23 @@ export async function deleteProductQuery(id: number) {
 
 	return result
 }
+
+export async function updateProductQuery(id: number, data: any) {
+	const { idcategoria, nome, descricao, valor, imagem } = data
+
+	const [result] = await db.execute(
+		`
+		UPDATE produtos
+		SET
+			idcategoria = ?,
+			nome = ?,
+			descricao = ?,
+			valor = ?,
+			imagem = ?
+		WHERE idproduto = ?
+	`,
+		[idcategoria, nome, descricao, valor, imagem, id]
+	)
+
+	return result
+}

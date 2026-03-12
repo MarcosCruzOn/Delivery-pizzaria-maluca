@@ -6,7 +6,13 @@ import {
 	deleteCategory,
 } from '../../api/categories'
 
-import { getProducts, createProduct, deleteProduct } from '../../api/products'
+import {
+	getProducts,
+	createProduct,
+	deleteProduct,
+	updateProduct,
+} from '../../api/products'
+
 import { uploadProductImage } from '../../api/upload'
 import { renderCategories } from './renderCategories'
 
@@ -20,7 +26,9 @@ ESTADO LOCAL
 
 let categories: Category[] = []
 let selectedCategoryId: number | null = null
+let selectedProductId: number | null = null
 let uploadedImageUrl = ''
+let currentImageUrl: string | null = null
 
 /*
 =====================================
@@ -86,6 +94,9 @@ function setupEvents(root: HTMLElement) {
 		const deleteCategoryBtn = target.closest('.delete-category')
 		const addProductBtn = target.closest("[data-action='add-product']")
 		const deleteProductBtn = target.closest('.delete-product')
+		const editProductBtn = target.closest(
+			'.edit-product'
+		) as HTMLElement | null
 
 		/*
 		CRIAR CATEGORIA
@@ -185,6 +196,38 @@ function setupEvents(root: HTMLElement) {
 				alert('Erro ao remover produto')
 			}
 		}
+
+		/*
+		EDITAR PRODUTO
+		*/
+
+		if (editProductBtn) {
+			event.preventDefault()
+
+			const modal = new (window as any).bootstrap.Modal(
+				document.getElementById('modalNovoProduto')
+			)
+
+			const nomeInput =
+				root.querySelector<HTMLInputElement>('#novoProdutoNome')
+			const descricaoInput = root.querySelector<HTMLTextAreaElement>(
+				'#novoProdutoDescricao'
+			)
+			const valorInput =
+				root.querySelector<HTMLInputElement>('#novoProdutoValor')
+
+			if (nomeInput) nomeInput.value = editProductBtn.dataset.name || ''
+			if (descricaoInput)
+				descricaoInput.value = editProductBtn.dataset.description || ''
+			if (valorInput)
+				valorInput.value = editProductBtn.dataset.price || ''
+
+			selectedProductId = Number(editProductBtn.dataset.id)
+
+			currentImageUrl = editProductBtn.dataset.image || null
+
+			modal.show()
+		}
 	})
 }
 
@@ -255,15 +298,32 @@ function setupCreateProductSubmit(root: HTMLElement) {
 		}
 
 		try {
-			await createProduct({
-				idcategoria,
-				nome,
-				descricao,
-				valor,
-				imagem: uploadedImageUrl || null,
-			})
+			if (selectedProductId) {
+				await updateProduct(selectedProductId, {
+					idcategoria,
+					nome,
+					descricao,
+					valor,
+					imagem: uploadedImageUrl || currentImageUrl,
+				})
 
-			alert('Produto criado!')
+				alert('Produto atualizado!')
+			} else {
+				await createProduct({
+					idcategoria,
+					nome,
+					descricao,
+					valor,
+					imagem: uploadedImageUrl || null,
+				})
+
+				alert('Produto criado!')
+			}
+
+			uploadedImageUrl = ''
+			selectedProductId = null
+			currentImageUrl = null
+
 			location.reload()
 		} catch {
 			alert('Erro ao criar produto')
@@ -299,9 +359,11 @@ async function loadCategories() {
 				name: p.nome,
 				description: p.descricao || '',
 				priceText: `R$ ${Number(p.valor).toFixed(2)}`,
-				imageUrl: p.imagem.startsWith('/uploads')
-					? p.imagem
-					: `/uploads/${p.imagem}`,
+				imageUrl: p.imagem
+					? p.imagem.startsWith('/uploads')
+						? p.imagem
+						: `/uploads/${p.imagem}`
+					: '',
 			})
 		})
 	} catch (error) {

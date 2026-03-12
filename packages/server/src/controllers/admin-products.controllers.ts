@@ -1,7 +1,10 @@
 import { Request, Response } from 'express'
-import { createProductService } from '../services/admin-products.services.js'
-import { listProductsService } from '../services/admin-products.services.js'
-import { deleteProductService } from '../services/admin-products.services.js'
+import {
+	createProductService,
+	listProductsService,
+	deleteProductService,
+	updateProductService,
+} from '../services/admin-products.services.js'
 
 export async function createProduct(req: Request, res: Response) {
 	try {
@@ -43,6 +46,22 @@ export async function deleteProduct(req, res) {
 	} catch {
 		return res.status(500).json({
 			error: 'Erro ao remover produto',
+		})
+	}
+}
+
+export async function updateProduct(req, res) {
+	try {
+		const id = Number(req.params.id)
+
+		await updateProductService(id, req.body)
+
+		return res.json({
+			message: 'Produto atualizado com sucesso',
+		})
+	} catch {
+		return res.status(500).json({
+			error: 'Erro ao atualizar produto',
 		})
 	}
 }

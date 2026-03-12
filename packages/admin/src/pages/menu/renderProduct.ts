@@ -37,9 +37,17 @@ export function renderProduct(p: Product) {
 	    <i class="fas fa-layer-group"></i>
 	   </a>
 
-	   <a href="#" class="icon-action">
-	    <i class="fas fa-pencil-alt"></i>
-	   </a>
+	   <a
+			href="#"
+			class="icon-action edit-product"
+			data-id="${p.id}"
+			data-name="${p.name}"
+			data-description="${p.description}"
+			data-price="${p.priceText.replace('R$ ', '')}"
+			data-image="${p.imageUrl}"
+		>
+			<i class="fas fa-pencil-alt"></i>
+		</a>
 
 	   <a href="#" class="icon-action">
 	    <i class="far fa-copy"></i>
