@@ -4,6 +4,7 @@ import {
 	getCategories,
 	deleteCategory,
 } from '../../api/categories'
+import { getProducts } from '../../api/products'
 import { uploadProductImage } from '../../api/upload'
 import { createProduct } from '../../api/products'
 
@@ -17,7 +18,7 @@ type Product = {
 }
 
 type Category = {
-	id: string
+	id: number
 	iconClass: string
 	title: string
 	products: Product[]
@@ -512,15 +513,31 @@ function setupCreateProductSubmit(root: HTMLElement) {
 
 async function loadCategories() {
 	try {
-		const data = await getCategories()
+		const categoriesData = await getCategories()
+		const productsData = await getProducts()
 
-		categories = data.map((c: any) => ({
+		categories = categoriesData.map((c: any) => ({
 			id: c.idcategoria,
 			iconClass: c.icone,
 			title: c.nome,
 			products: [],
 		}))
-	} catch (error) {
+
+		productsData.forEach((p: any) => {
+			const category = categories.find((cat) => cat.id === p.idcategoria)
+
+			if (!category) return
+
+			category.products.push({
+				id: p.idproduto,
+				name: p.nome,
+				description: p.descricao || '',
+				priceText: `R$ ${Number(p.valor).toFixed(2)}`,
+				imageUrl: p.imagem || '',
+			})
+		})
+	} catch {
+		console.log(Error)
 		alert('Erro ao carregar categorias')
 	}
 }

@@ -13,3 +13,20 @@ export async function createProductQuery(data: CreateProductDTO) {
 
 	return result
 }
+
+export async function listProductsQuery() {
+	const [rows] = await db.execute(`
+		SELECT 
+			idproduto,
+			idcategoria,
+			nome,
+			descricao,
+			valor,
+			imagem
+		FROM produtos
+		WHERE ATIVO = 1
+		ORDER BY ordem
+	`)
+
+	return rows
+}

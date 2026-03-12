@@ -21,3 +21,13 @@ export async function createProduct(data: CreateProductDTO) {
 
 	return response.json()
 }
+
+export async function getProducts() {
+	const response = await fetch('/admin/products')
+
+	if (!response.ok) {
+		throw new Error('Erro ao buscar produtos')
+	}
+
+	return response.json()
+}
