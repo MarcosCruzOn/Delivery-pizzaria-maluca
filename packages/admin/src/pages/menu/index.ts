@@ -1,22 +1,15 @@
 import { AdminLayout } from '../../components/AdminLayout/AdminLayout'
 
-import {
-	createCategory,
-	getCategories,
-	deleteCategory,
-} from '../../api/categories'
-
-import {
-	getProducts,
-	createProduct,
-	deleteProduct,
-	updateProduct,
-} from '../../api/products'
-
-import { uploadProductImage } from '../../api/upload'
+import { getCategories } from '../../api/categories'
+import { getProducts } from '../../api/products'
 
 import { renderProductModal } from './renderProductModal'
 import { renderCategories } from './renderCategories'
+
+import { setupCategoryEvents } from './events/categoryEvents'
+import { setupProductEvents } from './events/productEvents'
+import { setupUploadEvents } from './events/uploadEvents'
+import { setupProductSubmit } from './events/productSubmit'
 
 import type { Category } from './types'
 
@@ -27,10 +20,13 @@ ESTADO LOCAL
 */
 
 let categories: Category[] = []
-let selectedCategoryId: number | null = null
-let selectedProductId: number | null = null
-let uploadedImageUrl = ''
-let currentImageUrl: string | null = null
+
+const state = {
+	selectedCategoryId: null as number | null,
+	selectedProductId: null as number | null,
+	uploadedImageUrl: '',
+	currentImageUrl: null as string | null,
+}
 
 /*
 =====================================
@@ -73,264 +69,14 @@ export async function renderMenuAdmin(root: HTMLElement) {
 		 </div>
 		</div>
 
-		${renderProductModal(categories)})}
+		${renderProductModal(categories)}
 		`,
 	})
 
-	setupEvents(root)
-	setupImagePreview(root)
-	setupCreateProductSubmit(root)
-}
-
-/*
-=====================================
-EVENTOS
-=====================================
-*/
-
-function setupEvents(root: HTMLElement) {
-	root.addEventListener('click', async (event) => {
-		const target = event.target as HTMLElement
-
-		const addCategoryBtn = target.closest('#btnAddCategory')
-		const deleteCategoryBtn = target.closest('.delete-category')
-		const addProductBtn = target.closest("[data-action='add-product']")
-		const deleteProductBtn = target.closest('.delete-product')
-		const editProductBtn = target.closest(
-			'.edit-product'
-		) as HTMLElement | null
-
-		/*
-		CRIAR CATEGORIA
-		*/
-
-		if (addCategoryBtn) {
-			const nome = prompt('Nome da categoria')
-			if (!nome) return
-
-			const icone =
-				prompt('Classe do ícone (ex: fas fa-pizza-slice)') ||
-				'fas fa-utensils'
-
-			try {
-				await createCategory({
-					nome,
-					icone,
-					ordem: categories.length + 1,
-				})
-
-				alert('Categoria criada!')
-				location.reload()
-			} catch {
-				alert('Erro ao criar categoria')
-			}
-		}
-
-		/*
-		DELETAR CATEGORIA
-		*/
-
-		if (deleteCategoryBtn) {
-			event.preventDefault()
-
-			const id = Number(deleteCategoryBtn.getAttribute('data-id'))
-
-			const confirmDelete = confirm('Deseja remover essa categoria?')
-			if (!confirmDelete) return
-
-			try {
-				await deleteCategory(id)
-
-				alert('Categoria removida!')
-				location.reload()
-			} catch {
-				alert('Erro ao remover categoria')
-			}
-		}
-
-		/*
-		ADICIONAR PRODUTO
-		*/
-
-		if (addProductBtn) {
-			event.preventDefault()
-
-			const categoryId = Number(
-				addProductBtn.getAttribute('data-category-id')
-			)
-
-			selectedCategoryId = categoryId
-
-			const modal = new (window as any).bootstrap.Modal(
-				document.getElementById('modalNovoProduto')
-			)
-
-			modal.show()
-
-			const select = root.querySelector<HTMLSelectElement>(
-				'#novoProdutoCategoria'
-			)
-
-			if (select) {
-				select.value = String(categoryId)
-			}
-		}
-
-		/*
-		DELETAR PRODUTO
-		*/
-
-		if (deleteProductBtn) {
-			event.preventDefault()
-
-			const id = Number(deleteProductBtn.getAttribute('data-id'))
-
-			const confirmDelete = confirm('Deseja remover esse produto?')
-
-			if (!confirmDelete) return
-
-			try {
-				await deleteProduct(id)
-
-				alert('Produto removido!')
-				location.reload()
-			} catch {
-				alert('Erro ao remover produto')
-			}
-		}
-
-		/*
-		EDITAR PRODUTO
-		*/
-
-		if (editProductBtn) {
-			event.preventDefault()
-
-			const modal = new (window as any).bootstrap.Modal(
-				document.getElementById('modalNovoProduto')
-			)
-
-			const nomeInput =
-				root.querySelector<HTMLInputElement>('#novoProdutoNome')
-			const descricaoInput = root.querySelector<HTMLTextAreaElement>(
-				'#novoProdutoDescricao'
-			)
-			const valorInput =
-				root.querySelector<HTMLInputElement>('#novoProdutoValor')
-
-			if (nomeInput) nomeInput.value = editProductBtn.dataset.name || ''
-			if (descricaoInput)
-				descricaoInput.value = editProductBtn.dataset.description || ''
-			if (valorInput)
-				valorInput.value = editProductBtn.dataset.price || ''
-
-			selectedProductId = Number(editProductBtn.dataset.id)
-
-			currentImageUrl = editProductBtn.dataset.image || null
-
-			modal.show()
-		}
-	})
-}
-
-/*
-=====================================
-UPLOAD IMAGEM
-=====================================
-*/
-
-function setupImagePreview(root: HTMLElement) {
-	root.addEventListener('change', async (event) => {
-		const target = event.target as HTMLInputElement
-
-		if (target.id !== 'novoProdutoImagem') return
-
-		const file = target.files?.[0]
-		if (!file) return
-
-		const preview = root.querySelector<HTMLImageElement>(
-			'#previewNovoProduto'
-		)
-
-		if (!preview) return
-
-		preview.src = URL.createObjectURL(file)
-		preview.style.display = 'block'
-
-		try {
-			const result = await uploadProductImage(file)
-			uploadedImageUrl = result.imageUrl
-		} catch {
-			alert('Erro ao enviar imagem')
-		}
-	})
-}
-
-/*
-=====================================
-CRIAR PRODUTO
-=====================================
-*/
-
-function setupCreateProductSubmit(root: HTMLElement) {
-	const btn = root.querySelector<HTMLButtonElement>('#btnSalvarNovoProduto')
-
-	btn?.addEventListener('click', async () => {
-		const nome =
-			root.querySelector<HTMLInputElement>('#novoProdutoNome')?.value ||
-			''
-
-		const descricao =
-			root.querySelector<HTMLTextAreaElement>('#novoProdutoDescricao')
-				?.value || ''
-
-		const valor = Number(
-			root.querySelector<HTMLInputElement>('#novoProdutoValor')?.value ||
-				0
-		)
-
-		const idcategoria = Number(
-			root.querySelector<HTMLSelectElement>('#novoProdutoCategoria')
-				?.value || 0
-		)
-
-		if (!nome || !valor || !idcategoria) {
-			alert('Preencha os campos obrigatórios')
-			return
-		}
-
-		try {
-			if (selectedProductId) {
-				await updateProduct(selectedProductId, {
-					idcategoria,
-					nome,
-					descricao,
-					valor,
-					imagem: uploadedImageUrl || currentImageUrl,
-				})
-
-				alert('Produto atualizado!')
-			} else {
-				await createProduct({
-					idcategoria,
-					nome,
-					descricao,
-					valor,
-					imagem: uploadedImageUrl || null,
-				})
-
-				alert('Produto criado!')
-			}
-
-			uploadedImageUrl = ''
-			selectedProductId = null
-			currentImageUrl = null
-
-			location.reload()
-		} catch {
-			alert('Erro ao criar produto')
-		}
-	})
+	setupCategoryEvents(root, categories.length)
+	setupProductEvents(root, state)
+	setupUploadEvents(root, state)
+	setupProductSubmit(root, state)
 }
 
 /*
@@ -373,9 +119,3 @@ async function loadCategories() {
 		alert('Erro ao carregar categorias')
 	}
 }
-
-/*
-=====================================
-MODAL PRODUTO
-=====================================
-*/
