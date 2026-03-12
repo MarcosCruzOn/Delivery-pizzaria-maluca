@@ -6,6 +6,7 @@ import path from 'path'
 import { testDatabaseConnection } from './database/testConnection.js'
 import { errorHandler } from './middlewares/errorHandler.js'
 import { router } from './routes/index.js'
+import { fileURLToPath } from 'url'
 
 const app = express()
 
@@ -16,7 +17,14 @@ app.use(router)
 
 app.use(errorHandler)
 
-app.use('/uploads', express.static(path.resolve('packages/server/uploads')))
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const uploadsPath = path.resolve(__dirname, '../uploads')
+
+app.use('/uploads', express.static(uploadsPath))
+
+// app.use('/uploads', express.static(path.resolve('packages/server/uploads')))
 
 testDatabaseConnection()
 
