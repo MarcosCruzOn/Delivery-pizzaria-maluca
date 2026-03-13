@@ -55,7 +55,7 @@ export async function renderMenuAdmin(root: HTMLElement) {
 		</div>
 
 		${renderProductModal(menuState.categories)}
-		${renderCategoryModal}
+		${renderCategoryModal()}
 		`,
 	})
 
