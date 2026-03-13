@@ -9,12 +9,7 @@ import { renderCategories } from './renderCategories'
 import { setupUploadEvents } from './events/product/uploadEvents'
 import { setupProductSubmit } from './events/product/productSubmit'
 
-import { handleAddProduct } from './events/product/addProduct'
-import { handleDeleteProduct } from './events/product/deleteProduct'
-import { handleEditProduct } from './events/product/editProduct'
-
-import { handleAddCategory } from './events/category/addCategory'
-import { handleDeleteCategory } from './events/category/deleteCategory'
+import { setupMenuEvents } from './events'
 
 import { menuState } from './state/menuState'
 
@@ -63,9 +58,9 @@ export async function renderMenuAdmin(root: HTMLElement) {
 		`,
 	})
 
+	setupMenuEvents(root)
 	setupUploadEvents(root)
 	setupProductSubmit(root)
-	setupMenuEvents(root)
 }
 
 /*
@@ -109,42 +104,4 @@ async function loadCategories() {
 		console.error(error)
 		alert('Erro ao carregar categorias')
 	}
-}
-
-export function setupMenuEvents(root: HTMLElement) {
-	root.addEventListener('click', async (event) => {
-		const target = event.target as HTMLElement
-
-		const addProductBtn = target.closest("[data-action='add-product']")
-		const deleteProductBtn = target.closest('.delete-product')
-		const editProductBtn = target.closest('.edit-product')
-
-		const addCategoryBtn = target.closest('#btnAddCategory')
-		const deleteCategoryBtn = target.closest('.delete-category')
-
-		if (addCategoryBtn) {
-			event.preventDefault()
-			handleAddCategory()
-		}
-
-		if (deleteCategoryBtn) {
-			event.preventDefault()
-			await handleDeleteCategory(deleteCategoryBtn as HTMLElement)
-		}
-
-		if (addProductBtn) {
-			event.preventDefault()
-			handleAddProduct(addProductBtn as HTMLElement)
-		}
-
-		if (deleteProductBtn) {
-			event.preventDefault()
-			await handleDeleteProduct(deleteProductBtn as HTMLElement)
-		}
-
-		if (editProductBtn) {
-			event.preventDefault()
-			handleEditProduct(editProductBtn as HTMLElement)
-		}
-	})
 }
