@@ -5,6 +5,9 @@ import { handleEditProduct } from './product/editProduct'
 import { handleAddCategory } from './category/addCategory'
 import { handleDeleteCategory } from './category/deleteCategory'
 
+import { setupUploadEvents } from './product/uploadEvents'
+import { setupProductSubmit } from './product/productSubmit'
+
 export function setupMenuEvents(root: HTMLElement) {
 	root.addEventListener('click', async (event) => {
 		const target = event.target as HTMLElement
@@ -41,4 +44,8 @@ export function setupMenuEvents(root: HTMLElement) {
 			handleEditProduct(editProductBtn as HTMLElement)
 		}
 	})
+
+	// eventos separados
+	setupUploadEvents(root)
+	setupProductSubmit(root)
 }

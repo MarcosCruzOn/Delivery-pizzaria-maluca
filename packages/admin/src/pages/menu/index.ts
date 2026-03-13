@@ -6,10 +6,10 @@ import { getProducts } from '../../api/products'
 import { renderProductModal } from './renderProductModal'
 import { renderCategories } from './renderCategories'
 
-import { setupUploadEvents } from './events/product/uploadEvents'
-import { setupProductSubmit } from './events/product/productSubmit'
-
 import { setupMenuEvents } from './events'
+
+import { renderCategoryModal } from './renderCategoryModal'
+import { setupCategorySubmit } from './events/category/categorySubimit'
 
 import { menuState } from './state/menuState'
 
@@ -55,12 +55,12 @@ export async function renderMenuAdmin(root: HTMLElement) {
 		</div>
 
 		${renderProductModal(menuState.categories)}
+		${renderCategoryModal}
 		`,
 	})
 
 	setupMenuEvents(root)
-	setupUploadEvents(root)
-	setupProductSubmit(root)
+	setupCategorySubmit(root)
 }
 
 /*
