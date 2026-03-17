@@ -2,10 +2,26 @@ import { Header } from '../components/Header/Header'
 import { Categories } from '../components/Categories/Categories'
 import { BottomMenu } from '../components/BottomMenu/BottomMenu'
 
+import { getCategories } from '../api/categories'
+
 import { mount } from '@delivery/shared/dom'
 ;('../utils/dom')
 
-export function renderHome(root: HTMLElement) {
+export async function renderHome(root: HTMLElement) {
+	let mappedCategories = []
+
+	try {
+		const categories = await getCategories()
+
+		mappedCategories = categories.map((c: any) => ({
+			id: c.idcategoria,
+			title: c.nome,
+			iconClass: c.icone,
+		}))
+	} catch {
+		console.error('Erro ao carregar categorias')
+	}
+
 	root.innerHTML = `
     
     <header id="app-header"></header>
@@ -19,7 +35,7 @@ export function renderHome(root: HTMLElement) {
   `
 
 	mount('#app-header', Header())
-	mount('#app-categories', Categories([]))
+	mount('#app-categories', Categories(mappedCategories))
 
 	mount(
 		'#app-bottom-menu',
