@@ -224,7 +224,29 @@ function showTab(root: HTMLElement, tab: Tab) {
 
 function setupActions(root: HTMLElement) {
 	root.querySelector('#btnSaveAbout')?.addEventListener('click', () => {
-		alert('Salvar Sobre (depois vamos ligar na API)')
+		root.querySelector('#btnSaveAbout')?.addEventListener(
+			'click',
+			async () => {
+				const nome = (
+					root.querySelector('#companyName') as HTMLInputElement
+				).value
+				const sobre = (
+					root.querySelector('#companyAbout') as HTMLTextAreaElement
+				).value
+
+				try {
+					await fetch('http://localhost:3333/company/about', {
+						method: 'PUT',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ nome, sobre }),
+					})
+
+					alert('Salvo com sucesso!')
+				} catch {
+					alert('Erro ao salvar')
+				}
+			}
+		)
 	})
 
 	root.querySelector('#btnBuscarCep')?.addEventListener('click', () => {

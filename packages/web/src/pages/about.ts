@@ -35,13 +35,13 @@ export async function renderAbout(root: HTMLElement) {
 	const extra = document.querySelector('#about-extra')!
 
 	// 🧠 SOBRE
-	if (!company?.descricao) {
+	if (!company?.sobre) {
 		content.appendChild(EmptyState('Adicione uma descrição da sua loja'))
 	} else {
 		content.innerHTML = `
-      <h1><b>${company.nome}</b></h1>
-      <p>${company.descricao}</p>
-    `
+			<h1><b>${company.nome || 'Nome não definido'}</b></h1>
+			<p>${company.sobre || 'Adicione informações no painel administrativo'}</p>
+		`
 	}
 
 	// 📍 ENDEREÇO
