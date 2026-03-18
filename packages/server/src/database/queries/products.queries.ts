@@ -14,8 +14,8 @@ export async function createProductQuery(data: CreateProductDTO) {
 	return result
 }
 
-export async function listProductsQuery() {
-	const [rows] = await db.execute(`
+export async function listProductsQuery(categoryId?: number) {
+	let query = `
 		SELECT 
 			idproduto,
 			idcategoria,
@@ -25,8 +25,18 @@ export async function listProductsQuery() {
 			imagem
 		FROM produtos
 		WHERE ATIVO = 1
-		ORDER BY ordem
-	`)
+	`
+
+	const params: any[] = []
+
+	if (categoryId) {
+		query += ` AND idcategoria = ?`
+		params.push(categoryId)
+	}
+
+	query += ` ORDER BY ordem`
+
+	const [rows] = await db.execute(query, params)
 
 	return rows
 }

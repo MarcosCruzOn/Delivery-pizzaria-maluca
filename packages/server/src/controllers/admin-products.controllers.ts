@@ -24,7 +24,9 @@ export async function createProduct(req: Request, res: Response) {
 
 export async function listProducts(req, res) {
 	try {
-		const products = await listProductsService()
+		const { categoryId } = req.query // 👈 NOVO
+
+		const products = await listProductsService(categoryId) // 👈 PASSA
 
 		return res.json(products)
 	} catch {

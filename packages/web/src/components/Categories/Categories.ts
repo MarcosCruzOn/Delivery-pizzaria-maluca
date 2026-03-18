@@ -6,7 +6,10 @@ export type Category = {
 	iconClass: string
 }
 
-export function Categories(categories: Category[]): HTMLElement {
+export function Categories(
+	categories: Category[],
+	onClick: (id: number) => void
+): HTMLElement {
 	const section = document.createElement('section')
 	section.className = 'categoria width-fix mt-4'
 
@@ -27,7 +30,11 @@ export function Categories(categories: Category[]): HTMLElement {
       ${categories
 			.map(
 				(cat) => `
-        <a href="#" class="item-categoria btn btn-white btn-sm mb-3 me-3">
+        <a 
+          href="#" 
+          data-id="${cat.id}"
+          class="item-categoria btn btn-white btn-sm mb-3 me-3"
+        >
           <i class="${cat.iconClass}"></i>&nbsp; ${cat.title}
         </a>
       `
@@ -35,6 +42,22 @@ export function Categories(categories: Category[]): HTMLElement {
 			.join('')}
     </div>
   `
+
+	// ✅ AQUI entra o evento
+	const container = section.querySelector('#listaCategorias')!
+
+	container.addEventListener('click', (event) => {
+		const target = event.target as HTMLElement
+		const button = target.closest('a')
+
+		if (!button) return
+
+		event.preventDefault()
+
+		const id = Number(button.getAttribute('data-id'))
+
+		onClick(id)
+	})
 
 	return section
 }

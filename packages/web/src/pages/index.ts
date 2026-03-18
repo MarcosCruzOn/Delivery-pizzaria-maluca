@@ -7,8 +7,12 @@ import { getCategories } from '../api/categories'
 import { mount } from '@delivery/shared/dom'
 ;('../utils/dom')
 
+import { getProductsByCategory } from '../api/products'
+import { MenuItemCard } from '../components/MenuItemsCards/MenuItemsCards'
+
 export async function renderHome(root: HTMLElement) {
 	let mappedCategories = []
+	let selectedCategoryId: number | null = null
 
 	try {
 		const categories = await getCategories()
@@ -18,12 +22,16 @@ export async function renderHome(root: HTMLElement) {
 			title: c.nome,
 			iconClass: c.icone,
 		}))
+
+		// pega a primeira categoria automaticamente
+		if (mappedCategories.length > 0) {
+			selectedCategoryId = mappedCategories[0].id
+		}
 	} catch {
 		console.error('Erro ao carregar categorias')
 	}
 
 	root.innerHTML = `
-    
     <header id="app-header"></header>
     <div id="app-categories"></div>
 
@@ -35,25 +43,48 @@ export async function renderHome(root: HTMLElement) {
   `
 
 	mount('#app-header', Header())
-	mount('#app-categories', Categories(mappedCategories))
+
+	// 👇 importante: passar callback de clique
+	mount(
+		'#app-categories',
+		Categories(mappedCategories, async (categoryId: number) => {
+			await loadProducts(categoryId)
+		})
+	)
+
+	const list = document.querySelector('#app-menu-list')!
+
+	async function loadProducts(categoryId: number) {
+		list.innerHTML = '<p>Carregando...</p>'
+
+		try {
+			const products = await getProductsByCategory(categoryId)
+
+			list.innerHTML = ''
+
+			products.forEach((p: any) => {
+				const card = MenuItemCard({
+					id: p.idproduto,
+					name: p.nome,
+					description: p.descricao,
+					priceText: `R$ ${p.preco}`,
+					imageUrl: `http://localhost:3333${p.imagem}`,
+				})
+
+				list.appendChild(card)
+			})
+		} catch {
+			list.innerHTML = '<p>Erro ao carregar produtos</p>'
+		}
+	}
+
+	// carrega inicial
+	if (selectedCategoryId) {
+		await loadProducts(selectedCategoryId)
+	}
 
 	mount(
 		'#app-bottom-menu',
 		BottomMenu({ isOpen: true, active: 'cardapio', cartCount: 2 })
 	)
-
-	const list = document.querySelector('#app-menu-list')!
-
-	list.innerHTML = `
-	<div class="container-group mb-5 empty-state">
-		<p class="title-categoria">
-			<b>Seu cardápio ainda está vazio</b>
-		</p>
-
-		<p>
-			Vá até o <b>painel administrativo</b> e crie categorias e produtos
-			para que eles apareçam aqui.
-		</p>
-	</div>
-	`
 }

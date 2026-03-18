@@ -23,8 +23,8 @@ export async function createProductService(data: CreateProductDTO) {
 	return createProductQuery(data)
 }
 
-export async function listProductsService() {
-	return listProductsQuery()
+export async function listProductsService(categoryId?: number) {
+	return listProductsQuery(categoryId)
 }
 
 export async function deleteProductService(id: number) {
