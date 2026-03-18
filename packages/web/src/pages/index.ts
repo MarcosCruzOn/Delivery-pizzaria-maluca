@@ -67,7 +67,7 @@ export async function renderHome(root: HTMLElement) {
 					id: p.idproduto,
 					name: p.nome,
 					description: p.descricao,
-					priceText: `R$ ${p.preco}`,
+					priceText: `R$ ${p.valor}`,
 					imageUrl: `http://localhost:3333${p.imagem}`,
 				})
 

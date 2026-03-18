@@ -22,9 +22,12 @@ export async function createProduct(req: Request, res: Response) {
 	}
 }
 
-export async function listProducts(req, res) {
+export async function listProducts(req: Request, res: Response) {
 	try {
-		const { categoryId } = req.query // 👈 NOVO
+		const categoryId =
+			typeof req.query.categoryId === 'string'
+				? Number(req.query.categoryId)
+				: undefined
 
 		const products = await listProductsService(categoryId) // 👈 PASSA
 
@@ -36,7 +39,7 @@ export async function listProducts(req, res) {
 	}
 }
 
-export async function deleteProduct(req, res) {
+export async function deleteProduct(req: Request, res: Response) {
 	try {
 		const id = Number(req.params.id)
 
@@ -52,7 +55,7 @@ export async function deleteProduct(req, res) {
 	}
 }
 
-export async function updateProduct(req, res) {
+export async function updateProduct(req: Request, res: Response) {
 	try {
 		const id = Number(req.params.id)
 
