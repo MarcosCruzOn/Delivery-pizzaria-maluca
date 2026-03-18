@@ -185,6 +185,7 @@ export function renderCompany(root: HTMLElement) {
 	setupTabs(root)
 	setupActions(root)
 	setupHorario(root)
+	loadHorarios(root)
 
 	// começa em "horário" (como no seu HTML original, botão active) :contentReference[oaicite:2]{index=2}
 	showTab(root, 'horario')
@@ -223,30 +224,24 @@ function showTab(root: HTMLElement, tab: Tab) {
 }
 
 function setupActions(root: HTMLElement) {
-	root.querySelector('#btnSaveAbout')?.addEventListener('click', () => {
-		root.querySelector('#btnSaveAbout')?.addEventListener(
-			'click',
-			async () => {
-				const nome = (
-					root.querySelector('#companyName') as HTMLInputElement
-				).value
-				const sobre = (
-					root.querySelector('#companyAbout') as HTMLTextAreaElement
-				).value
+	root.querySelector('#btnSaveAbout')?.addEventListener('click', async () => {
+		const nome = (root.querySelector('#companyName') as HTMLInputElement)
+			.value
+		const sobre = (
+			root.querySelector('#companyAbout') as HTMLTextAreaElement
+		).value
 
-				try {
-					await fetch('http://localhost:3333/company/about', {
-						method: 'PUT',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ nome, sobre }),
-					})
+		try {
+			await fetch('http://localhost:3333/company/about', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ nome, sobre }),
+			})
 
-					alert('Salvo com sucesso!')
-				} catch {
-					alert('Erro ao salvar')
-				}
-			}
-		)
+			alert('Salvo com sucesso!')
+		} catch {
+			alert('Erro ao salvar')
+		}
 	})
 
 	root.querySelector('#btnBuscarCep')?.addEventListener('click', () => {
@@ -293,25 +288,68 @@ function setupHorario(root: HTMLElement) {
 	const abre = root.querySelector<HTMLInputElement>('#abre')!
 	const fecha = root.querySelector<HTMLInputElement>('#fecha')!
 
-	btn.addEventListener('click', (e) => {
+	btn.addEventListener('click', async (e) => {
 		e.preventDefault()
+
 		if (!abre.value || !fecha.value) {
 			alert('Preencha abre e fecha.')
 			return
 		}
 
-		const row = document.createElement('tr')
-		row.innerHTML = `
-      <td>${diaDe.options[diaDe.selectedIndex].text} - ${diaAte.options[diaAte.selectedIndex].text}</td>
-      <td>${abre.value}</td>
-      <td>${fecha.value}</td>
-      <td>
-        <a href="#" class="btn btn-sm btn-white">Remover</a>
-      </td>
-    `
+		const data = {
+			diainicio: Number(diaDe.value),
+			diafim: Number(diaAte.value),
+			iniciohorarioum: abre.value,
+			fimhorarioum: fecha.value,
+			iniciohorariodois: '',
+			fimhorariodois: '',
+		}
 
-		row.querySelector('a')!.addEventListener('click', (ev) => {
-			ev.preventDefault()
+		try {
+			await fetch('http://localhost:3333/company/horario', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data),
+			})
+
+			alert('Horário salvo!')
+
+			await loadHorarios(root)
+		} catch {
+			alert('Erro ao salvar horário')
+		}
+	})
+}
+
+async function loadHorarios(root: HTMLElement) {
+	const tbody = root.querySelector<HTMLTableSectionElement>('#listaHorarios')!
+
+	const res = await fetch('http://localhost:3333/company/horario')
+	const horarios = await res.json()
+
+	tbody.innerHTML = ''
+
+	horarios.forEach((h: any) => {
+		const row = document.createElement('tr')
+
+		row.innerHTML = `
+			<td>${h.diainicio} - ${h.diafim}</td>
+			<td>${h.iniciohorarioum}</td>
+			<td>${h.fimhorarioum}</td>
+			<td>
+				<a href="#" data-id="${h.idhorario}" class="btn btn-sm btn-white">Remover</a>
+			</td>
+		`
+
+		// 🔥 remover do banco
+		row.querySelector('a')!.addEventListener('click', async (e) => {
+			e.preventDefault()
+
+			await fetch(
+				`http://localhost:3333/company/horario/${h.idhorario}`,
+				{ method: 'DELETE' }
+			)
+
 			row.remove()
 		})
 
