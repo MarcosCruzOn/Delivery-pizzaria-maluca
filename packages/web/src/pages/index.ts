@@ -9,6 +9,7 @@ import { mount } from '@delivery/shared/dom'
 
 import { getProductsByCategory } from '../api/products'
 import { MenuItemCard } from '../components/MenuItemsCards/MenuItemsCards'
+import { MenuItemsList } from '../components/MenuItemsList/MenuItemsList'
 
 export async function renderHome(root: HTMLElement) {
 	let mappedCategories = []
@@ -62,17 +63,15 @@ export async function renderHome(root: HTMLElement) {
 
 			list.innerHTML = ''
 
-			products.forEach((p: any) => {
-				const card = MenuItemCard({
-					id: p.idproduto,
-					name: p.nome,
-					description: p.descricao,
-					priceText: `R$ ${p.valor}`,
-					imageUrl: `http://localhost:3333${p.imagem}`,
-				})
+			const mappedProducts = products.map((p: any) => ({
+				id: p.idproduto,
+				name: p.nome,
+				description: p.descricao,
+				priceText: `R$ ${Number(p.valor).toFixed(2)}`,
+				imageUrl: `http://localhost:3333${p.imagem}`,
+			}))
 
-				list.appendChild(card)
-			})
+			list.appendChild(MenuItemsList(mappedProducts))
 		} catch {
 			list.innerHTML = '<p>Erro ao carregar produtos</p>'
 		}

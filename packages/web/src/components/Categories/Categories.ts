@@ -54,6 +54,13 @@ export function Categories(
 
 		event.preventDefault()
 
+		// 🔥 remove active de todos
+		const all = container.querySelectorAll('a')
+		all.forEach((el) => el.classList.remove('active'))
+
+		// ✅ adiciona no clicado
+		button.classList.add('active')
+
 		const id = Number(button.getAttribute('data-id'))
 
 		onClick(id)
