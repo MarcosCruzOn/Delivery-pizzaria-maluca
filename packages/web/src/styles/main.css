@@ -163,6 +163,15 @@ textarea {
 	font-size: 18px;
 }
 
+.empty-state {
+	background: #f8f9fa;
+	border: 1px dashed #ccc;
+	padding: 16px;
+	border-radius: 8px;
+	text-align: center;
+	color: #666;
+}
+
 .title-sobre {
 	margin-bottom: 20px !important;
 	margin-top: 5px;

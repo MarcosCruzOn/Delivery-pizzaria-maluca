@@ -8,7 +8,6 @@ import { mount } from '@delivery/shared/dom'
 ;('../utils/dom')
 
 import { getProductsByCategory } from '../api/products'
-import { MenuItemCard } from '../components/MenuItemsCards/MenuItemsCards'
 import { MenuItemsList } from '../components/MenuItemsList/MenuItemsList'
 
 export async function renderHome(root: HTMLElement) {
