@@ -73,67 +73,88 @@ export async function renderAbout(root: HTMLElement) {
 		content.appendChild(EmptyState('Adicione uma descrição da sua loja'))
 	} else {
 		content.innerHTML = `
-			<h1><b>${company.nome || 'Nome não definido'}</b></h1>
-			<p>${company.sobre || 'Adicione informações no painel administrativo'}</p>
+			<div class="d-flex">
+				<img 
+					class="container-img-sobre"
+					src="http://localhost:3333${company.logotipo || ''}" 
+					style="width:80px;height:80px;border-radius:10px;object-fit:cover;"
+				/>
+				<div class=">
+					<h1 class="mb-2"><b>${company.nome || 'Nome não definido'}</b></h1>
+					<p class="normal-text">
+						${company.sobre || 'Adicione informações no painel administrativo'}
+					</p>
+				</div>
+			</div>
 		`
 	}
 
-	// 📍 ENDEREÇO
-	if (!company?.endereco) {
-		extra.appendChild(EmptyState('Cadastre um endereço'))
-	} else {
-		extra.innerHTML += `
-      <div class="card">
-        <p>
-			${company.endereco}, ${company.numero} <br>
-			${company.bairro} <br>
-			${company.cidade} - ${company.estado} <br>
-			CEP: ${company.cep}
+	// 📍 ENDEREÇO + MAPA
+	const enderecoContainer = document.createElement('div')
+	enderecoContainer.className = 'container-group mb-5'
+
+	enderecoContainer.innerHTML = `
+		<p class="title-categoria mb-3">
+			<i class="fas fa-map-marker-alt"></i>&nbsp; <b>Endereço</b>
 		</p>
-      </div>
-    `
-	}
+	`
 
-	const mapaContainer = document.createElement('div')
-	mapaContainer.className = 'container-group mb-5'
+	if (!company?.endereco) {
+		enderecoContainer.appendChild(EmptyState('Cadastre um endereço'))
+	} else {
+		const wrapper = document.createElement('div')
+		wrapper.className = 'row g-3 align-items-stretch'
 
-	mapaContainer.innerHTML = `
-	<p class="title-categoria mb-0">
-		<i class="fas fa-map"></i>&nbsp; <b>Localização</b>
-	</p>
-`
+		// 📍 CARD ENDEREÇO
+		const colEndereco = document.createElement('div')
+		colEndereco.className = 'col-12 col-md-6'
 
-	if (company?.endereco) {
+		colEndereco.innerHTML = `
+			<div class="card h-100 p-3">
+				<p class="normal-text mb-0">
+					${company.endereco}, ${company.numero} <br>
+					${company.bairro} <br>
+					${company.cidade} - ${company.estado} <br>
+					CEP: ${company.cep}
+				</p>
+			</div>
+		`
+
+		// 🗺️ MAPA
+		const colMapa = document.createElement('div')
+		colMapa.className = 'col-12 col-md-6'
+
 		const endereco = `${company.endereco}, ${company.numero}, ${company.cidade}`
 
-		mapaContainer.innerHTML += `
-		<div class="card mt-2">
-			<iframe
-				width="100%"
-				height="200"
-				style="border:0; border-radius:10px;"
-				loading="lazy"
-				src="https://www.google.com/maps?q=${encodeURIComponent(endereco)}&output=embed">
-			</iframe>
-		</div>
-	`
-	} else {
-		mapaContainer.appendChild(
-			EmptyState('Adicione um endereço para ver o mapa')
-		)
+		colMapa.innerHTML = `
+			<div class="card h-100 p-2">
+				<iframe
+					width="100%"
+					height="100%"
+					style="border:0; border-radius:10px; min-height:200px;"
+					loading="lazy"
+					src="https://www.google.com/maps?q=${encodeURIComponent(endereco)}&output=embed">
+				</iframe>
+			</div>
+		`
+
+		wrapper.appendChild(colEndereco)
+		wrapper.appendChild(colMapa)
+
+		enderecoContainer.appendChild(wrapper)
 	}
 
-	extra.appendChild(mapaContainer)
+	extra.appendChild(enderecoContainer)
 
 	// ⏰ HORÁRIO
 	const containerHorario = document.createElement('div')
 	containerHorario.className = 'container-group mb-5'
 
 	containerHorario.innerHTML = `
-	<p class="title-categoria mb-0">
-		<i class="fas fa-clock"></i>&nbsp; <b>Horário de funcionamento</b>
-	</p>
-`
+		<p class="title-categoria mb-3">
+			<i class="fas fa-clock"></i>&nbsp; <b>Horário de funcionamento</b>
+		</p>
+	`
 
 	if (!horarios.length) {
 		containerHorario.appendChild(
@@ -147,9 +168,9 @@ export async function renderAbout(root: HTMLElement) {
 			card.className = 'card mt-2'
 
 			card.innerHTML = `
-			<p class="normal-text mb-0"><b>${formatted.dias}</b></p>
-			<p class="normal-text mb-0">${formatted.horario}</p>
-		`
+				<p class="normal-text mb-0"><b>${formatted.dias}</b></p>
+				<p class="normal-text mb-0">${formatted.horario}</p>
+			`
 
 			containerHorario.appendChild(card)
 		})
@@ -158,7 +179,30 @@ export async function renderAbout(root: HTMLElement) {
 	extra.appendChild(containerHorario)
 
 	// 💳 PAGAMENTO
-	if (!company?.pagamentos?.length) {
-		extra.appendChild(EmptyState('Adicione formas de pagamento'))
+	const pagamentosContainer = document.createElement('div')
+	pagamentosContainer.className = 'container-group mb-5'
+
+	pagamentosContainer.innerHTML = `
+		<p class="title-categoria mb-3">
+			<i class="fas fa-coins"></i>&nbsp; <b>Formas de pagamento</b>
+		</p>
+	`
+
+	if (!company?.pagamentos) {
+		pagamentosContainer.appendChild(
+			EmptyState('Adicione formas de pagamento')
+		)
+	} else {
+		const list = company.pagamentos.split(',')
+
+		list.forEach((p: string) => {
+			const card = document.createElement('div')
+			card.className = 'card mt-2'
+			card.innerHTML = `<p class="normal-text mb-0"><b>${p.trim()}</b></p>`
+
+			pagamentosContainer.appendChild(card)
+		})
 	}
+
+	extra.appendChild(pagamentosContainer)
 }

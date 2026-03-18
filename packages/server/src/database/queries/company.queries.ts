@@ -43,3 +43,12 @@ export async function updateCompanyAddressQuery(data: any) {
 
 	return result
 }
+
+export async function updateCompanyLogoQuery(path: string) {
+	const [result] = await db.execute(
+		`UPDATE empresa SET logotipo = ? WHERE ativo = 1`,
+		[path]
+	)
+
+	return result
+}

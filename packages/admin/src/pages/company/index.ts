@@ -29,11 +29,12 @@ export function renderCompany(root: HTMLElement) {
           <div class="col-12 mt-5 hidden" id="sobre">
             <div class="d-flex">
               <div class="logo-empresa">
-                <div class="container-img-sobre" style="background-image: url('/logo.png'); background-size: 70%;">
-                  <a href="#" class="icon-action me-1 mb-1" title="Editar">
-                    <i class="fas fa-pencil-alt"></i>
-                  </a>
-                </div>
+                <div class="container-img-sobre" id="logoPreview" style="background-size: cover;">
+					<input type="file" id="logoInput" hidden />
+					<a href="#" class="icon-action me-1 mb-1" id="btnUploadLogo">
+						<i class="fas fa-pencil-alt"></i>
+					</a>
+				</div>
               </div>
 
               <div class="detalhes-empresa">
@@ -277,6 +278,37 @@ function setupActions(root: HTMLElement) {
 			}
 		}
 	)
+
+	// ===== LOGO UPLOAD =====
+	const input = root.querySelector('#logoInput') as HTMLInputElement
+	const preview = root.querySelector('#logoPreview') as HTMLElement
+	const btnLogo = root.querySelector('#btnUploadLogo')!
+
+	btnLogo.addEventListener('click', (e) => {
+		e.preventDefault()
+		input.click()
+	})
+
+	input.addEventListener('change', async () => {
+		const file = input.files?.[0]
+		if (!file) return
+
+		// 👁 preview
+		const reader = new FileReader()
+		reader.onload = () => {
+			preview.style.backgroundImage = `url(${reader.result})`
+		}
+		reader.readAsDataURL(file)
+
+		// ⬆️ upload
+		const formData = new FormData()
+		formData.append('file', file)
+
+		await fetch('http://localhost:3333/company/logo', {
+			method: 'POST',
+			body: formData,
+		})
+	})
 }
 
 function setupHorario(root: HTMLElement) {
