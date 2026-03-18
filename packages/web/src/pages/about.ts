@@ -2,10 +2,44 @@ import { mount } from '@delivery/shared/dom'
 ;('../utils/dom')
 import { TitleHeader } from '../components/TitleHeader/TitleHeader'
 
-import { getCompany } from '../api/company'
+import { getCompany, getHorarios } from '../api/company'
 import { EmptyState } from '../components/EmptyState/EmptyState'
 
+function getDiaNome(dia: number) {
+	const dias = [
+		'Domingo',
+		'Segunda',
+		'Terça',
+		'Quarta',
+		'Quinta',
+		'Sexta',
+		'Sábado',
+	]
+
+	return dias[dia] || ''
+}
+
+function formatHorario(h: any) {
+	const inicio = getDiaNome(h.diainicio)
+	const fim = getDiaNome(h.diafim)
+
+	const dias = h.diainicio === h.diafim ? inicio : `${inicio} a ${fim}`
+
+	return {
+		dias,
+		horario: `${h.iniciohorarioum} às ${h.fimhorarioum}`,
+	}
+}
+
 export async function renderAbout(root: HTMLElement) {
+	let horarios: any[] = []
+
+	try {
+		horarios = await getHorarios()
+	} catch {
+		console.log('Sem horários')
+	}
+
 	let company: any = null
 
 	try {
@@ -61,9 +95,36 @@ export async function renderAbout(root: HTMLElement) {
 	}
 
 	// ⏰ HORÁRIO
-	if (!company?.horario) {
-		extra.appendChild(EmptyState('Defina horário de funcionamento'))
+	const containerHorario = document.createElement('div')
+	containerHorario.className = 'container-group mb-5'
+
+	containerHorario.innerHTML = `
+	<p class="title-categoria mb-0">
+		<i class="fas fa-clock"></i>&nbsp; <b>Horário de funcionamento</b>
+	</p>
+`
+
+	if (!horarios.length) {
+		containerHorario.appendChild(
+			EmptyState('Defina horário de funcionamento')
+		)
+	} else {
+		horarios.forEach((h) => {
+			const formatted = formatHorario(h)
+
+			const card = document.createElement('div')
+			card.className = 'card mt-2'
+
+			card.innerHTML = `
+			<p class="normal-text mb-0"><b>${formatted.dias}</b></p>
+			<p class="normal-text mb-0">${formatted.horario}</p>
+		`
+
+			containerHorario.appendChild(card)
+		})
 	}
+
+	extra.appendChild(containerHorario)
 
 	// 💳 PAGAMENTO
 	if (!company?.pagamentos?.length) {
