@@ -22,3 +22,24 @@ export async function updateCompanyAboutQuery(nome: string, sobre: string) {
 
 	return result
 }
+
+export async function updateCompanyAddressQuery(data: any) {
+	const { cep, endereco, numero, bairro, cidade, estado } = data
+
+	const [result]: any = await db.execute(
+		`
+		UPDATE empresa
+		SET
+			cep = ?,
+			endereco = ?,
+			numero = ?,
+			bairro = ?,
+			cidade = ?,
+			estado = ?
+		WHERE ativo = 1
+	`,
+		[cep, endereco, numero, bairro, cidade, estado]
+	)
+
+	return result
+}

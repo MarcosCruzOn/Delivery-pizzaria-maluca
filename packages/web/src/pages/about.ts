@@ -50,7 +50,12 @@ export async function renderAbout(root: HTMLElement) {
 	} else {
 		extra.innerHTML += `
       <div class="card">
-        <p>${company.endereco}</p>
+        <p>
+			${company.endereco}, ${company.numero} <br>
+			${company.bairro} <br>
+			${company.cidade} - ${company.estado} <br>
+			CEP: ${company.cep}
+		</p>
       </div>
     `
 	}

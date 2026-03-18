@@ -253,9 +253,35 @@ function setupActions(root: HTMLElement) {
 		alert('Buscar CEP (depois vamos integrar)')
 	})
 
-	root.querySelector('#btnSaveAddress')?.addEventListener('click', () => {
-		alert('Salvar Endereço (depois vamos ligar na API)')
-	})
+	root.querySelector('#btnSaveAddress')?.addEventListener(
+		'click',
+		async () => {
+			const data = {
+				cep: (root.querySelector('#cep') as HTMLInputElement).value,
+				endereco: (root.querySelector('#rua') as HTMLInputElement)
+					.value,
+				numero: (root.querySelector('#numero') as HTMLInputElement)
+					.value,
+				bairro: (root.querySelector('#bairro') as HTMLInputElement)
+					.value,
+				cidade: (root.querySelector('#cidade') as HTMLInputElement)
+					.value,
+				estado: (root.querySelector('#uf') as HTMLInputElement).value,
+			}
+
+			try {
+				await fetch('http://localhost:3333/company/address', {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data),
+				})
+
+				alert('Endereço salvo com sucesso!')
+			} catch {
+				alert('Erro ao salvar endereço')
+			}
+		}
+	)
 }
 
 function setupHorario(root: HTMLElement) {
