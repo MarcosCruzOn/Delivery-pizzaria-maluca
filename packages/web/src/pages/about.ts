@@ -94,6 +94,37 @@ export async function renderAbout(root: HTMLElement) {
     `
 	}
 
+	const mapaContainer = document.createElement('div')
+	mapaContainer.className = 'container-group mb-5'
+
+	mapaContainer.innerHTML = `
+	<p class="title-categoria mb-0">
+		<i class="fas fa-map"></i>&nbsp; <b>Localização</b>
+	</p>
+`
+
+	if (company?.endereco) {
+		const endereco = `${company.endereco}, ${company.numero}, ${company.cidade}`
+
+		mapaContainer.innerHTML += `
+		<div class="card mt-2">
+			<iframe
+				width="100%"
+				height="200"
+				style="border:0; border-radius:10px;"
+				loading="lazy"
+				src="https://www.google.com/maps?q=${encodeURIComponent(endereco)}&output=embed">
+			</iframe>
+		</div>
+	`
+	} else {
+		mapaContainer.appendChild(
+			EmptyState('Adicione um endereço para ver o mapa')
+		)
+	}
+
+	extra.appendChild(mapaContainer)
+
 	// ⏰ HORÁRIO
 	const containerHorario = document.createElement('div')
 	containerHorario.className = 'container-group mb-5'

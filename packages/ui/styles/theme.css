@@ -115,3 +115,19 @@ b {
 .hidden {
 	display: none !important;
 }
+
+.loader {
+	width: 30px;
+	height: 30px;
+	border: 3px solid #ccc;
+	border-top: 3px solid #000;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin: 20px auto;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
