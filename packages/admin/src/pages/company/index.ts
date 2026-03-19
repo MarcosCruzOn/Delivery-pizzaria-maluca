@@ -29,7 +29,7 @@ export function renderCompany(root: HTMLElement) {
           <div class="col-12 mt-5 hidden" id="sobre">
             <div class="d-flex">
               <div class="logo-empresa">
-                <div class="container-img-sobre" id="logoPreview" style="background-size: cover;">
+                <div class="container-img-sobre border-pri" id="logoPreview" style="background-size: cover;">
 					<input type="file" id="logoInput" hidden />
 					<a href="#" class="icon-action me-1 mb-1" id="btnUploadLogo">
 						<i class="fas fa-pencil-alt"></i>
@@ -185,6 +185,7 @@ export function renderCompany(root: HTMLElement) {
 
 	setupTabs(root)
 	setupActions(root)
+	loadCompanyData(root)
 	setupHorario(root)
 	loadHorarios(root)
 
@@ -228,15 +229,22 @@ function setupActions(root: HTMLElement) {
 	root.querySelector('#btnSaveAbout')?.addEventListener('click', async () => {
 		const nome = (root.querySelector('#companyName') as HTMLInputElement)
 			.value
+
 		const sobre = (
 			root.querySelector('#companyAbout') as HTMLTextAreaElement
 		).value
+
+		// 👇 montar objeto sem campos vazios
+		const data: any = {}
+
+		if (nome) data.nome = nome
+		if (sobre) data.sobre = sobre
 
 		try {
 			await fetch('http://localhost:3333/company/about', {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ nome, sobre }),
+				body: JSON.stringify(data),
 			})
 
 			alert('Salvo com sucesso!')
@@ -401,4 +409,25 @@ function renderDiasOptions() {
 		{ v: '6', t: 'Sábado' },
 	]
 	return dias.map((d) => `<option value="${d.v}">${d.t}</option>`).join('')
+}
+
+async function loadCompanyData(root: HTMLElement) {
+	try {
+		const res = await fetch('http://localhost:3333/company')
+		const company = await res.json()
+
+		;(root.querySelector('#companyName') as HTMLInputElement).value =
+			company.nome || ''
+		;(root.querySelector('#companyAbout') as HTMLTextAreaElement).value =
+			company.sobre || ''
+
+		// 🖼 logo preview
+		const preview = root.querySelector('#logoPreview') as HTMLElement
+
+		if (company.logotipo) {
+			preview.style.backgroundImage = `url(http://localhost:3333${company.logotipo})`
+		}
+	} catch {
+		console.log('Erro ao carregar empresa')
+	}
 }
