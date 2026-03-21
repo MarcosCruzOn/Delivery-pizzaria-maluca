@@ -6,8 +6,10 @@ import {
 } from '../database/queries/products.queries.js'
 
 import { CreateProductDTO } from '../types/menu.js'
+import { db } from '../database/connection.js' // 👈 IMPORTANTE
 
 export async function createProductService(data: CreateProductDTO) {
+	// validações (mantém isso sempre 👍)
 	if (!data.nome) {
 		throw new Error('Nome do produto é obrigatório')
 	}
@@ -20,7 +22,33 @@ export async function createProductService(data: CreateProductDTO) {
 		throw new Error('Valor obrigatório')
 	}
 
-	return createProductQuery(data)
+	// separa opcionais do produto
+	const { opcionais, ...productData } = data
+
+	// cria produto
+	const result: any = await createProductQuery(productData)
+
+	// 👇 IMPORTANTE: garantir que pegamos o insertId correto
+	const produtoId = result?.insertId || result?.[0]?.insertId
+
+	if (!produtoId) {
+		console.error('Erro: insertId não encontrado', result)
+		throw new Error('Erro ao criar produto')
+	}
+
+	// salva opcionais
+	if (opcionais && opcionais.length > 0) {
+		for (const opcionalId of opcionais) {
+			await db.query(
+				'INSERT INTO produtoopcional (idproduto, idopcional) VALUES (?, ?)',
+				[produtoId, opcionalId]
+			)
+		}
+	}
+	console.log('OPCIONAIS RECEBIDOS:', opcionais)
+	console.log('RESULT DO INSERT:', result)
+
+	return result
 }
 
 export async function listProductsService(categoryId?: number) {

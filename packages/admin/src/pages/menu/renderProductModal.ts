@@ -16,7 +16,11 @@ export function renderProductModal(categories: Category[]) {
 						.map(
 							(item) => `
 							<div class="form-check">
-								<input class="form-check-input" type="checkbox">
+								<input 
+									class="form-check-input opcional-checkbox" 
+									type="checkbox" 
+									data-id="${opcional.id}"
+								>
 								<label class="form-check-label">
 									${item.name} (+R$ ${item.price.toFixed(2)})
 								</label>

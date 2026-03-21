@@ -4,6 +4,9 @@ type CreateProductDTO = {
 	descricao: string
 	valor: number
 	imagem: string | null
+
+	// 👇 NOVO (ESSENCIAL)
+	opcionais?: number[]
 }
 
 export async function createProduct(data: CreateProductDTO) {

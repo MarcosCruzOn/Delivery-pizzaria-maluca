@@ -24,6 +24,13 @@ export function setupProductSubmit(root: HTMLElement) {
 
 		const image = menuState.uploadedImageUrl || menuState.currentImageUrl
 
+		// 👇 CAPTURA DINÂMICA (CORRETA)
+		const opcionaisSelecionados = Array.from(
+			document.querySelectorAll('.opcional-checkbox:checked')
+		).map((el: any) => Number(el.dataset.id))
+
+		console.log('OPCIONAIS SELECIONADOS:', opcionaisSelecionados)
+
 		if (!nome || !valor || !idcategoria || !descricao || !image) {
 			alert('Preencha todos os campos e selecione uma imagem')
 			return
@@ -47,16 +54,19 @@ export function setupProductSubmit(root: HTMLElement) {
 					descricao,
 					valor,
 					imagem: menuState.uploadedImageUrl || null,
+					opcionais: opcionaisSelecionados, // 👈 AGORA FUNCIONA
 				})
 
 				alert('Produto criado!')
 			}
 
 			location.reload()
-		} catch {
+		} catch (error) {
+			console.error(error)
 			alert('Erro ao salvar produto')
 		}
 
+		// reset
 		menuState.uploadedImageUrl = ''
 		menuState.selectedProductId = null
 		menuState.currentImageUrl = null
@@ -81,4 +91,14 @@ export function setupProductSubmit(root: HTMLElement) {
 			modal.hide()
 		}
 	})
+
+	// document.addEventListener('change', (e: any) => {
+	// 	if (e.target.classList.contains('opcional-checkbox')) {
+	// 		console.log(
+	// 			'CHECKBOX CLICADO:',
+	// 			e.target.dataset.id,
+	// 			e.target.checked
+	// 		)
+	// 	}
+	// })
 }
