@@ -1,4 +1,4 @@
-import type { Category } from '../types'
+import type { Category, Opcional } from '../types'
 
 export const menuState = {
 	categories: [] as Category[],
@@ -10,4 +10,6 @@ export const menuState = {
 	uploadedImageUrl: '',
 
 	currentImageUrl: null as string | null,
+
+	opcionais: [] as Opcional[],
 }

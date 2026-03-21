@@ -10,6 +10,7 @@ import { setupMenuEvents } from './events'
 
 import { renderCategoryModal } from './renderCategoryModal'
 import { setupCategorySubmit } from './events/category/categorySubimit'
+import { getOpcionais, getOpcionalItens } from '../../api/opicionais'
 
 import { menuState } from './state/menuState'
 
@@ -73,6 +74,26 @@ async function loadCategories() {
 	try {
 		const categoriesData = await getCategories()
 		const productsData = await getProducts()
+		const opcionaisData = await getOpcionais() // 👈 NOVO
+
+		menuState.opcionais = opcionaisData.map((o: any) => ({
+			id: o.idopcional,
+			name: o.nome,
+			required: o.tiposimples === 1,
+			min: o.minimo,
+			max: o.maximo,
+			items: [], // ainda vamos carregar depois
+		}))
+
+		for (const opcional of menuState.opcionais) {
+			const itens = await getOpcionalItens(opcional.id)
+
+			opcional.items = itens.map((item: any) => ({
+				id: item.idopcionalitem,
+				name: item.nome,
+				price: Number(item.valor),
+			}))
+		}
 
 		menuState.categories = categoriesData.map((c: any) => ({
 			id: c.idcategoria,
@@ -100,6 +121,7 @@ async function loadCategories() {
 					: '',
 			})
 		})
+		console.log('OPCIONAIS COMPLETOS:', menuState.opcionais)
 	} catch (error) {
 		console.error(error)
 		alert('Erro ao carregar categorias')
