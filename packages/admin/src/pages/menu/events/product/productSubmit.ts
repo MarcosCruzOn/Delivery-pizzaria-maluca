@@ -24,6 +24,16 @@ export function setupProductSubmit(root: HTMLElement) {
 
 		const image = menuState.uploadedImageUrl || menuState.currentImageUrl
 
+		const modal = document.querySelector('#modalNovoProduto.show')
+
+		const opcionaisSelecionados = Array.from(
+			modal!.querySelectorAll('.opcional-checkbox')
+		)
+			.filter((el: any) => el.checked)
+			.map((el: any) => Number(el.dataset.id))
+
+		console.log('OPCIONAIS:', opcionaisSelecionados)
+
 		if (!nome || !valor || !idcategoria || !descricao || !image) {
 			alert('Preencha todos os campos e selecione uma imagem')
 			return
@@ -37,6 +47,7 @@ export function setupProductSubmit(root: HTMLElement) {
 					descricao,
 					valor,
 					imagem: image,
+					opcionais: opcionaisSelecionados,
 				})
 
 				alert('Produto atualizado!')
@@ -47,6 +58,7 @@ export function setupProductSubmit(root: HTMLElement) {
 					descricao,
 					valor,
 					imagem: menuState.uploadedImageUrl || null,
+					opcionais: opcionaisSelecionados,
 				})
 
 				alert('Produto criado!')

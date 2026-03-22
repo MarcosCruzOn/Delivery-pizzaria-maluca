@@ -1,4 +1,5 @@
 import { Modal } from '../../components/Modal/modal'
+import { menuState } from './state/menuState'
 import type { Category } from './types'
 
 export function renderProductModal(categories: Category[]) {
@@ -25,6 +26,8 @@ export function renderProductModal(categories: Category[]) {
 			<input type="number" step="0.01" class="form-control" id="novoProdutoValor"/>
 		</div>
 
+		
+
 		<div class="form-group mb-3">
 			<label><b>Categoria</b></label>
 
@@ -47,6 +50,26 @@ export function renderProductModal(categories: Category[]) {
 			id="previewNovoProduto"
 			style="display:none;width:200px;border-radius:10px"
 		/>
+		<div class="form-group mb-3">
+			<label><b>Opcionais</b></label>
+
+			${menuState.opcionais
+				.map(
+					(opcional) => `
+					<div class="form-check">
+						<input 
+							class="form-check-input opcional-checkbox" 
+							type="checkbox" 
+							data-id="${opcional.id}"
+						>
+						<label class="form-check-label">
+							${opcional.name}
+						</label>
+					</div>
+				`
+				)
+				.join('')}
+		</div>
 		`,
 
 		footer: `
