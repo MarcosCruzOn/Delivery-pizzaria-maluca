@@ -36,6 +36,25 @@ export function setupProductSubmit(root: HTMLElement) {
 
 		console.log('OPCIONAIS SELECIONADOS:', opcionaisSelecionados)
 
+		// 🔥 VALIDAÇÃO MIN/MAX
+		for (const opcional of menuState.opcionais) {
+			const selecionados = opcionaisSelecionados.filter(
+				(id) => id === opcional.id
+			)
+
+			if (selecionados.length < opcional.min) {
+				alert(
+					`Escolha pelo menos ${opcional.min} opção em "${opcional.name}"`
+				)
+				return
+			}
+
+			if (opcional.max > 0 && selecionados.length > opcional.max) {
+				alert(`Máximo de ${opcional.max} opções em "${opcional.name}"`)
+				return
+			}
+		}
+
 		if (!nome || !valor || !idcategoria || !descricao || !image) {
 			alert('Preencha todos os campos e selecione uma imagem')
 			return
