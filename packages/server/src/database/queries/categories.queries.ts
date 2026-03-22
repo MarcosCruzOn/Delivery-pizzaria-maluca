@@ -15,8 +15,29 @@ export async function createCategoryQuery(
 }
 
 export async function deleteCategoryQuery(idcategoria: number) {
-	const [result] = await db.execute(
-		`DELETE FROM categorias WHERE idcategoria = ?`,
+	// 🔥 1. pegar produtos da categoria
+	const [produtos]: any = await db.query(
+		'SELECT idproduto FROM produtos WHERE idcategoria = ?',
+		[idcategoria]
+	)
+
+	const produtoIds = produtos.map((p: any) => p.idproduto)
+
+	// 🔥 2. deletar opcionais dos produtos
+	if (produtoIds.length > 0) {
+		await db.query(
+			`DELETE FROM produtoopcional 
+			 WHERE idproduto IN (${produtoIds.map(() => '?').join(',')})`,
+			produtoIds
+		)
+	}
+
+	// 🔥 3. deletar produtos
+	await db.query('DELETE FROM produtos WHERE idcategoria = ?', [idcategoria])
+
+	// 🔥 4. deletar categoria
+	const [result] = await db.query(
+		'DELETE FROM categorias WHERE idcategoria = ?',
 		[idcategoria]
 	)
 

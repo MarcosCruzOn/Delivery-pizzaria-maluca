@@ -33,9 +33,6 @@ export function renderCategory(cat: Category, expanded: boolean) {
 	    <i class="fas fa-pencil-alt"></i>
 	   </a>
 
-	   <a href="#" class="icon-action">
-	    <i class="far fa-copy"></i>
-	   </a>
 
 	   <a
 	    href="#"
