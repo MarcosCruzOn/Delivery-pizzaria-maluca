@@ -3,6 +3,7 @@ import {
 	listProductsQuery,
 	deleteProductQuery,
 	updateProductQuery,
+	getProductOpcionaisQuery,
 } from '../database/queries/products.queries.js'
 
 import { CreateProductDTO } from '../types/menu.js'
@@ -68,5 +69,31 @@ export async function updateProductService(id: number, data: any) {
 		throw new Error('Produto inválido')
 	}
 
-	return updateProductQuery(id, data)
+	const { opcionais, ...productData } = data
+
+	// atualiza produto
+	await updateProductQuery(id, productData)
+
+	// 🔥 REMOVE TODOS OS OPCIONAIS ANTIGOS
+	await db.query('DELETE FROM produtoopcional WHERE idproduto = ?', [id])
+
+	// 🔥 INSERE NOVOS
+	if (opcionais && opcionais.length > 0) {
+		for (const opcionalId of opcionais) {
+			await db.query(
+				'INSERT INTO produtoopcional (idproduto, idopcional) VALUES (?, ?)',
+				[id, opcionalId]
+			)
+		}
+	}
+
+	return true
+}
+
+export async function getProductOpcionaisService(id: number) {
+	if (!id) {
+		throw new Error('Produto inválido')
+	}
+
+	return getProductOpcionaisQuery(id)
 }

@@ -4,6 +4,7 @@ import {
 	listProductsService,
 	deleteProductService,
 	updateProductService,
+	getProductOpcionaisService,
 } from '../services/admin-products.services.js'
 
 export async function createProduct(req: Request, res: Response) {
@@ -67,6 +68,21 @@ export async function updateProduct(req: Request, res: Response) {
 	} catch {
 		return res.status(500).json({
 			error: 'Erro ao atualizar produto',
+		})
+	}
+}
+
+export async function getProductOpcionais(req: Request, res: Response) {
+	try {
+		const id = Number(req.params.id)
+
+		const data = await getProductOpcionaisService(id)
+
+		return res.json(data)
+	} catch (error) {
+		console.error(error)
+		return res.status(500).json({
+			error: 'Erro ao buscar opcionais do produto',
 		})
 	}
 }

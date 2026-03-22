@@ -71,3 +71,12 @@ export async function updateProductQuery(id: number, data: any) {
 
 	return result
 }
+
+export async function getProductOpcionaisQuery(idproduto: number) {
+	const [rows] = await db.query(
+		'SELECT idopcional FROM produtoopcional WHERE idproduto = ?',
+		[idproduto]
+	)
+
+	return rows
+}

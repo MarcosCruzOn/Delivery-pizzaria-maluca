@@ -62,3 +62,13 @@ export async function updateProduct(id: number, data: any) {
 
 	return response.json()
 }
+
+export async function getProductOpcionais(id: number) {
+	const response = await fetch(`/admin/products/${id}/opcionais`)
+
+	if (!response.ok) {
+		throw new Error('Erro ao buscar opcionais do produto')
+	}
+
+	return response.json()
+}

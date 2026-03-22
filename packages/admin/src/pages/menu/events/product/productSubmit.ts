@@ -24,10 +24,15 @@ export function setupProductSubmit(root: HTMLElement) {
 
 		const image = menuState.uploadedImageUrl || menuState.currentImageUrl
 
-		// 👇 CAPTURA DINÂMICA (CORRETA)
+		// 🔥 PEGAR O MODAL CORRETO
+		const modal = document.getElementById('modalNovoProduto')
+
+		// 🔥 CAPTURA CORRETA (ESCOPADA NO MODAL)
 		const opcionaisSelecionados = Array.from(
-			document.querySelectorAll('.opcional-checkbox:checked')
-		).map((el: any) => Number(el.dataset.id))
+			modal!.querySelectorAll('.opcional-checkbox')
+		)
+			.filter((el: any) => el.checked)
+			.map((el: any) => Number(el.dataset.id))
 
 		console.log('OPCIONAIS SELECIONADOS:', opcionaisSelecionados)
 
@@ -44,6 +49,7 @@ export function setupProductSubmit(root: HTMLElement) {
 					descricao,
 					valor,
 					imagem: image,
+					opcionais: opcionaisSelecionados, // ✅ correto
 				})
 
 				alert('Produto atualizado!')
@@ -54,7 +60,7 @@ export function setupProductSubmit(root: HTMLElement) {
 					descricao,
 					valor,
 					imagem: menuState.uploadedImageUrl || null,
-					opcionais: opcionaisSelecionados, // 👈 AGORA FUNCIONA
+					opcionais: opcionaisSelecionados, // ✅ correto
 				})
 
 				alert('Produto criado!')
@@ -81,24 +87,12 @@ export function setupProductSubmit(root: HTMLElement) {
 			preview.style.display = 'none'
 		}
 
-		const modalElement = document.getElementById('modalNovoProduto')
+		if (modal) {
+			const modalInstance =
+				(window as any).bootstrap.Modal.getInstance(modal) ||
+				new (window as any).bootstrap.Modal(modal)
 
-		if (modalElement) {
-			const modal =
-				(window as any).bootstrap.Modal.getInstance(modalElement) ||
-				new (window as any).bootstrap.Modal(modalElement)
-
-			modal.hide()
+			modalInstance.hide()
 		}
 	})
-
-	// document.addEventListener('change', (e: any) => {
-	// 	if (e.target.classList.contains('opcional-checkbox')) {
-	// 		console.log(
-	// 			'CHECKBOX CLICADO:',
-	// 			e.target.dataset.id,
-	// 			e.target.checked
-	// 		)
-	// 	}
-	// })
 }
