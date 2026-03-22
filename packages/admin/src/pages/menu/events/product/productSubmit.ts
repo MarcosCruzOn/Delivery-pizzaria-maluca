@@ -24,37 +24,6 @@ export function setupProductSubmit(root: HTMLElement) {
 
 		const image = menuState.uploadedImageUrl || menuState.currentImageUrl
 
-		// 🔥 PEGAR O MODAL CORRETO
-		const modal = document.getElementById('modalNovoProduto')
-
-		// 🔥 CAPTURA CORRETA (ESCOPADA NO MODAL)
-		const opcionaisSelecionados = Array.from(
-			modal!.querySelectorAll('.opcional-checkbox')
-		)
-			.filter((el: any) => el.checked)
-			.map((el: any) => Number(el.dataset.id))
-
-		console.log('OPCIONAIS SELECIONADOS:', opcionaisSelecionados)
-
-		// 🔥 VALIDAÇÃO MIN/MAX
-		for (const opcional of menuState.opcionais) {
-			const selecionados = opcionaisSelecionados.filter(
-				(id) => id === opcional.id
-			)
-
-			if (selecionados.length < opcional.min) {
-				alert(
-					`Escolha pelo menos ${opcional.min} opção em "${opcional.name}"`
-				)
-				return
-			}
-
-			if (opcional.max > 0 && selecionados.length > opcional.max) {
-				alert(`Máximo de ${opcional.max} opções em "${opcional.name}"`)
-				return
-			}
-		}
-
 		if (!nome || !valor || !idcategoria || !descricao || !image) {
 			alert('Preencha todos os campos e selecione uma imagem')
 			return
@@ -68,7 +37,6 @@ export function setupProductSubmit(root: HTMLElement) {
 					descricao,
 					valor,
 					imagem: image,
-					opcionais: opcionaisSelecionados, // ✅ correto
 				})
 
 				alert('Produto atualizado!')
@@ -79,7 +47,6 @@ export function setupProductSubmit(root: HTMLElement) {
 					descricao,
 					valor,
 					imagem: menuState.uploadedImageUrl || null,
-					opcionais: opcionaisSelecionados, // ✅ correto
 				})
 
 				alert('Produto criado!')
@@ -106,12 +73,14 @@ export function setupProductSubmit(root: HTMLElement) {
 			preview.style.display = 'none'
 		}
 
-		if (modal) {
-			const modalInstance =
-				(window as any).bootstrap.Modal.getInstance(modal) ||
-				new (window as any).bootstrap.Modal(modal)
+		const modalElement = document.getElementById('modalNovoProduto')
 
-			modalInstance.hide()
+		if (modalElement) {
+			const modal =
+				(window as any).bootstrap.Modal.getInstance(modalElement) ||
+				new (window as any).bootstrap.Modal(modalElement)
+
+			modal.hide()
 		}
 	})
 }
