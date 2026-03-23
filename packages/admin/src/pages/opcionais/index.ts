@@ -1,4 +1,4 @@
-import { getOpcionais, createOpcional } from '../../api/opicionais'
+import { getOpcionais, createOpcional } from '../../api/opcionais'
 
 export async function renderOpcionaisPage(root: HTMLElement) {
 	const opcionais = await getOpcionais()

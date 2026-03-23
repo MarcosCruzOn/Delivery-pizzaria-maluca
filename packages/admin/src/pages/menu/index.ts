@@ -10,7 +10,7 @@ import { setupMenuEvents } from './events'
 
 import { renderCategoryModal } from './renderCategoryModal'
 import { setupCategorySubmit } from './events/category/categorySubimit'
-import { getOpcionais, getOpcionalItens } from '../../api/opicionais'
+import { getOpcionais, getOpcionalItens } from '../../api/opcionais'
 
 import { setupOpcionaisModal } from '../menu/renderOpcionaisModal'
 

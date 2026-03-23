@@ -1,6 +1,6 @@
 import { Modal } from '../../components/Modal/modal'
 import { menuState } from '../../pages/menu/state/menuState'
-import { createOpcional, getOpcionais } from '../../api/opicionais'
+import { createOpcional, getOpcionais } from '../../api/opcionais'
 
 export function renderOpcionaisModal() {
 	return Modal({
