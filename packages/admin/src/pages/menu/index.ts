@@ -12,7 +12,10 @@ import { renderCategoryModal } from './renderCategoryModal'
 import { setupCategorySubmit } from './events/category/categorySubimit'
 import { getOpcionais, getOpcionalItens } from '../../api/opcionais'
 
-import { setupOpcionaisModal } from '../menu/renderOpcionaisModal'
+import {
+	setupOpcionaisModal,
+	setupCreateItem,
+} from '../menu/renderOpcionaisModal'
 
 import { menuState } from './state/menuState'
 
@@ -66,6 +69,7 @@ export async function renderMenuAdmin(root: HTMLElement) {
 	setupCategorySubmit(root)
 
 	setupOpcionaisModal()
+	setupCreateItem()
 }
 
 /*

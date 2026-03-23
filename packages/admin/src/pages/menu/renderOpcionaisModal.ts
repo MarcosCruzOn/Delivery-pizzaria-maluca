@@ -1,6 +1,10 @@
 import { Modal } from '../../components/Modal/modal'
 import { menuState } from '../../pages/menu/state/menuState'
-import { createOpcional, getOpcionais } from '../../api/opcionais'
+import {
+	createOpcional,
+	getOpcionais,
+	createOpcionalItem,
+} from '../../api/opcionais'
 
 export function renderOpcionaisModal() {
 	return Modal({
@@ -38,6 +42,34 @@ export function renderOpcionaisModal() {
 	        </div>
 
 	        <hr/>
+
+			<div class="mb-3">
+				<select id="selectOpcional" class="form-control mb-2">
+					${menuState.opcionais
+						.map(
+							(o) => `<option value="${o.id}">${o.name}</option>`
+						)
+						.join('')}
+				</select>
+
+				<input 
+					type="text" 
+					id="inputItemNome" 
+					class="form-control mb-2"
+					placeholder="Nome do item (ex: Cheddar)"
+				/>
+
+				<input 
+					type="number" 
+					id="inputItemValor" 
+					class="form-control mb-2"
+					placeholder="Preço (ex: 5.00)"
+				/>
+
+				<button class="btn btn-yellow btn-sm" id="btnCriarItem">
+					Criar item
+				</button>
+			</div>
 
             <div id="listaOpcionais">
                 ${menuState.opcionais
@@ -117,6 +149,46 @@ export function setupOpcionaisModal() {
 		} catch (error) {
 			console.error(error)
 			alert('Erro ao criar opcional')
+		}
+	})
+}
+
+export function setupCreateItem() {
+	const btn = document.getElementById('btnCriarItem')
+
+	btn?.addEventListener('click', async () => {
+		const idopcional = Number(
+			(document.getElementById('selectOpcional') as HTMLSelectElement)
+				.value
+		)
+
+		const nome = (
+			document.getElementById('inputItemNome') as HTMLInputElement
+		).value
+		const valor = Number(
+			(document.getElementById('inputItemValor') as HTMLInputElement)
+				.value || 0
+		)
+
+		if (!nome) {
+			alert('Digite um nome para o item')
+			return
+		}
+
+		try {
+			await createOpcionalItem({
+				idopcional,
+				nome,
+				valor,
+			})
+
+			alert('Item criado!')
+
+			// 🔥 reload leve
+			location.reload()
+		} catch (error) {
+			console.error(error)
+			alert('Erro ao criar item')
 		}
 	})
 }

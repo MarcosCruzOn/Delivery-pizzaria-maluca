@@ -28,6 +28,22 @@ export async function listOpcionais(req: Request, res: Response) {
 	}
 }
 
+export async function createOpcionalItem(req: Request, res: Response) {
+	try {
+		const { idopcional, nome, valor } = req.body
+
+		const [result]: any = await db.query(
+			'INSERT INTO opcionalitem (idopcional, nome, valor) VALUES (?, ?, ?)',
+			[idopcional, nome, valor]
+		)
+
+		return res.status(201).json({ id: result.insertId })
+	} catch (error) {
+		console.error(error)
+		return res.status(500).json({ error: 'Erro ao criar item' })
+	}
+}
+
 export async function listOpcionalItens(req: Request, res: Response) {
 	try {
 		const { id } = req.params

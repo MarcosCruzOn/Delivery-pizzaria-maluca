@@ -35,3 +35,19 @@ export async function getOpcionalItens(id: number) {
 
 	return response.json()
 }
+
+export async function createOpcionalItem(data: any) {
+	const response = await fetch(`${API_URL}/admin/opcionais/itens`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(data),
+	})
+
+	if (!response.ok) {
+		throw new Error('Erro ao criar item')
+	}
+
+	return response.json()
+}
