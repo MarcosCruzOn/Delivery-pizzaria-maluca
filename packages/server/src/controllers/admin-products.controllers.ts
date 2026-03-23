@@ -30,7 +30,7 @@ export async function listProducts(req: Request, res: Response) {
 				? Number(req.query.categoryId)
 				: undefined
 
-		const products = await listProductsService(categoryId) // 👈 PASSA
+		const products = await listProductsService(categoryId)
 
 		return res.json(products)
 	} catch {

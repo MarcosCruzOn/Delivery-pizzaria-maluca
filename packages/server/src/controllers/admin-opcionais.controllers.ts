@@ -1,6 +1,22 @@
 import { Request, Response } from 'express'
 import { db } from '../database/connection.js'
 
+export async function createOpcional(req: Request, res: Response) {
+	try {
+		const { nome, minimo, maximo, tiposimples } = req.body
+
+		const [result]: any = await db.query(
+			'INSERT INTO opcional (nome, minimo, maximo, tiposimples) VALUES (?, ?, ?, ?)',
+			[nome, minimo, maximo, tiposimples]
+		)
+
+		return res.status(201).json({ id: result.insertId })
+	} catch (error) {
+		console.error(error)
+		return res.status(500).json({ error: 'Erro ao criar opcional' })
+	}
+}
+
 export async function listOpcionais(req: Request, res: Response) {
 	try {
 		const [rows] = await db.query('SELECT * FROM opcional')

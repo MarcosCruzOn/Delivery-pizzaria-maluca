@@ -51,25 +51,38 @@ export function renderProductModal(categories: Category[]) {
 			style="display:none;width:200px;border-radius:10px"
 		/>
 		<div class="form-group mb-3">
-			<label><b>Opcionais</b></label>
+	<label><b>Opcionais</b></label>
 
-			${menuState.opcionais
-				.map(
-					(opcional) => `
-					<div class="form-check">
-						<input 
-							class="form-check-input opcional-checkbox" 
-							type="checkbox" 
-							data-id="${opcional.id}"
-						>
-						<label class="form-check-label">
-							${opcional.name}
-						</label>
-					</div>
-				`
-				)
-				.join('')}
-		</div>
+	${menuState.opcionais
+		.map(
+			(opcional) => `
+			<div class="mt-3 p-2 border rounded">
+				<p class="mb-1"><b>${opcional.name}</b></p>
+
+				<div>
+					${opcional.items
+						.map(
+							(item) => `
+							<div class="form-check">
+								<input 
+									class="form-check-input opcional-item-checkbox" 
+									type="checkbox" 
+									data-opcional="${opcional.id}"
+									data-item="${item.id}"
+								>
+								<label class="form-check-label">
+									${item.name} (+R$ ${item.price.toFixed(2)})
+								</label>
+							</div>
+						`
+						)
+						.join('')}
+				</div>
+			</div>
+		`
+		)
+		.join('')}
+</div>
 		`,
 
 		footer: `

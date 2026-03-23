@@ -12,6 +12,8 @@ import { renderCategoryModal } from './renderCategoryModal'
 import { setupCategorySubmit } from './events/category/categorySubimit'
 import { getOpcionais, getOpcionalItens } from '../../api/opicionais'
 
+import { setupOpcionaisModal } from '../menu/renderOpcionaisModal'
+
 import { menuState } from './state/menuState'
 
 /*
@@ -62,6 +64,8 @@ export async function renderMenuAdmin(root: HTMLElement) {
 
 	setupMenuEvents(root)
 	setupCategorySubmit(root)
+
+	setupOpcionaisModal()
 }
 
 /*
@@ -121,7 +125,6 @@ async function loadCategories() {
 					: '',
 			})
 		})
-		console.log('OPCIONAIS COMPLETOS:', menuState.opcionais)
 	} catch (error) {
 		console.error(error)
 		alert('Erro ao carregar categorias')

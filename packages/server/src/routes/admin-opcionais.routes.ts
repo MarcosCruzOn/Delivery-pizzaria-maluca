@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
 	listOpcionais,
 	listOpcionalItens,
+	createOpcional,
 } from '../controllers/admin-opcionais.controllers.js'
 
 const router = Router()

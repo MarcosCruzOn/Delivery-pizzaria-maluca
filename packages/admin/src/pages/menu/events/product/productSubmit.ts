@@ -1,5 +1,6 @@
 import { menuState } from '../../state/menuState'
 import { createProduct, updateProduct } from '../../../../api/products'
+import { renderOpcionaisModal } from '../../renderOpcionaisModal'
 
 export function setupProductSubmit(root: HTMLElement) {
 	const btn = root.querySelector<HTMLButtonElement>('#btnSalvarNovoProduto')
@@ -26,13 +27,20 @@ export function setupProductSubmit(root: HTMLElement) {
 
 		const modal = document.querySelector('#modalNovoProduto.show')
 
-		const opcionaisSelecionados = Array.from(
-			modal!.querySelectorAll('.opcional-checkbox')
-		)
-			.filter((el: any) => el.checked)
-			.map((el: any) => Number(el.dataset.id))
+		// 🔥 pegar todos itens marcados
+		const itensSelecionados = Array.from(
+			modal!.querySelectorAll('.opcional-item-checkbox')
+		).filter((el: any) => el.checked)
 
-		console.log('OPCIONAIS:', opcionaisSelecionados)
+		// 🔥 extrair grupos únicos
+		const opcionaisSelecionados = [
+			...new Set(
+				itensSelecionados.map((el: any) => Number(el.dataset.opcional))
+			),
+		]
+
+		console.log('ITENS:', itensSelecionados)
+		console.log('GRUPOS:', opcionaisSelecionados)
 
 		if (!nome || !valor || !idcategoria || !descricao || !image) {
 			alert('Preencha todos os campos e selecione uma imagem')
@@ -94,5 +102,19 @@ export function setupProductSubmit(root: HTMLElement) {
 
 			modal.hide()
 		}
+	})
+
+	const btnopt = document.getElementById('btnGerenciarOpcionais')
+
+	btnopt?.addEventListener('click', () => {
+		document.body.insertAdjacentHTML('beforeend', renderOpcionaisModal())
+
+		const modalElement = document.getElementById('modalOpcionais')
+
+		const modal =
+			(window as any).bootstrap.Modal.getInstance(modalElement) ||
+			new (window as any).bootstrap.Modal(modalElement)
+
+		modal.show()
 	})
 }
