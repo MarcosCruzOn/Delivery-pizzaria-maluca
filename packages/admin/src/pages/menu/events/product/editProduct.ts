@@ -1,5 +1,6 @@
 import { menuState } from '../../state/menuState'
 import { getProductOpcionais } from '../../../../api/products'
+import { renderOpcionaisNoModal } from '../../renderProductModal'
 
 export async function handleEditProduct(button: HTMLElement) {
 	const nomeInput =
@@ -50,4 +51,5 @@ export async function handleEditProduct(button: HTMLElement) {
 		new (window as any).bootstrap.Modal(modalElement)
 
 	modal.show()
+	renderOpcionaisNoModal()
 }

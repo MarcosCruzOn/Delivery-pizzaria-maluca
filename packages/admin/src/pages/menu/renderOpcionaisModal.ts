@@ -12,78 +12,94 @@ export function renderOpcionaisModal() {
 		title: 'Gerenciar Opcionais',
 
 		body: `
-            <div class="mb-3">
-                <input 
-                    type="text" 
-                    class="form-control mb-2" 
-                    id="inputNomeOpcional"
-                    placeholder="Nome (ex: Bordas)"
-                />
+<div class="container-fluid">
 
-                <div class="d-flex gap-2">
-                    <input 
-                        type="number" 
-                        class="form-control" 
-                        id="inputMinimo"
-                        placeholder="Min"
-                    />
+	<!-- 🔹 CRIAR OPCIONAL -->
+	<div class="card card-select p-3 mb-3">
+		<h6 class="mb-2">Novo grupo de opcional</h6>
 
-                    <input 
-                        type="number" 
-                        class="form-control" 
-                        id="inputMaximo"
-                        placeholder="Max"
-                    />
-                </div>
+		<input 
+			type="text" 
+			class="form-control mb-2" 
+			id="inputNomeOpcional"
+			placeholder="Ex: Bordas, Bebidas..."
+		/>
 
-                <button class="btn btn-yellow btn-sm mt-2" id="btnSalvarOpcional">
-                    Salvar opcional
-                </button>
-	        </div>
+		<div class="d-flex gap-2 mb-2">
+			<input 
+				type="number" 
+				class="form-control" 
+				id="inputMinimo"
+				placeholder="Min"
+			/>
 
-	        <hr/>
+			<input 
+				type="number" 
+				class="form-control" 
+				id="inputMaximo"
+				placeholder="Max"
+			/>
+		</div>
 
-			<div class="mb-3">
-				<select id="selectOpcional" class="form-control mb-2">
-					${menuState.opcionais
-						.map(
-							(o) => `<option value="${o.id}">${o.name}</option>`
-						)
-						.join('')}
-				</select>
+		<button class="btn btn-yellow btn-sm" id="btnSalvarOpcional">
+			Salvar grupo
+		</button>
+	</div>
 
-				<input 
-					type="text" 
-					id="inputItemNome" 
-					class="form-control mb-2"
-					placeholder="Nome do item (ex: Cheddar)"
-				/>
+	<!-- 🔹 CRIAR ITEM -->
+	<div class="card card-select p-3 mb-3">
+		<h6 class="mb-2">Novo item</h6>
 
-				<input 
-					type="number" 
-					id="inputItemValor" 
-					class="form-control mb-2"
-					placeholder="Preço (ex: 5.00)"
-				/>
+		<select id="selectOpcional" class="form-control mb-2">
+			${menuState.opcionais
+				.map((o) => `<option value="${o.id}">${o.name}</option>`)
+				.join('')}
+		</select>
 
-				<button class="btn btn-yellow btn-sm" id="btnCriarItem">
-					Criar item
-				</button>
-			</div>
+		<input 
+			type="text" 
+			id="inputItemNome" 
+			class="form-control mb-2"
+			placeholder="Ex: Cheddar"
+		/>
 
-            <div id="listaOpcionais">
-                ${menuState.opcionais
-					.map(
-						(o) => `
-                        <div class="card card-select mb-2 p-2">
-                            <b>${o.name}</b>
-                            <small>Min: ${o.min} | Max: ${o.max}</small>
-                        </div>
-                    `
-					)
-					.join('')}
-            </div>
-        `,
+		<input 
+			type="number" 
+			id="inputItemValor" 
+			class="form-control mb-2"
+			placeholder="Preço (ex: 5.00)"
+		/>
+
+		<button class="btn btn-yellow btn-sm" id="btnCriarItem">
+			Criar item
+		</button>
+	</div>
+
+	<!-- 🔹 LISTA -->
+	<div>
+		<h6 class="mb-2">Grupos cadastrados</h6>
+
+		${menuState.opcionais
+			.map(
+				(o) => `
+				<div class="card card-select mb-2 p-2">
+					<div class="d-flex justify-content-between">
+						<div>
+							<b>${o.name}</b><br/>
+							<small>Min: ${o.min} | Max: ${o.max}</small>
+						</div>
+						<span class="badge bg-light text-dark">
+							ID ${o.id}
+						</span>
+					</div>
+				</div>
+			`
+			)
+			.join('')}
+	</div>
+
+</div>
+`,
 	})
 }
 

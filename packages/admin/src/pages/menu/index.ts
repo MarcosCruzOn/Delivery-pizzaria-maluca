@@ -84,6 +84,7 @@ async function loadCategories() {
 		const productsData = await getProducts()
 		const opcionaisData = await getOpcionais() // 👈 NOVO
 
+		menuState.opcionais = [] // 🔥 LIMPA ANTES
 		menuState.opcionais = opcionaisData.map((o: any) => ({
 			id: o.idopcional,
 			name: o.nome,

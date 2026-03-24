@@ -11,49 +11,60 @@ export function renderProductModal(categories: Category[]) {
 		title: 'Novo produto',
 
 		body: `
-		<div class="form-group mb-3">
-			<label><b>Nome</b></label>
-			<input type="text" class="form-control" id="novoProdutoNome"/>
-		</div>
+			<div class="form-group mb-3">
+				<label><b>Nome</b></label>
+				<input type="text" class="form-control" id="novoProdutoNome"/>
+			</div>
 
-		<div class="form-group mb-3">
-			<label><b>Descrição</b></label>
-			<textarea class="form-control" id="novoProdutoDescricao"></textarea>
-		</div>
+			<div class="form-group mb-3">
+				<label><b>Valor</b></label>
+				<input type="number" step="0.01" class="form-control" id="novoProdutoValor"/>
+			</div>
 
-		<div class="form-group mb-3">
-			<label><b>Valor</b></label>
-			<input type="number" step="0.01" class="form-control" id="novoProdutoValor"/>
-		</div>
+			<div class="form-group mb-3">
+				<label><b>Categoria</b></label>
 
+				<select class="form-control" id="novoProdutoCategoria">
+					${categories
+						.map(
+							(cat) =>
+								`<option value="${cat.id}">${cat.title}</option>`
+						)
+						.join('')}
+				</select>
+			</div>
+
+			<div class="form-group mb-3">
+				<label><b>Imagem</b></label>
+				<input type="file" class="form-control" id="novoProdutoImagem"/>
+			</div>
+
+			<img
+				id="previewNovoProduto"
+				style="display:none;width:200px;border-radius:10px"
+			/>
+
+			<div class="form-group mb-3">
+				<label><b>Opcionais</b></label>
+			</div>
+
+			<div id="containerOpcionais"></div>
 		
+		`,
 
-		<div class="form-group mb-3">
-			<label><b>Categoria</b></label>
+		footer: `
+			<button class="btn btn-yellow btn-sm" id="btnSalvarNovoProduto">
+				Salvar produto
+			</button>
+		`,
+	})
+}
+export function renderOpcionaisNoModal() {
+	const container = document.getElementById('containerOpcionais')
 
-			<select class="form-control" id="novoProdutoCategoria">
-				${categories
-					.map(
-						(cat) =>
-							`<option value="${cat.id}">${cat.title}</option>`
-					)
-					.join('')}
-			</select>
-		</div>
+	if (!container) return
 
-		<div class="form-group mb-3">
-			<label><b>Imagem</b></label>
-			<input type="file" class="form-control" id="novoProdutoImagem"/>
-		</div>
-
-		<img
-			id="previewNovoProduto"
-			style="display:none;width:200px;border-radius:10px"
-		/>
-		<div class="form-group mb-3">
-	<label><b>Opcionais</b></label>
-
-	${menuState.opcionais
+	container.innerHTML = menuState.opcionais
 		.map(
 			(opcional) => `
 			<div class="mt-3 p-2 border rounded">
@@ -81,14 +92,5 @@ export function renderProductModal(categories: Category[]) {
 			</div>
 		`
 		)
-		.join('')}
-</div>
-		`,
-
-		footer: `
-			<button class="btn btn-yellow btn-sm" id="btnSalvarNovoProduto">
-				Salvar produto
-			</button>
-		`,
-	})
+		.join('')
 }
