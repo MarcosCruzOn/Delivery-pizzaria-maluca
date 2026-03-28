@@ -21,6 +21,21 @@ import {
 	listOpcionalItemsController,
 } from '../controllers/opcioinais.controllers.js'
 
+import {
+	createPaymentController,
+	listPaymentsController,
+	createDeliveryController,
+	listDeliveriesController,
+	createOrderStatusController,
+	listOrderStatusController,
+} from '../controllers/settings.controllers.js'
+
+import {
+	createOrderController,
+	listOrdersController,
+	updateOrderStatusController,
+} from '../controllers/orders.controllers.js'
+
 import { verificarToken } from '../middlewares/auth.js'
 
 const routes = Router()
@@ -33,10 +48,10 @@ routes.post('/admin/categories', verificarToken, createCategoryController)
 routes.get('/admin/categories', listCategoriesController)
 
 // Rotas de Produtos
-// 2. Criar produto (Protegido pelo Token)
+// Criar produto (Protegido pelo Token)
 routes.post('/admin/products', verificarToken, createProductController)
 
-// 3. Listar produtos (Público para o cliente ver o cardápio)
+// Listar produtos (Público para o cliente ver o cardápio)
 routes.get('/admin/products', listProductsController)
 
 // O ":idproduto" é uma variável na URL. Se você mandar /admin/products/5/imagem, o idproduto vira 5.
@@ -70,5 +85,30 @@ routes.post(
 	createOpcionalItemController
 )
 routes.get('/admin/opcionais/:idopcional/itens', listOpcionalItemsController)
+
+// NOVO: Rotas de Pagamento
+routes.post('/admin/pagamentos', verificarToken, createPaymentController)
+routes.get('/pagamentos', listPaymentsController) // Rota Pública
+
+// NOVO: Rotas de Tipo de Entrega
+routes.post('/admin/entregas', verificarToken, createDeliveryController)
+routes.get('/entregas', listDeliveriesController) // Rota Pública
+
+// NOVO: Rotas de Status do Pedido
+routes.post('/admin/status', verificarToken, createOrderStatusController)
+// A listagem pode ser pública, pois no futuro o cliente vai querer ver na Web que o pedido dele está "Em Preparo"
+routes.get('/status', listOrderStatusController)
+
+// Rota Pública (Cliente criando pedido)
+routes.post('/orders', createOrderController)
+
+// NOVO: Rota Protegida (Admin vendo os pedidos)
+routes.get('/admin/orders', verificarToken, listOrdersController)
+// 2. NOVO: Rota PATCH para alterar o status
+routes.patch(
+	'/admin/orders/:idpedido/status',
+	verificarToken,
+	updateOrderStatusController
+)
 
 export default routes
