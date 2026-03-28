@@ -36,6 +36,12 @@ import {
 	updateOrderStatusController,
 } from '../controllers/orders.controllers.js'
 
+import {
+	getCompanyController,
+	updateCompanyController,
+	updateCompanyLogoController,
+} from '../controllers/company.controllers.js'
+
 import { verificarToken } from '../middlewares/auth.js'
 
 const routes = Router()
@@ -109,6 +115,15 @@ routes.patch(
 	'/admin/orders/:idpedido/status',
 	verificarToken,
 	updateOrderStatusController
+)
+
+// NOVO: Rotas da Empresa (Painel "Company")
+routes.get('/admin/company/:idempresa', verificarToken, getCompanyController)
+routes.put('/admin/company/:idempresa', verificarToken, updateCompanyController) // Usamos PUT pois atualiza o registro inteiro
+routes.patch(
+	'/admin/company/:idempresa/logo',
+	verificarToken,
+	updateCompanyLogoController
 )
 
 export default routes
