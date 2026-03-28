@@ -1,35 +1,48 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import cors from 'cors'
-import 'dotenv/config'
+import dotenv from 'dotenv'
+import routes from './routes/index.js'
 import path from 'path'
 
-import { testDatabaseConnection } from './database/testConnection.js'
-import { errorHandler } from './middlewares/errorHandler.js'
-import { router } from './routes/index.js'
-import { fileURLToPath } from 'url'
+import { getDirname } from './utils/pathUtils.js' // 👈 Importamos a nossa ferramenta
 
+import uploadRoutes from './routes/upload.routes.js'
+
+// Carrega as variáveis de ambiente do arquivo .env
+dotenv.config()
+
+// Inicializa o aplicativo Express
 const app = express()
 
-app.use(express.json())
+// O CORS permite que seu Admin e sua Web (que rodam em portas diferentes) consigam conversar com esta API
 app.use(cors())
 
-app.use(router)
+// Permite que o servidor entenda informações enviadas no formato JSON
+app.use(express.json())
 
-app.use(errorHandler)
+// Olha a elegância! Em uma linha você tem o __dirname resolvido:
+const __dirname = getDirname(import.meta.url)
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+app.use('/uploads', express.static(path.resolve(__dirname, '..', 'uploads')))
 
-const uploadsPath = path.resolve(__dirname, '../uploads')
+// 2. Adicione esta linha (Todas as nossas rotas vão começar com /api):
+app.use('/api', routes)
 
-app.use('/uploads', express.static(uploadsPath))
+//  Conectando a rota de upload especificamente no caminho /api/admin/upload
+app.use('/api/admin/upload', uploadRoutes)
 
-// app.use('/uploads', express.static(path.resolve('packages/server/uploads')))
+// Criando uma rota de teste bem simples para sabermos se está funcionando
+app.get('/teste', (req: Request, res: Response) => {
+	return res.json({
+		mensagem:
+			'Olá! O servidor da Pizzaria Maluca está rodando perfeitamente! 🍕',
+	})
+})
 
-testDatabaseConnection()
+// Define a porta puxando do .env, ou usa a 3333 como padrão
+const PORT = process.env.PORT || 3333
 
-const port = Number(process.env.PORT) || 3333
-
-app.listen(port, () => {
-	console.log(`API rodando em http://localhost:${port}`)
+// Faz o servidor "escutar" a porta definida e avisa no terminal
+app.listen(PORT, () => {
+	console.log(`🚀 Servidor rodando na porta ${PORT}`)
 })

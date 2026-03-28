@@ -112,6 +112,12 @@ b {
 	background: var(--color-primary-out);
 }
 
+.btn-google {
+	background: #fff;
+	color: #333;
+	border: 1px solid #ccc;
+}
+
 .hidden {
 	display: none !important;
 }

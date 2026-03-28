@@ -51,3 +51,14 @@ export async function createOpcionalItem(data: any) {
 
 	return response.json()
 }
+
+export async function linkOpcionalToProduct(data: {
+	idproduto: number
+	idopcional: number
+}) {
+	return fetch('/admin/product/opcional', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(data),
+	})
+}

@@ -1,9 +1,16 @@
 import { Router } from 'express'
-import { upload } from '../middlewares/upload.js'
+import { uploadMiddleware } from '../middlewares/upload.js'
+import { verificarToken } from '../middlewares/auth.js'
 import { uploadImage } from '../controllers/upload.controllers.js'
 
-const router = Router()
+const uploadRoutes = Router()
 
-router.post('/', upload.single('image'), uploadImage)
+// Olha como fica elegante! Passamos pelo segurança, pelo multer, e chamamos o seu controller.
+uploadRoutes.post(
+	'/',
+	verificarToken,
+	uploadMiddleware.single('file'),
+	uploadImage
+)
 
-export default router
+export default uploadRoutes

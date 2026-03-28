@@ -1,26 +1,26 @@
 import multer from 'multer'
 import path from 'path'
-import fs from 'fs'
-import { fileURLToPath } from 'url'
+import { getDirname } from '../utils/pathUtils.js' // 👈 Importamos a nossa ferramenta
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+// Uma linha só e pronto!
+const __dirname = getDirname(import.meta.url)
 
-const uploadDir = path.resolve(__dirname, '../../uploads')
-
-if (!fs.existsSync(uploadDir)) {
-	fs.mkdirSync(uploadDir, { recursive: true })
-}
-
+// Configuração do "Armazém" (Storage)
 const storage = multer.diskStorage({
-	destination: (_req, _file, cb) => {
-		cb(null, uploadDir)
+	// 1. Onde vamos guardar as fotos?
+	destination: (req, file, cb) => {
+		// Apontamos para a pasta "uploads" que fica na raiz do server
+		cb(null, path.resolve(__dirname, '..', '..', 'uploads'))
 	},
-	filename: (_req, file, cb) => {
-		const ext = path.extname(file.originalname)
-		const fileName = `produto-${Date.now()}${ext}`
-		cb(null, fileName)
+
+	// 2. Que nome vamos dar para a foto?
+	filename: (req, file, cb) => {
+		// Pegamos a data atual em milissegundos e juntamos com o nome original.
+		// Exemplo: 16987654321-calabresa.jpg (Isso evita que fotos com o mesmo nome se apaguem)
+		const nomeUnico = `${Date.now()}-${file.originalname}`
+		cb(null, nomeUnico)
 	},
 })
 
-export const upload = multer({ storage })
+// Criamos o nosso "recepcionista" passando as regras acima
+export const uploadMiddleware = multer({ storage: storage })

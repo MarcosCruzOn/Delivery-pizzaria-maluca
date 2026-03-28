@@ -28,6 +28,10 @@ export function renderLogin(root: HTMLElement) {
           Fazer Login
         </button>
 
+        <button class="btn btn-google mt-2" id="btnGoogle" type="button">
+          Entrar com Google
+        </button>
+
       </div>
     </section>
   `
@@ -49,8 +53,44 @@ export function renderLogin(root: HTMLElement) {
 			}
 
 			// depois: POST /api/admin/login
-			localStorage.setItem('admin_token', 'fake-token')
-			window.location.hash = '#/home'
+			// localStorage.setItem('admin_token', 'fake-token')
+			// window.location.hash = '#/home'
+			try {
+				const response = await fetch(
+					'http://localhost:3000/api/auth/login',
+					{
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							email,
+							password,
+						}),
+					}
+				)
+
+				const data = await response.json()
+
+				if (!response.ok) {
+					alert(data.error)
+					return
+				}
+
+				// sucesso
+				localStorage.setItem('admin_token', data.token)
+				window.location.hash = '#/home'
+			} catch (error) {
+				console.error(error)
+				alert('Erro ao conectar com servidor')
+			}
+		}
+	)
+
+	root.querySelector<HTMLButtonElement>('#btnGoogle')!.addEventListener(
+		'click',
+		() => {
+			window.location.href = 'http://localhost:3000/api/auth/google'
 		}
 	)
 }
