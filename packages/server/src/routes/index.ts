@@ -42,6 +42,11 @@ import {
 	updateCompanyLogoController,
 } from '../controllers/company.controllers.js'
 
+import {
+	createHorarioController,
+	listHorariosController,
+} from '../controllers/horario.controllers.js'
+
 import { verificarToken } from '../middlewares/auth.js'
 
 const routes = Router()
@@ -117,7 +122,7 @@ routes.patch(
 	updateOrderStatusController
 )
 
-// NOVO: Rotas da Empresa (Painel "Company")
+// Rotas da Empresa (Painel "Company")
 routes.get('/admin/company/:idempresa', verificarToken, getCompanyController)
 routes.put('/admin/company/:idempresa', verificarToken, updateCompanyController) // Usamos PUT pois atualiza o registro inteiro
 routes.patch(
@@ -125,5 +130,9 @@ routes.patch(
 	verificarToken,
 	updateCompanyLogoController
 )
+
+// Rotas de Horário de Funcionamento
+routes.post('/admin/horarios', verificarToken, createHorarioController)
+routes.get('/horarios', listHorariosController) // Rota Pública
 
 export default routes
