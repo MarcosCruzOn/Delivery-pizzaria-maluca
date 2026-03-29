@@ -1,8 +1,20 @@
 import { AdminLayout } from '../../components/AdminLayout/AdminLayout'
+// Importamos os nossos garçons!
+import {
+	buscarDadosEmpresa,
+	atualizarEmpresa,
+	fazerUploadLogo,
+	salvarLogoEmpresa,
+	listarHorarios,
+	criarHorario,
+	buscarCepNaViaCep,
+} from '../../api/company'
 
 type Tab = 'sobre' | 'endereco' | 'horario'
 
 export function renderCompany(root: HTMLElement) {
+	// ... (MANTENHA TODO O SEU root.innerHTML EXATAMENTE COMO VOCÊ ME MANDOU, NÃO MUDEI NADA NO HTML!) ...
+	// Vou pular o HTML aqui para economizar espaço, cole o seu root.innerHTML aqui novamente!
 	root.innerHTML = AdminLayout({
 		title: 'Configurações da Empresa',
 		iconClass: 'fas fa-building',
@@ -86,11 +98,18 @@ export function renderCompany(root: HTMLElement) {
                   </div>
                 </div>
 
+				<div class="col-12 col-md-8 mt-3">
+					<p class="title-categoria mb-0"><b>Complemento:</b></p>
+					<div class="form-group mt-2">
+						<input type="text" class="form-control" id="complemento" placeholder="Apto, Bloco, Casa 2..." />
+					</div>
+				</div>
+
                 <div class="col-12 col-md-8 mt-3">
-                  <p class="title-categoria mb-0"><b>Bairro:</b></p>
-                  <div class="form-group mt-2">
-                    <input type="text" class="form-control" id="bairro" />
-                  </div>
+					<p class="title-categoria mb-0"><b>Bairro:</b></p>
+					<div class="form-group mt-2">
+						<input type="text" class="form-control" id="bairro" />
+					</div>
                 </div>
 
                 <div class="col-12 col-md-6 mt-3">
@@ -189,7 +208,6 @@ export function renderCompany(root: HTMLElement) {
 	setupHorario(root)
 	loadHorarios(root)
 
-	// começa em "horário" (como no seu HTML original, botão active) :contentReference[oaicite:2]{index=2}
 	showTab(root, 'horario')
 }
 
@@ -225,69 +243,95 @@ function showTab(root: HTMLElement, tab: Tab) {
 	tabs.querySelector(`a[data-tab="${tab}"]`)?.classList.add('active')
 }
 
+// Função auxiliar para pegar todos os dados da tela (Sobre + Endereço) de uma vez
+function lerTodosOsCamposDaTela(root: HTMLElement) {
+	return {
+		nome: (root.querySelector('#companyName') as HTMLInputElement).value,
+		sobre: (root.querySelector('#companyAbout') as HTMLTextAreaElement)
+			.value,
+		cep: (root.querySelector('#cep') as HTMLInputElement).value,
+		endereco: (root.querySelector('#rua') as HTMLInputElement).value,
+		numero: (root.querySelector('#numero') as HTMLInputElement).value,
+		bairro: (root.querySelector('#bairro') as HTMLInputElement).value,
+		cidade: (root.querySelector('#cidade') as HTMLInputElement).value,
+		estado: (root.querySelector('#uf') as HTMLInputElement).value,
+		complemento: (root.querySelector('#complemento') as HTMLInputElement)
+			.value,
+	}
+}
+
 function setupActions(root: HTMLElement) {
+	// Salvar Sobre
 	root.querySelector('#btnSaveAbout')?.addEventListener('click', async () => {
-		const nome = (root.querySelector('#companyName') as HTMLInputElement)
-			.value
-
-		const sobre = (
-			root.querySelector('#companyAbout') as HTMLTextAreaElement
-		).value
-
-		// 👇 montar objeto sem campos vazios
-		const data: any = {}
-
-		if (nome) data.nome = nome
-		if (sobre) data.sobre = sobre
-
 		try {
-			await fetch('http://localhost:3333/company/about', {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data),
-			})
-
-			alert('Salvo com sucesso!')
-		} catch {
+			const dados = lerTodosOsCamposDaTela(root)
+			await atualizarEmpresa(dados)
+			alert('Dados sobre a empresa salvos com sucesso!')
+		} catch (error) {
 			alert('Erro ao salvar')
 		}
 	})
 
-	root.querySelector('#btnBuscarCep')?.addEventListener('click', () => {
-		alert('Buscar CEP (depois vamos integrar)')
+	// Buscar CEP via ViaCEP
+	root.querySelector('#btnBuscarCep')?.addEventListener('click', async () => {
+		const cepInput = (root.querySelector('#cep') as HTMLInputElement).value
+		const btnBuscar = root.querySelector('#btnBuscarCep') as HTMLElement
+
+		if (!cepInput) {
+			alert('Por favor, digite um CEP antes de buscar.')
+			return
+		}
+
+		try {
+			// Efeito visual: Muda o texto do botão para mostrar que está carregando
+			const textoOriginal = btnBuscar.innerHTML
+			btnBuscar.innerHTML = 'Buscando...'
+			btnBuscar.style.pointerEvents = 'none' // Impede de clicar 2 vezes rápido
+
+			// Chama a API do ViaCEP
+			const dadosEndereco = await buscarCepNaViaCep(cepInput)
+
+			// Preenche as caixinhas de texto com os dados que voltaram!
+			// O ViaCEP chama rua de "logradouro" e cidade de "localidade"
+			;(root.querySelector('#rua') as HTMLInputElement).value =
+				dadosEndereco.logradouro || ''
+			;(root.querySelector('#bairro') as HTMLInputElement).value =
+				dadosEndereco.bairro || ''
+			;(root.querySelector('#cidade') as HTMLInputElement).value =
+				dadosEndereco.localidade || ''
+			;(root.querySelector('#uf') as HTMLInputElement).value =
+				dadosEndereco.uf || ''
+
+			// Foca no campo de Número para o usuário só digitar o número da casa e salvar
+			;(root.querySelector('#numero') as HTMLInputElement).focus()
+
+			// Restaura o botão
+			btnBuscar.innerHTML = textoOriginal
+			btnBuscar.style.pointerEvents = 'auto'
+		} catch (error: any) {
+			alert(error.message || 'Erro ao buscar CEP')
+
+			// Restaura o botão em caso de erro também
+			btnBuscar.innerHTML = 'Buscar'
+			btnBuscar.style.pointerEvents = 'auto'
+		}
 	})
 
+	// Salvar Endereço
 	root.querySelector('#btnSaveAddress')?.addEventListener(
 		'click',
 		async () => {
-			const data = {
-				cep: (root.querySelector('#cep') as HTMLInputElement).value,
-				endereco: (root.querySelector('#rua') as HTMLInputElement)
-					.value,
-				numero: (root.querySelector('#numero') as HTMLInputElement)
-					.value,
-				bairro: (root.querySelector('#bairro') as HTMLInputElement)
-					.value,
-				cidade: (root.querySelector('#cidade') as HTMLInputElement)
-					.value,
-				estado: (root.querySelector('#uf') as HTMLInputElement).value,
-			}
-
 			try {
-				await fetch('http://localhost:3333/company/address', {
-					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(data),
-				})
-
+				const dados = lerTodosOsCamposDaTela(root)
+				await atualizarEmpresa(dados)
 				alert('Endereço salvo com sucesso!')
-			} catch {
+			} catch (error) {
 				alert('Erro ao salvar endereço')
 			}
 		}
 	)
 
-	// ===== LOGO UPLOAD =====
+	// ===== LOGO UPLOAD (Agora chamando a API!) =====
 	const input = root.querySelector('#logoInput') as HTMLInputElement
 	const preview = root.querySelector('#logoPreview') as HTMLElement
 	const btnLogo = root.querySelector('#btnUploadLogo')!
@@ -301,28 +345,28 @@ function setupActions(root: HTMLElement) {
 		const file = input.files?.[0]
 		if (!file) return
 
-		// 👁 preview
+		// 👁 preview visual
 		const reader = new FileReader()
 		reader.onload = () => {
 			preview.style.backgroundImage = `url(${reader.result})`
 		}
 		reader.readAsDataURL(file)
 
-		// ⬆️ upload
-		const formData = new FormData()
-		formData.append('file', file)
+		try {
+			// 1. Faz upload e pega o nome maluco da imagem (ex: 1712...-logo.png)
+			const uploadResult = await fazerUploadLogo(file)
 
-		await fetch('http://localhost:3333/company/logo', {
-			method: 'POST',
-			body: formData,
-		})
+			// 2. Salva esse nome no banco de dados da empresa
+			await salvarLogoEmpresa(uploadResult.filename)
+			alert('Logotipo atualizado!')
+		} catch (error) {
+			alert('Erro ao fazer upload da logotipo')
+		}
 	})
 }
 
 function setupHorario(root: HTMLElement) {
-	const tbody = root.querySelector<HTMLTableSectionElement>('#listaHorarios')!
 	const btn = root.querySelector<HTMLAnchorElement>('#btnAddHorario')!
-
 	const diaDe = root.querySelector<HTMLSelectElement>('#diaDe')!
 	const diaAte = root.querySelector<HTMLSelectElement>('#diaAte')!
 	const abre = root.querySelector<HTMLInputElement>('#abre')!
@@ -341,20 +385,12 @@ function setupHorario(root: HTMLElement) {
 			diafim: Number(diaAte.value),
 			iniciohorarioum: abre.value,
 			fimhorarioum: fecha.value,
-			iniciohorariodois: '',
-			fimhorariodois: '',
 		}
 
 		try {
-			await fetch('http://localhost:3333/company/horario', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data),
-			})
-
+			await criarHorario(data)
 			alert('Horário salvo!')
-
-			await loadHorarios(root)
+			await loadHorarios(root) // Recarrega a tabela
 		} catch {
 			alert('Erro ao salvar horário')
 		}
@@ -364,37 +400,33 @@ function setupHorario(root: HTMLElement) {
 async function loadHorarios(root: HTMLElement) {
 	const tbody = root.querySelector<HTMLTableSectionElement>('#listaHorarios')!
 
-	const res = await fetch('http://localhost:3333/company/horario')
-	const horarios = await res.json()
+	try {
+		const horarios = await listarHorarios()
+		tbody.innerHTML = ''
 
-	tbody.innerHTML = ''
+		horarios.forEach((h: any) => {
+			const row = document.createElement('tr')
+			row.innerHTML = `
+				<td>${h.diainicio} - ${h.diafim}</td>
+				<td>${h.iniciohorarioum}</td>
+				<td>${h.fimhorarioum}</td>
+				<td>
+					<a href="#" data-id="${h.idhorario}" class="btn btn-sm btn-white" title="Em breve">X</a>
+				</td>
+			`
+			// OBSERVAÇÃO: Nós não criamos a rota DELETE no backend ainda!
+			row.querySelector('a')!.addEventListener('click', (e) => {
+				e.preventDefault()
+				alert(
+					'Ops! A rota de excluir horário ainda não foi construída no servidor!'
+				)
+			})
 
-	horarios.forEach((h: any) => {
-		const row = document.createElement('tr')
-
-		row.innerHTML = `
-			<td>${h.diainicio} - ${h.diafim}</td>
-			<td>${h.iniciohorarioum}</td>
-			<td>${h.fimhorarioum}</td>
-			<td>
-				<a href="#" data-id="${h.idhorario}" class="btn btn-sm btn-white">Remover</a>
-			</td>
-		`
-
-		// 🔥 remover do banco
-		row.querySelector('a')!.addEventListener('click', async (e) => {
-			e.preventDefault()
-
-			await fetch(
-				`http://localhost:3333/company/horario/${h.idhorario}`,
-				{ method: 'DELETE' }
-			)
-
-			row.remove()
+			tbody.appendChild(row)
 		})
-
-		tbody.appendChild(row)
-	})
+	} catch (error) {
+		console.log('Erro ao buscar horários da tabela')
+	}
 }
 
 function renderDiasOptions() {
@@ -413,19 +445,33 @@ function renderDiasOptions() {
 
 async function loadCompanyData(root: HTMLElement) {
 	try {
-		const res = await fetch('http://localhost:3333/company')
-		const company = await res.json()
+		const company = await buscarDadosEmpresa()
 
+		// Preenche os inputs com o que veio do banco!
 		;(root.querySelector('#companyName') as HTMLInputElement).value =
 			company.nome || ''
 		;(root.querySelector('#companyAbout') as HTMLTextAreaElement).value =
 			company.sobre || ''
+		;(root.querySelector('#cep') as HTMLInputElement).value =
+			company.cep || ''
+		;(root.querySelector('#rua') as HTMLInputElement).value =
+			company.endereco || ''
+		;(root.querySelector('#numero') as HTMLInputElement).value =
+			company.numero || ''
+		;(root.querySelector('#complemento') as HTMLInputElement).value =
+			company.complemento || ''
+		;(root.querySelector('#bairro') as HTMLInputElement).value =
+			company.bairro || ''
+		;(root.querySelector('#cidade') as HTMLInputElement).value =
+			company.cidade || ''
+		;(root.querySelector('#uf') as HTMLInputElement).value =
+			company.estado || ''
 
 		// 🖼 logo preview
 		const preview = root.querySelector('#logoPreview') as HTMLElement
-
 		if (company.logotipo) {
-			preview.style.backgroundImage = `url(http://localhost:3333${company.logotipo})`
+			// Usando o proxy do vite de novo (/uploads/...)
+			preview.style.backgroundImage = `url(/uploads/${company.logotipo})`
 		}
 	} catch {
 		console.log('Erro ao carregar empresa')

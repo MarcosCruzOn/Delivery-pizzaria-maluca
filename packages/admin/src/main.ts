@@ -12,7 +12,7 @@ const app = appElement
 
 function render() {
 	app.innerHTML = ''
-	router(app)
+	router()
 }
 
 window.addEventListener('hashchange', render)
