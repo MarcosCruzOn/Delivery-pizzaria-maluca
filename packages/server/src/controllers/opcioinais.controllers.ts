@@ -101,3 +101,61 @@ export async function listOpcionalItemsController(
 			.json({ erro: 'Erro interno ao listar os itens.' })
 	}
 }
+
+// Importe as novas funções que acabamos de criar no service lá no topo!
+import {
+	atualizarOpcionalNoBanco,
+	deletarOpcionalNoBanco,
+	atualizarItemOpcionalNoBanco,
+	deletarItemOpcionalNoBanco,
+} from '../services/opcionais.services.js'
+
+// ... (seus controllers antigos) ...
+
+export async function updateOpcionalController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		await atualizarOpcionalNoBanco(Number(req.params.id), req.body)
+		return res.json({ mensagem: 'Grupo atualizado!' })
+	} catch (erro) {
+		return res.status(500).json({ erro: 'Erro ao atualizar grupo' })
+	}
+}
+
+export async function deleteOpcionalController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		await deletarOpcionalNoBanco(Number(req.params.id))
+		return res.json({ mensagem: 'Grupo removido!' })
+	} catch (erro) {
+		return res.status(500).json({ erro: 'Erro ao remover grupo' })
+	}
+}
+
+export async function updateItemOpcionalController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		await atualizarItemOpcionalNoBanco(Number(req.params.idItem), req.body)
+		return res.json({ mensagem: 'Item atualizado!' })
+	} catch (erro) {
+		return res.status(500).json({ erro: 'Erro ao atualizar item' })
+	}
+}
+
+export async function deleteItemOpcionalController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		await deletarItemOpcionalNoBanco(Number(req.params.idItem))
+		return res.json({ mensagem: 'Item removido!' })
+	} catch (erro) {
+		return res.status(500).json({ erro: 'Erro ao remover item' })
+	}
+}

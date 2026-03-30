@@ -15,7 +15,7 @@ export async function criarPedidoCompletoNoBanco(dadosDoPedido: any) {
       (idpedidostatus, idtipoentrega, idpagamentos, total, nomecliente, telefonecliente, endereço, numero, bairro) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			[
-				8, // Status do pedido (Novo)
+				1, // Status do pedido (Novo)
 				dadosDoPedido.idtipoentrega,
 				dadosDoPedido.idpagamentos,
 				dadosDoPedido.total,

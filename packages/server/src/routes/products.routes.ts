@@ -5,6 +5,8 @@ import {
 	updateProductImageController,
 	linkOpcionalController,
 	listProductOpcionaisController,
+	updateProductController,
+	deleteProductController,
 } from '../controllers/products.controllers.js'
 import { verificarToken } from '../middlewares/auth.js'
 
@@ -24,6 +26,18 @@ productRoutes.post(
 productRoutes.get(
 	'/admin/products/:idproduto/opcionais',
 	listProductOpcionaisController
+)
+
+// NOVO: Atualizar e Deletar
+productRoutes.put(
+	'/admin/products/:idproduto',
+	verificarToken,
+	updateProductController
+)
+productRoutes.delete(
+	'/admin/products/:idproduto',
+	verificarToken,
+	deleteProductController
 )
 
 export default productRoutes

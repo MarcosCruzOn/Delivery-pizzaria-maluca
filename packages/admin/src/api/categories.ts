@@ -1,46 +1,34 @@
-const API_URL = 'http://localhost:3333'
-
-export async function getCategories() {
-	const response = await fetch(`${API_URL}/admin/categories`)
-
-	if (!response.ok) {
-		throw new Error('Erro ao buscar categorias')
-	}
-
-	return response.json()
+const getAuthHeaders = () => {
+	const token = localStorage.getItem('admin_token')
+	return { Authorization: `Bearer ${token}` }
 }
 
-export async function createCategory(data: {
-	nome: string
-	icone: string
-	ordem: number
-}) {
-	const response = await fetch(`${API_URL}/admin/categories`, {
+export async function getCategories() {
+	// Adicionamos o /api no começo! E como no backend deixamos a listagem pública, não precisa de token aqui
+	const res = await fetch('/api/admin/categories')
+	if (!res.ok) throw new Error('Erro ao buscar categorias')
+	return res.json()
+}
+
+export async function createCategory(data: any) {
+	const res = await fetch('/api/admin/categories', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
+			...getAuthHeaders(), // Mandando o crachá!
 		},
 		body: JSON.stringify(data),
 	})
-
-	if (!response.ok) {
-		throw new Error('Erro ao criar categoria')
-	}
-
-	return response.json()
+	if (!res.ok) throw new Error('Erro ao criar categoria')
+	return res.json()
 }
 
 export async function deleteCategory(id: number) {
-	const response = await fetch(
-		`http://localhost:3333/admin/categories/${id}`,
-		{
-			method: 'DELETE',
-		}
-	)
-
-	if (!response.ok) {
-		throw new Error('Erro ao deletar categoria')
-	}
-
-	return response.json()
+	// Atenção: Ainda não criamos essa rota no backend!
+	const res = await fetch(`/api/admin/categories/${id}`, {
+		method: 'DELETE',
+		headers: getAuthHeaders(),
+	})
+	if (!res.ok) throw new Error('Erro ao deletar categoria')
+	return res.json()
 }

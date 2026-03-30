@@ -1,74 +1,59 @@
-type CreateProductDTO = {
-	idcategoria: number
-	nome: string
-	descricao: string
-	valor: number
-	imagem: string | null
-
-	// 👇 NOVO (ESSENCIAL)
-	opcionais?: number[]
-}
-
-export async function createProduct(data: CreateProductDTO) {
-	const response = await fetch('/admin/products', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(data),
-	})
-
-	if (!response.ok) {
-		throw new Error('Erro ao salvar produto')
-	}
-
-	return response.json()
+const getAuthHeaders = () => {
+	const token = localStorage.getItem('admin_token')
+	return { Authorization: `Bearer ${token}` }
 }
 
 export async function getProducts() {
-	const response = await fetch('/admin/products')
-
-	if (!response.ok) {
-		throw new Error('Erro ao buscar produtos')
-	}
-
-	return response.json()
+	const res = await fetch('/api/admin/products')
+	if (!res.ok) throw new Error('Erro ao buscar produtos')
+	return res.json()
 }
 
-export async function deleteProduct(id: number) {
-	const response = await fetch(`/admin/products/${id}`, {
-		method: 'DELETE',
-	})
-
-	if (!response.ok) {
-		throw new Error('Erro ao remover produto')
-	}
-
-	return response.json()
-}
-
-export async function updateProduct(id: number, data: any) {
-	const response = await fetch(`/admin/products/${id}`, {
-		method: 'PUT',
+export async function createProduct(data: any) {
+	const res = await fetch('/api/admin/products', {
+		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
+			...getAuthHeaders(),
 		},
 		body: JSON.stringify(data),
 	})
-
-	if (!response.ok) {
-		throw new Error('Erro ao atualizar produto')
+	if (!res.ok) {
+		const erroDoBackend = await res.json()
+		throw new Error(erroDoBackend.erro || 'Erro ao criar produto')
 	}
+}
 
-	return response.json()
+export async function updateProduct(id: number, data: any) {
+	// Atenção: Ainda não criamos essa rota no backend!
+	const res = await fetch(`/api/admin/products/${id}`, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+			...getAuthHeaders(),
+		},
+		body: JSON.stringify(data),
+	})
+	if (!res.ok) {
+		const erroDoBackend = await res.json()
+		throw new Error(erroDoBackend.erro || 'Erro ao atualizar produto')
+	}
+}
+
+export async function deleteProduct(id: number) {
+	// Atenção: Ainda não criamos essa rota no backend!
+	const res = await fetch(`/api/admin/products/${id}`, {
+		method: 'DELETE',
+		headers: getAuthHeaders(),
+	})
+	if (!res.ok) {
+		const erroDoBackend = await res.json()
+		throw new Error(erroDoBackend.erro || 'Erro ao deletar produto')
+	}
 }
 
 export async function getProductOpcionais(id: number) {
-	const response = await fetch(`/admin/products/${id}/opcionais`)
-
-	if (!response.ok) {
-		throw new Error('Erro ao buscar opcionais do produto')
-	}
-
-	return response.json()
+	const res = await fetch(`/api/admin/products/${id}/opcionais`)
+	if (!res.ok) throw new Error('Erro ao buscar opcionais do produto')
+	return res.json()
 }

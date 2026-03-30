@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import {
 	criarCategoriaNoBanco,
 	listarCategoriasDoBanco,
+	deletarCategoriaNoBanco,
 } from '../services/categories.services.js'
 
 // Controller para o POST (Criar)
@@ -48,5 +49,26 @@ export async function listCategoriesController(
 		return res
 			.status(500)
 			.json({ erro: 'Erro interno ao listar as categorias.' })
+	}
+}
+
+export async function deleteCategoryController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		const { id } = req.params
+
+		await deletarCategoriaNoBanco(Number(id))
+
+		return res.json({
+			mensagem: 'Categoria e produtos apagados com sucesso! 🗑️',
+		})
+	} catch (erro: any) {
+		console.error('Erro ao deletar categoria:', erro)
+		// Se bater na regra do pedido fechado, avisamos elegantemente
+		return res.status(500).json({
+			erro: 'Não foi possível apagar. Provavelmente existem pedidos já finalizados com produtos desta categoria!',
+		})
 	}
 }

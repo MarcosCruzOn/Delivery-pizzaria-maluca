@@ -6,12 +6,13 @@ export async function criarProdutoNoBanco(
 	nome: string,
 	descricao: string,
 	valor: number,
+	imagem: string,
 	ordem: number
 ) {
 	// O comando INSERT INTO agora inclui o idcategoria para fazer o vínculo
 	const [resultado] = await pool.query(
-		'INSERT INTO produtos (idcategoria, nome, descricao, valor, ordem) VALUES (?, ?, ?, ?, ?)',
-		[idcategoria, nome, descricao, valor, ordem]
+		'INSERT INTO produtos (idcategoria, nome, descricao, valor,imagem, ordem) VALUES (?, ?, ?, ?, ?, ?)',
+		[idcategoria, nome, descricao, valor, imagem, ordem]
 	)
 
 	return resultado
@@ -30,13 +31,13 @@ export async function listarProdutosDoBanco() {
 // Função para atualizar APENAS a imagem de um produto existente
 export async function atualizarImagemDoProduto(
 	idproduto: number,
-	nomeDaImagem: string
+	imagem: string
 ) {
 	// O comando UPDATE altera uma linha que já existe.
 	// O "WHERE idproduto = ?" garante que não vamos colocar a foto da calabresa na coca-cola sem querer!
 	const [resultado] = await pool.query(
 		'UPDATE produtos SET imagem = ? WHERE idproduto = ?',
-		[nomeDaImagem, idproduto]
+		[imagem, idproduto]
 	)
 
 	return resultado
@@ -70,4 +71,65 @@ export async function listarOpcionaisDoProduto(idproduto: number) {
 	)
 
 	return linhas
+}
+
+// ... (suas funções anteriores de criar e listar produtos)
+
+// NOVO: Atualizar Produto
+export async function atualizarProdutoNoBanco(idproduto: number, dados: any) {
+	// 1. Atualiza os dados básicos na tabela 'produtos'
+	let query =
+		'UPDATE produtos SET idcategoria = ?, nome = ?, descricao = ?, valor = ?, imagem = ?'
+	let params: any[] = [
+		dados.idcategoria,
+		dados.nome,
+		dados.descricao,
+		dados.valor,
+		dados.imagem,
+	]
+
+	// Se o usuário mandou uma imagem nova, a gente atualiza. Se não, deixa a velha lá!
+	if (dados.imagem) {
+		query += ', imagem = ?'
+		params.push(dados.imagem)
+	}
+
+	query += ' WHERE idproduto = ?'
+	params.push(idproduto)
+
+	await pool.query(query, params)
+
+	// 2. Atualiza os Opcionais na tabela 'produtoopcional'
+	// Primeiro a gente "vassoura" os antigos para não duplicar
+	await pool.query('DELETE FROM produtoopcional WHERE idproduto = ?', [
+		idproduto,
+	])
+
+	// Depois a gente insere os novos que vieram do array (se vieram)
+	if (dados.opcionais && dados.opcionais.length > 0) {
+		for (const idopcional of dados.opcionais) {
+			await pool.query(
+				'INSERT INTO produtoopcional (idproduto, idopcional) VALUES (?, ?)',
+				[idproduto, idopcional]
+			)
+		}
+	}
+
+	return true
+}
+
+// NOVO: Deletar Produto
+export async function deletarProdutoNoBanco(idproduto: number) {
+	// 1. Apaga os vínculos de opcionais na tabela 'produtoopcional' primeiro (Regra Cascata!)
+	await pool.query('DELETE FROM produtoopcional WHERE idproduto = ?', [
+		idproduto,
+	])
+
+	// 2. Apaga o produto na tabela 'produtos'
+	const [resultado] = await pool.query(
+		'DELETE FROM produtos WHERE idproduto = ?',
+		[idproduto]
+	)
+
+	return resultado
 }

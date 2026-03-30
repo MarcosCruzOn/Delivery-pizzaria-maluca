@@ -24,3 +24,25 @@ export async function listarCategoriasDoBanco() {
 	)
 	return linhas
 }
+
+export async function deletarCategoriaNoBanco(idcategoria: number) {
+	// 1. Deletamos os vínculos dos opcionais (se houver) dos produtos que pertencem a essa categoria
+	await pool.query(
+		`DELETE FROM produtoopcional 
+     WHERE idproduto IN (SELECT idproduto FROM produtos WHERE idcategoria = ?)`,
+		[idcategoria]
+	)
+
+	// 2. Deletamos os produtos filhos dessa categoria
+	await pool.query('DELETE FROM produtos WHERE idcategoria = ?', [
+		idcategoria,
+	])
+
+	// 3. Finalmente, deletamos a categoria pai
+	const [resultado] = await pool.query(
+		'DELETE FROM categorias WHERE idcategoria = ?',
+		[idcategoria]
+	)
+
+	return resultado
+}

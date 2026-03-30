@@ -5,6 +5,8 @@ import {
 	atualizarImagemDoProduto,
 	vincularOpcionalAoProduto,
 	listarOpcionaisDoProduto,
+	atualizarProdutoNoBanco,
+	deletarProdutoNoBanco,
 } from '../services/products.services.js'
 
 // Controller para o POST (Criar Produto)
@@ -13,21 +15,29 @@ export async function createProductController(
 	res: Response
 ): Promise<Response | void> {
 	try {
-		const { idcategoria, nome, descricao, valor, ordem } = req.body
+		const { idcategoria, nome, descricao, valor, imagem, ordem } = req.body
 
 		// Validação: Verifica se os campos obrigatórios foram enviados
 		if (
 			!idcategoria ||
 			!nome ||
 			valor === undefined ||
+			!imagem === undefined ||
 			ordem === undefined
 		) {
 			return res.status(400).json({
-				erro: 'Preencha categoria, nome, valor e ordem do produto!',
+				erro: 'Preencha categoria, nome, valor, imagem e ordem do produto!',
 			})
 		}
 
-		await criarProdutoNoBanco(idcategoria, nome, descricao, valor, ordem)
+		await criarProdutoNoBanco(
+			idcategoria,
+			nome,
+			descricao,
+			valor,
+			imagem,
+			ordem
+		)
 
 		return res
 			.status(201)
@@ -133,5 +143,46 @@ export async function listProductOpcionaisController(
 		return res
 			.status(500)
 			.json({ erro: 'Erro interno ao listar os opcionais.' })
+	}
+}
+
+export async function updateProductController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		const { idproduto } = req.params
+		const dados = req.body
+
+		if (!dados.nome || !dados.valor || !dados.idcategoria) {
+			return res
+				.status(400)
+				.json({ erro: 'Nome, valor e categoria são obrigatórios!' })
+		}
+
+		await atualizarProdutoNoBanco(Number(idproduto), dados)
+		return res.json({ mensagem: 'Produto atualizado com sucesso! 🍕' })
+	} catch (erro) {
+		console.error('Erro ao atualizar produto:', erro)
+		return res
+			.status(500)
+			.json({ erro: 'Erro interno ao atualizar o produto.' })
+	}
+}
+
+export async function deleteProductController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		const { idproduto } = req.params
+
+		await deletarProdutoNoBanco(Number(idproduto))
+		return res.json({ mensagem: 'Produto apagado com sucesso! 🗑️' })
+	} catch (erro) {
+		console.error('Erro ao deletar produto:', erro)
+		return res.status(500).json({
+			erro: 'Não foi possível apagar o produto. Talvez ele já esteja em um pedido finalizado!',
+		})
 	}
 }
