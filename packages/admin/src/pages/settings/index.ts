@@ -1,9 +1,12 @@
 import { AdminLayout } from '../../components/AdminLayout/AdminLayout'
+// Importando o nosso Garçom!
+import { getPagamentos, togglePagamento } from '../../api/pagamentos'
 
 type Tab = 'delivery' | 'taxa' | 'pagamento'
 type FeeMode = 'sem' | 'unica' | 'distancia'
 
-export function renderSettings(root: HTMLElement) {
+// Transformamos em async para podermos buscar do banco
+export async function renderSettings(root: HTMLElement) {
 	root.innerHTML = AdminLayout({
 		title: 'Configurações',
 		iconClass: 'fas fa-cog',
@@ -26,18 +29,13 @@ export function renderSettings(root: HTMLElement) {
             </div>
           </div>
 
-          <!-- DELIVERY / RETIRADA -->
           <div class="col-12 mt-5 hidden" id="delivery-retirada">
             <p class="title-categoria mb-0">
               <b>Selecione as opções de entrega da sua loja</b>
             </p>
-
-            <!-- Retirada -->
             <div class="container-group mb-3">
               <div class="card card-address cursor-default mt-3">
-                <div class="img-icon-details">
-                  <i class="fas fa-box"></i>
-                </div>
+                <div class="img-icon-details"><i class="fas fa-box"></i></div>
                 <div class="infos config">
                   <p class="name mb-1"><b>Retirada</b></p>
                   <label class="switch">
@@ -46,7 +44,6 @@ export function renderSettings(root: HTMLElement) {
                     <span class="text mb-0" id="txtRetirada">Desligado</span>
                   </label>
                 </div>
-
                 <div class="tempo disabled" id="tempoRetirada">
                   <div class="form-group">
                     <label><b>Tempo mínimo retirada (min)</b></label>
@@ -57,19 +54,15 @@ export function renderSettings(root: HTMLElement) {
                     <input type="number" class="form-control" placeholder="40" disabled />
                   </div>
                 </div>
-
                 <a class="btn btn-yellow btn-sm ms-4 disabled" id="btnSalvarRetirada">
                   <i class="fas fa-check"></i>&nbsp; Salvar
                 </a>
               </div>
             </div>
 
-            <!-- Delivery -->
             <div class="container-group mb-3">
               <div class="card card-address cursor-default mt-3">
-                <div class="img-icon-details">
-                  <i class="fas fa-motorcycle"></i>
-                </div>
+                <div class="img-icon-details"><i class="fas fa-motorcycle"></i></div>
                 <div class="infos config">
                   <p class="name mb-1"><b>Delivery</b></p>
                   <label class="switch">
@@ -82,157 +75,90 @@ export function renderSettings(root: HTMLElement) {
             </div>
           </div>
 
-          <!-- TAXA ENTREGA -->
           <div class="col-12 mt-5 hidden" id="taxa-entrega">
-            <p class="title-categoria mb-0">
-              <b>Selecione as opções de taxas de entrega</b>
-            </p>
-
-            <div class="container-group inline mb-3" id="feeModes">
-              <div class="card mt-3">
-                <div class="group-select">
-                  <div class="checks">
-                    <label class="container-check">
-                      <input type="checkbox" data-fee="sem" />
-                      <span class="checkmark"></span>
-                      Sem taxa
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card mt-3">
-                <div class="group-select">
-                  <div class="checks">
-                    <label class="container-check">
-                      <input type="checkbox" data-fee="unica" />
-                      <span class="checkmark"></span>
-                      Taxa única
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card mt-3">
-                <div class="group-select">
-                  <div class="checks">
-                    <label class="container-check">
-                      <input type="checkbox" data-fee="distancia" />
-                      <span class="checkmark"></span>
-                      Taxa por distância
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="container-group mb-3 hidden" id="container-sem-taxa">
-              <div class="card card-address cursor-default mt-4">
-                <div class="infos">
-                  <p class="name mb-0"><b>Sem taxa</b></p>
-                  <span class="text mb-0">Nenhuma taxa será cobrada</span>
-                </div>
-                <a class="btn btn-yellow btn-sm ms-4">
-                  <i class="fas fa-check"></i>&nbsp; Salvar
-                </a>
-              </div>
-            </div>
-
-            <div class="container-group mb-3 hidden" id="container-taxa-unica">
-              <div class="card card-address cursor-default mt-4">
-                <div class="infos">
-                  <p class="name mb-1"><b>Taxa única</b></p>
-                  <div class="form-group">
-                    <label><b>Valor da taxa (R$)</b></label>
-                    <input type="number" class="form-control" placeholder="10" />
-                  </div>
-                </div>
-                <a class="btn btn-yellow btn-sm ms-4">
-                  <i class="fas fa-check"></i>&nbsp; Salvar
-                </a>
-              </div>
-            </div>
-
-            <div class="container-group mb-3 hidden" id="container-taxa-distancia">
-              <div class="card card-address cursor-default mt-4">
-                <div class="infos">
-                  <p class="name mb-1"><b>Taxa por distância</b></p>
-                  <span class="text mb-0">Configurar por faixa de KM (vamos fazer depois)</span>
-                </div>
-                <a class="btn btn-yellow btn-sm ms-4">
-                  <i class="fas fa-check"></i>&nbsp; Salvar
-                </a>
-              </div>
-            </div>
+             <p class="title-categoria mb-0"><b>Selecione as opções de taxas de entrega</b></p>
+             <p class="text-muted mt-2">Em breve conectaremos ao banco de dados...</p>
           </div>
 
-          <!-- FORMAS DE PAGAMENTO -->
           <div class="col-12 mt-5" id="forma-pagamento">
-            <p class="title-categoria mb-0">
-              <b>Selecione as formas de <b class="color-primary">pagamento na entrega</b></b>
-            </p>
-
-            <div class="container-group mb-3">
-              <div class="card card-address cursor-default mt-3">
-                <div class="img-icon-details">
-                  <i class="fas fa-dollar-sign"></i>
-                </div>
-                <div class="infos">
-                  <p class="name mb-1"><b>Pix</b></p>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" />
-                  <span class="slider round"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="container-group mb-3">
-              <div class="card card-address cursor-default mt-3">
-                <div class="img-icon-details">
-                  <i class="fas fa-money-bill"></i>
-                </div>
-                <div class="infos">
-                  <p class="name mb-1"><b>Dinheiro</b></p>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" checked />
-                  <span class="slider round"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="container-group mb-3">
-              <div class="card card-address cursor-default mt-3">
-                <div class="img-icon-details">
-                  <i class="fas fa-credit-card"></i>
-                </div>
-                <div class="infos">
-                  <p class="name mb-1"><b>Cartão</b></p>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" />
-                  <span class="slider round"></span>
-                </label>
-              </div>
-            </div>
-          </div>
+             </div>
 
         </div>
       </div>
     `,
 	})
 
-	// abas
 	setupTabs(root)
-
-	// toggles simples (só texto + “disabled” visual)
 	setupDeliveryToggles(root)
+	// setupFeeModes(root) // Descomente quando formos fazer as taxas
 
-	// taxa de entrega (sem/unica/distancia)
-	setupFeeModes(root)
+	// 🔥 A MAGIA ACONTECE AQUI
+	await carregarE_RenderizarPagamentos(root)
 }
 
+// =====================================
+// FUNÇÕES DE LÓGICA
+// =====================================
+
+async function carregarE_RenderizarPagamentos(root: HTMLElement) {
+	const container = root.querySelector('#forma-pagamento')
+	if (!container) return
+
+	try {
+		// 1. Busca os dados reais do banco
+		const pagamentos = await getPagamentos()
+
+		// 2. Monta o HTML com os dados do banco
+		const htmlPagamentos = pagamentos
+			.map(
+				(p: any) => `
+			<div class="container-group mb-3">
+              <div class="card card-address cursor-default mt-3">
+                <div class="img-icon-details">
+                  <i class="fas fa-coins"></i>
+                </div>
+                <div class="infos">
+                  <p class="name mb-1"><b>${p.nome}</b></p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" class="toggle-pagamento-checkbox" data-id="${p.idpagamentos}" ${p.ATIVO === 1 ? 'checked' : ''} />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+		`
+			)
+			.join('')
+
+		container.innerHTML = `
+			<p class="title-categoria mb-0">
+              <b>Selecione as formas de <b class="color-primary">pagamento na entrega</b></b>
+            </p>
+			${htmlPagamentos}
+		`
+
+		// 3. Adiciona o ouvinte de cliques para salvar sozinho no banco
+		container.querySelectorAll('.toggle-pagamento-checkbox').forEach((checkbox) => {
+			checkbox.addEventListener('change', async (e) => {
+				const target = e.target as HTMLInputElement
+				const id = Number(target.dataset.id)
+				const estaLigado = target.checked
+
+				try {
+					await togglePagamento(id, estaLigado)
+				} catch (err) {
+					alert('Erro ao salvar no banco!')
+					target.checked = !estaLigado // Se der erro no banco, a chavinha volta ao normal!
+				}
+			})
+		})
+	} catch (error) {
+		console.error(error)
+		container.innerHTML = `<p class="text-danger mt-4">Erro ao carregar pagamentos do servidor.</p>`
+	}
+}
+
+// ... (Mantenha as suas funções setupTabs e setupDeliveryToggles originais aqui embaixo!) ...
 function setupTabs(root: HTMLElement) {
 	const tabs = root.querySelector('#tabs-config')!
 	const delivery = root.querySelector<HTMLElement>('#delivery-retirada')!
@@ -256,7 +182,6 @@ function setupTabs(root: HTMLElement) {
 		show(tab)
 	})
 
-	// começa em pagamento (igual seu HTML)
 	show('pagamento')
 }
 
@@ -264,8 +189,7 @@ function setupDeliveryToggles(root: HTMLElement) {
 	const retirada = root.querySelector<HTMLInputElement>('#toggleRetirada')!
 	const txtRetirada = root.querySelector<HTMLElement>('#txtRetirada')!
 	const tempoRetirada = root.querySelector<HTMLElement>('#tempoRetirada')!
-	const btnSalvarRetirada =
-		root.querySelector<HTMLElement>('#btnSalvarRetirada')!
+	const btnSalvarRetirada = root.querySelector<HTMLElement>('#btnSalvarRetirada')!
 
 	function applyRetiradaUI() {
 		const on = retirada.checked
@@ -285,38 +209,4 @@ function setupDeliveryToggles(root: HTMLElement) {
 	delivery.addEventListener('change', () => {
 		txtDelivery.textContent = delivery.checked ? 'Ligado' : 'Desligado'
 	})
-}
-
-function setupFeeModes(root: HTMLElement) {
-	const feeBox = root.querySelector('#feeModes')!
-	const inputs = Array.from(
-		feeBox.querySelectorAll<HTMLInputElement>(
-			'input[type="checkbox"][data-fee]'
-		)
-	)
-
-	const sem = root.querySelector<HTMLElement>('#container-sem-taxa')!
-	const unica = root.querySelector<HTMLElement>('#container-taxa-unica')!
-	const distancia = root.querySelector<HTMLElement>(
-		'#container-taxa-distancia'
-	)!
-
-	function showFee(mode: FeeMode | null) {
-		sem.classList.toggle('hidden', mode !== 'sem')
-		unica.classList.toggle('hidden', mode !== 'unica')
-		distancia.classList.toggle('hidden', mode !== 'distancia')
-	}
-
-	feeBox.addEventListener('change', (e) => {
-		const input = e.target as HTMLInputElement
-		const mode = input.getAttribute('data-fee') as FeeMode | null
-		if (!mode) return
-
-		// comportamento de “radio”: marca só 1
-		inputs.forEach((i) => (i.checked = i === input ? input.checked : false))
-
-		showFee(input.checked ? mode : null)
-	})
-
-	showFee(null)
 }

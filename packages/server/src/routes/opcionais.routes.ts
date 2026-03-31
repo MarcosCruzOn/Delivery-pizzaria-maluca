@@ -12,40 +12,21 @@ import {
 import { verificarToken } from '../middlewares/auth.js'
 
 const opcionaisRoutes = Router()
-opcionaisRoutes.post(
-	'/admin/opcionais',
-	verificarToken,
-	createOpcionalController
-)
+opcionaisRoutes.post('/admin/opcionais', verificarToken, createOpcionalController)
 opcionaisRoutes.get('/admin/opcionais', listOpcionaisController)
 opcionaisRoutes.post(
 	'/admin/opcionais/:idopcional/itens',
 	verificarToken,
 	createOpcionalItemController
 )
-opcionaisRoutes.get(
-	'/admin/opcionais/:idopcional/itens',
-	listOpcionalItemsController
-)
+opcionaisRoutes.get('/admin/opcionais/:idopcional/itens', listOpcionalItemsController)
 
 // Rotas do GRUPO
-opcionaisRoutes.put(
-	'/admin/opcionais/:id',
-	verificarToken,
-	updateOpcionalController
-)
-opcionaisRoutes.delete(
-	'/admin/opcionais/:id',
-	verificarToken,
-	deleteOpcionalController
-)
+opcionaisRoutes.put('/admin/opcionais/:id', verificarToken, updateOpcionalController)
+opcionaisRoutes.delete('/admin/opcionais/:id', verificarToken, deleteOpcionalController)
 
 // Rotas do ITEM
-opcionaisRoutes.put(
-	'/admin/opcionais/itens/:idItem',
-	verificarToken,
-	updateItemOpcionalController
-)
+opcionaisRoutes.put('/admin/opcionais/itens/:idItem', verificarToken, updateItemOpcionalController)
 opcionaisRoutes.delete(
 	'/admin/opcionais/itens/:idItem',
 	verificarToken,

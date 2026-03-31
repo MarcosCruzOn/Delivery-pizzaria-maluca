@@ -18,26 +18,11 @@ productRoutes.patch(
 	verificarToken,
 	updateProductImageController
 )
-productRoutes.post(
-	'/admin/products/:idproduto/opcionais',
-	verificarToken,
-	linkOpcionalController
-)
-productRoutes.get(
-	'/admin/products/:idproduto/opcionais',
-	listProductOpcionaisController
-)
+productRoutes.post('/admin/products/:idproduto/opcionais', verificarToken, linkOpcionalController)
+productRoutes.get('/admin/products/:idproduto/opcionais', listProductOpcionaisController)
 
 // NOVO: Atualizar e Deletar
-productRoutes.put(
-	'/admin/products/:idproduto',
-	verificarToken,
-	updateProductController
-)
-productRoutes.delete(
-	'/admin/products/:idproduto',
-	verificarToken,
-	deleteProductController
-)
+productRoutes.put('/admin/products/:idproduto', verificarToken, updateProductController)
+productRoutes.delete('/admin/products/:idproduto', verificarToken, deleteProductController)
 
 export default productRoutes

@@ -14,19 +14,11 @@ import {
 import { verificarToken } from '../middlewares/auth.js'
 
 const settingsRoutes = Router()
-settingsRoutes.post(
-	'/admin/pagamentos',
-	verificarToken,
-	createPaymentController
-)
+settingsRoutes.post('/admin/pagamentos', verificarToken, createPaymentController)
 settingsRoutes.get('/pagamentos', listPaymentsController)
 settingsRoutes.post('/admin/entregas', verificarToken, createDeliveryController)
 settingsRoutes.get('/entregas', listDeliveriesController)
-settingsRoutes.post(
-	'/admin/status',
-	verificarToken,
-	createOrderStatusController
-)
+settingsRoutes.post('/admin/status', verificarToken, createOrderStatusController)
 settingsRoutes.get('/status', listOrderStatusController)
 settingsRoutes.post('/admin/horarios', verificarToken, createHorarioController)
 settingsRoutes.get('/horarios', listHorariosController)
