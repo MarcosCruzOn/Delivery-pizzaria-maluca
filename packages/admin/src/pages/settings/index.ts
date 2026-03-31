@@ -1,7 +1,7 @@
 import { AdminLayout } from '../../components/AdminLayout/AdminLayout'
 // Importando o nosso Garçom!
 import { getPagamentos, togglePagamento } from '../../api/pagamentos'
-import { getTaxas, updateTaxa } from '../../api/taxas'
+import { getTaxas, updateTaxa, addFaixaDistancia, removeFaixaDistancia } from '../../api/taxas'
 
 type Tab = 'delivery' | 'taxa' | 'pagamento'
 type FeeMode = 'sem' | 'unica' | 'distancia'
@@ -127,9 +127,29 @@ export async function renderSettings(root: HTMLElement) {
                     </label>
                   </div>
                 </div>
-                <div id="container-taxa-distancia" class="mt-3 hidden pl-3">
-                  <p class="text-muted mb-2">As taxas serão calculadas com base na distância (km).</p>
-                  <a href="#" class="btn btn-yellow btn-sm"><i class="fas fa-check"></i> Salvar</a>
+               <div id="container-taxa-distancia" class="mt-3 hidden pl-3">
+                  <p class="text-muted mb-3">As taxas serão calculadas com base na distância (km).</p>
+                  
+                  <div class="card p-3 mb-3 border">
+                    <h6 class="mb-2 text-primary" style="font-size: 0.9em;"><i class="fas fa-plus"></i> Adicionar Faixa de KM</h6>
+                    <div class="d-flex gap-2">
+                        <div style="flex:1">
+                            <label class="mb-0" style="font-size: 0.8em"><b>Até KM</b></label>
+                            <input type="number" id="inputDistanciaKm" class="form-control form-control-sm" placeholder="Ex: 5">
+                        </div>
+                        <div style="flex:1">
+                            <label class="mb-0" style="font-size: 0.8em"><b>Valor (R$)</b></label>
+                            <input type="number" step="0.01" id="inputDistanciaValor" class="form-control form-control-sm" placeholder="Ex: 8.50">
+                        </div>
+                        <div class="d-flex align-items-end">
+                            <button class="btn btn-yellow btn-sm w-100" id="btnAddFaixaKm">Adicionar</button>
+                        </div>
+                    </div>
+                  </div>
+
+                  <div id="lista-faixas-km" class="mb-3"></div>
+
+                  <a href="#" class="btn btn-primary btn-sm mt-2" id="btnSalvarDistancia"><i class="fas fa-check"></i> Ativar Modo por Distância</a>
                 </div>
               </div>
             </div>
@@ -216,33 +236,51 @@ async function carregarE_RenderizarPagamentos(root: HTMLElement) {
 
 async function carregarE_RenderizarTaxas(root: HTMLElement) {
 	try {
-		// 1. Busca os dados reais do banco
 		const taxas = await getTaxas()
 
-		// 2. Prepara os IDs para sabermos quem é quem (1: Sem Taxa, 2: Única, 3: Distância)
-		let idSemTaxa = 0,
-			idTaxaUnica = 0,
-			idTaxaDistancia = 0
+		// Filtra só as faixas de distância para desenharmos na tela
+		const faixasDistancia = taxas.filter(
+			(t: any) => t.idtaxaentregatipo === 3 && t.distancia !== null
+		)
+		const containerFaixas = root.querySelector('#lista-faixas-km')
+
+		if (containerFaixas) {
+			containerFaixas.innerHTML = faixasDistancia
+				.map(
+					(f: any) => `
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>Até <b>${f.distancia} km</b> <i class="fas fa-arrow-right mx-2 text-muted"></i> R$ ${Number(f.valor).toFixed(2)}</span>
+                    <button class="btn btn-link text-danger p-0 btn-remover-faixa" data-id="${f.idtaxaentrega}"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `
+				)
+				.join('')
+
+			// Eventos de remover faixa
+			containerFaixas.querySelectorAll('.btn-remover-faixa').forEach((btn) => {
+				btn.addEventListener('click', async (e) => {
+					e.preventDefault()
+					if (confirm('Remover esta faixa de KM?')) {
+						const idFaixa = Number((e.currentTarget as HTMLElement).dataset.id)
+						await removeFaixaDistancia(idFaixa)
+						location.reload()
+					}
+				})
+			})
+		}
 
 		taxas.forEach((t: any) => {
-			if (t.idtaxaentregatipo === 1) idSemTaxa = t.idtaxaentrega
 			if (t.idtaxaentregatipo === 2) {
-				idTaxaUnica = t.idtaxaentrega
-				// Preenche o valor que veio do banco no input de Taxa Única
 				const inputValor = root.querySelector(
 					'#container-taxa-unica input'
 				) as HTMLInputElement
 				if (inputValor) inputValor.value = Number(t.valor).toFixed(2)
 			}
-			if (t.idtaxaentregatipo === 3) idTaxaDistancia = t.idtaxaentrega
 
-			// 3. Marca no HTML qual é a taxa que está ativa no momento
 			if (t.ATIVO === 1) {
 				let modoAtivo: FeeMode = 'sem'
 				if (t.idtaxaentregatipo === 2) modoAtivo = 'unica'
 				if (t.idtaxaentregatipo === 3) modoAtivo = 'distancia'
-
-				// Simula um clique no checkbox correspondente para abrir a aba certa
 				const checkboxTarget = root.querySelector(
 					`input[data-fee="${modoAtivo}"]`
 				) as HTMLInputElement
@@ -250,38 +288,59 @@ async function carregarE_RenderizarTaxas(root: HTMLElement) {
 			}
 		})
 
-		// 4. Configura os botões de SALVAR!
-		const btnSalvarSemTaxa = root.querySelector('#container-sem-taxa .btn-yellow')
-		btnSalvarSemTaxa?.addEventListener('click', async (e) => {
+		// Evento de Adicionar Faixa
+		root.querySelector('#btnAddFaixaKm')?.addEventListener('click', async (e) => {
 			e.preventDefault()
+			const km = Number((root.querySelector('#inputDistanciaKm') as HTMLInputElement).value)
+			const valor = Number(
+				(root.querySelector('#inputDistanciaValor') as HTMLInputElement).value
+			)
+			if (!km) return alert('Informe até qual KM esta taxa se aplica!')
+
 			try {
-				await updateTaxa(idSemTaxa, 0)
-				alert('Configuração salva: Sem Taxa de Entrega!')
+				await addFaixaDistancia(km, valor)
+				location.reload()
 			} catch (err) {
-				alert('Erro ao salvar!')
+				alert('Erro ao adicionar faixa!')
 			}
 		})
 
-		const btnSalvarTaxaUnica = root.querySelector('#container-taxa-unica .btn-yellow')
-		btnSalvarTaxaUnica?.addEventListener('click', async (e) => {
-			e.preventDefault()
-			const valorDigitado = (
-				root.querySelector('#container-taxa-unica input') as HTMLInputElement
-			).value
-			try {
-				await updateTaxa(idTaxaUnica, Number(valorDigitado))
-				alert('Configuração salva: Taxa Única atualizada!')
-			} catch (err) {
-				alert('Erro ao salvar!')
+		// Os 3 botões mestre de Salvar/Ativar Modo!
+		// Agora passamos o TIPO (1, 2 ou 3) direto!
+		root.querySelector('#container-sem-taxa .btn-yellow')?.addEventListener(
+			'click',
+			async (e) => {
+				e.preventDefault()
+				try {
+					await updateTaxa(1, 0)
+					alert('Modo Sem Taxa ativado!')
+				} catch (err) {
+					alert('Erro ao salvar!')
+				}
 			}
-		})
+		)
 
-		const btnSalvarDistancia = root.querySelector('#container-taxa-distancia .btn-yellow')
-		btnSalvarDistancia?.addEventListener('click', async (e) => {
+		root.querySelector('#container-taxa-unica .btn-yellow')?.addEventListener(
+			'click',
+			async (e) => {
+				e.preventDefault()
+				const valorDigitado = (
+					root.querySelector('#container-taxa-unica input') as HTMLInputElement
+				).value
+				try {
+					await updateTaxa(2, Number(valorDigitado))
+					alert('Modo Taxa Única ativado!')
+				} catch (err) {
+					alert('Erro ao salvar!')
+				}
+			}
+		)
+
+		root.querySelector('#btnSalvarDistancia')?.addEventListener('click', async (e) => {
 			e.preventDefault()
 			try {
-				await updateTaxa(idTaxaDistancia, 0) // Depois no futuro passaremos a tabela de distâncias aqui!
-				alert('Configuração salva: Modo por Distância ativado!')
+				await updateTaxa(3, 0)
+				alert('Modo por Distância ativado!')
 			} catch (err) {
 				alert('Erro ao salvar!')
 			}
