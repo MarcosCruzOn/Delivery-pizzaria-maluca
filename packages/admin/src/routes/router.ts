@@ -2,6 +2,7 @@ import { renderLogin } from '../pages/login' // Importa a tela de login que arru
 import { renderCompany } from '../pages/company'
 import { renderDashboard } from '../pages/dashboard'
 import { renderMenuAdmin } from '../pages/menu'
+import { renderSettings } from '../pages/settings'
 
 // Exportamos a função 'router' que o main.ts está desesperado procurando!
 export function router() {
@@ -37,6 +38,9 @@ export function router() {
 			break
 		case '#/menu':
 			renderMenuAdmin(appRoot)
+			break
+		case '#/settings':
+			renderSettings(appRoot)
 			break
 
 		default:
