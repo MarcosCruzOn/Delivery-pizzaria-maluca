@@ -2,6 +2,7 @@ import { AdminLayout } from '../../components/AdminLayout/AdminLayout'
 // Importando o nosso Garçom!
 import { getPagamentos, togglePagamento } from '../../api/pagamentos'
 import { getTaxas, updateTaxa, addFaixaDistancia, removeFaixaDistancia } from '../../api/taxas'
+import { getDeliveryTypes, updateDeliveryType } from '../../api/delivery'
 
 type Tab = 'delivery' | 'taxa' | 'pagamento'
 type FeeMode = 'sem' | 'unica' | 'distancia'
@@ -13,27 +14,26 @@ export async function renderSettings(root: HTMLElement) {
 		iconClass: 'fas fa-cog',
 		active: 'settings',
 		content: `
-      <div class="container">
-        <div class="row">
+		<div class="container">
+			<div class="row">
 
-          <div class="col-12">
-            <div class="menus-config" id="tabs-config">
-              <a href="#" class="btn btn-white btn-sm" data-tab="delivery">
-                <i class="fas fa-shopping-bag"></i> Delivery e retirada
-              </a>
-              <a href="#" class="btn btn-white btn-sm" data-tab="taxa">
-                <i class="fas fa-motorcycle"></i> Taxa de entrega
-              </a>
-              <a href="#" class="btn btn-white btn-sm active" data-tab="pagamento">
-                <i class="fas fa-coins"></i> Formas de pagamento
-              </a>
-            </div>
-          </div>
+			<div class="col-12">
+				<div class="menus-config" id="tabs-config">
+				<a href="#" class="btn btn-white btn-sm" data-tab="delivery">
+					<i class="fas fa-shopping-bag"></i> Delivery e retirada
+				</a>
+				<a href="#" class="btn btn-white btn-sm" data-tab="taxa">
+					<i class="fas fa-motorcycle"></i> Taxa de entrega
+				</a>
+				<a href="#" class="btn btn-white btn-sm active" data-tab="pagamento">
+					<i class="fas fa-coins"></i> Formas de pagamento
+				</a>
+				</div>
+			</div>
 
-          <div class="col-12 mt-5 hidden" id="delivery-retirada">
-            <p class="title-categoria mb-0">
-              <b>Selecione as opções de entrega da sua loja</b>
-            </p>
+			<div class="col-12 mt-5 hidden" id="delivery-retirada">
+            <p class="title-categoria mb-0"><b>Selecione as opções de entrega da sua loja</b></p>
+            
             <div class="container-group mb-3">
               <div class="card card-address cursor-default mt-3">
                 <div class="img-icon-details"><i class="fas fa-box"></i></div>
@@ -47,12 +47,12 @@ export async function renderSettings(root: HTMLElement) {
                 </div>
                 <div class="tempo disabled" id="tempoRetirada">
                   <div class="form-group">
-                    <label><b>Tempo mínimo retirada (min)</b></label>
-                    <input type="number" class="form-control" placeholder="20" disabled />
+                    <label><b>Tempo mínimo (min)</b></label>
+                    <input type="number" id="minRetirada" class="form-control" placeholder="20" disabled />
                   </div>
                   <div class="form-group">
-                    <label><b>Tempo máximo retirada (min)</b></label>
-                    <input type="number" class="form-control" placeholder="40" disabled />
+                    <label><b>Tempo máximo (min)</b></label>
+                    <input type="number" id="maxRetirada" class="form-control" placeholder="40" disabled />
                   </div>
                 </div>
                 <a class="btn btn-yellow btn-sm ms-4 disabled" id="btnSalvarRetirada">
@@ -67,47 +67,65 @@ export async function renderSettings(root: HTMLElement) {
                 <div class="infos config">
                   <p class="name mb-1"><b>Delivery</b></p>
                   <label class="switch">
-                    <input id="toggleDelivery" type="checkbox" checked />
+                    <input id="toggleDelivery" type="checkbox" />
                     <span class="slider round"></span>
-                    <span class="text mb-0" id="txtDelivery">Ligado</span>
+                    <span class="text mb-0" id="txtDelivery">Desligado</span>
                   </label>
                 </div>
+                <div class="tempo disabled" id="tempoDelivery">
+                  <div class="form-group">
+                    <label><b>Tempo mínimo (min)</b></label>
+                    <input type="number" id="minDelivery" class="form-control" placeholder="40" disabled />
+                  </div>
+                  <div class="form-group">
+                    <label><b>Tempo máximo (min)</b></label>
+                    <input type="number" id="maxDelivery" class="form-control" placeholder="60" disabled />
+                  </div>
+                </div>
+                <a class="btn btn-yellow btn-sm ms-4 disabled" id="btnSalvarDelivery">
+                  <i class="fas fa-check"></i>&nbsp; Salvar
+                </a>
               </div>
             </div>
           </div>
 
-          <div class="col-12 mt-5 hidden" id="taxa-entrega">
-            <p class="title-categoria mb-0">
-              <b>Selecione as opções de taxas de entrega</b>
-            </p>
+          	<div class="col-12 mt-5 hidden" id="taxa-entrega">
+				<p class="title-categoria mb-0">
+					<b>Selecione as opções de taxas de entrega</b>
+				</p>
 
-            <div id="feeModes">
-              <div class="container-group mb-3 mt-4">
-                <div class="card card-address cursor-default">
-                  <div class="infos config">
-                    <p class="name mb-1"><b>Sem taxa de entrega</b></p>
-                    <label class="switch">
-                      <input type="checkbox" data-fee="sem" />
-                      <span class="slider round"></span>
-                    </label>
-                  </div>
-                </div>
-                <div id="container-sem-taxa" class="mt-3 hidden pl-3">
-                  <p class="text-muted mb-2">A entrega será gratuita para todos os clientes.</p>
-                  <a href="#" class="btn btn-yellow btn-sm"><i class="fas fa-check"></i> Salvar</a>
-                </div>
-              </div>
+           		<div id="feeModes">
+					<div class="container-group mb-3 mt-4">
+						<div class="card card-address cursor-default">
+							<div class="infos config">
+								<p class="name mb-1">
+									<b>Sem taxa de entrega</b
+								</p>
+								<label class="switch">
+									<input type="checkbox" data-fee="sem" />
+									<span class="slider round"></span>
+								</label>
+							</div>
+						</div>
+						<div id="container-sem-taxa" class="mt-3 hidden pl-3">
+							<p class="text-muted mb-2">A entrega será gratuita para todos os clientes.
+							</p>
+							<a href="#" class="btn btn-yellow btn-sm">
+								<i class="fas fa-check"></i> Salvar
+							</a>
+						</div>
+					</div>
 
-              <div class="container-group mb-3">
-                <div class="card card-address cursor-default mt-3">
-                  <div class="infos config">
-                    <p class="name mb-1"><b>Taxa única</b></p>
-                    <label class="switch">
-                      <input type="checkbox" data-fee="unica" />
-                      <span class="slider round"></span>
-                    </label>
-                  </div>
-                </div>
+					<div class="container-group mb-3">
+						<div class="card card-address cursor-default mt-3">
+							<div class="infos config">
+								<p class="name mb-1"><b>Taxa única</b></p>
+								<label class="switch">
+									<input type="checkbox" data-fee="unica" />
+									<span class="slider round"></span>
+								</label>
+							</div>
+						</div>
                 <div id="container-taxa-unica" class="mt-3 hidden pl-3">
                   <div class="form-group mb-2" style="max-width: 200px;">
                     <label><b>Valor da taxa (R$)</b></label>
@@ -170,6 +188,7 @@ export async function renderSettings(root: HTMLElement) {
 	// 🔥 A MAGIA ACONTECE AQUI
 	await carregarE_RenderizarPagamentos(root)
 	await carregarE_RenderizarTaxas(root)
+	await carregarE_RenderizarDelivery(root)
 }
 
 // =====================================
@@ -347,6 +366,103 @@ async function carregarE_RenderizarTaxas(root: HTMLElement) {
 		})
 	} catch (error) {
 		console.error('Erro ao carregar taxas', error)
+	}
+}
+
+async function carregarE_RenderizarDelivery(root: HTMLElement) {
+	try {
+		const entregas = await getDeliveryTypes()
+		let idDelivery = 1 // Valores padrão, mas vamos sobrescrever com os reais do banco
+		let idRetirada = 2
+
+		// Elementos da Tela
+		const chkRetirada = root.querySelector('#toggleRetirada') as HTMLInputElement
+		const txtRetirada = root.querySelector('#txtRetirada') as HTMLElement
+		const divTempoRetirada = root.querySelector('#tempoRetirada') as HTMLElement
+		const btnSalvarRetirada = root.querySelector('#btnSalvarRetirada') as HTMLElement
+		const minRetirada = root.querySelector('#minRetirada') as HTMLInputElement
+		const maxRetirada = root.querySelector('#maxRetirada') as HTMLInputElement
+
+		const chkDelivery = root.querySelector('#toggleDelivery') as HTMLInputElement
+		const txtDelivery = root.querySelector('#txtDelivery') as HTMLElement
+		const divTempoDelivery = root.querySelector('#tempoDelivery') as HTMLElement
+		const btnSalvarDelivery = root.querySelector('#btnSalvarDelivery') as HTMLElement
+		const minDelivery = root.querySelector('#minDelivery') as HTMLInputElement
+		const maxDelivery = root.querySelector('#maxDelivery') as HTMLInputElement
+
+		// 1. Puxar os dados do Banco de Dados e pintar a tela
+		entregas.forEach((e: any) => {
+			if (e.nome.toLowerCase() === 'retirada') {
+				idRetirada = e.idtipoentrega
+				chkRetirada.checked = e.ATIVO === 1
+				minRetirada.value = e.tempominimo || ''
+				maxRetirada.value = e.tempomaximo || ''
+				applyUI(chkRetirada, txtRetirada, divTempoRetirada, btnSalvarRetirada)
+			}
+			if (e.nome.toLowerCase() === 'delivery') {
+				idDelivery = e.idtipoentrega
+				chkDelivery.checked = e.ATIVO === 1
+				minDelivery.value = e.tempominimo || ''
+				maxDelivery.value = e.tempomaximo || ''
+				applyUI(chkDelivery, txtDelivery, divTempoDelivery, btnSalvarDelivery)
+			}
+		})
+
+		// 2. Controlar o visual quando a chavinha é clicada (mas ainda não salva no banco)
+		function applyUI(
+			chk: HTMLInputElement,
+			txt: HTMLElement,
+			divTempo: HTMLElement,
+			btn: HTMLElement
+		) {
+			const on = chk.checked
+			txt.textContent = on ? 'Ligado' : 'Desligado'
+			divTempo.classList.toggle('disabled', !on)
+			btn.classList.toggle('disabled', !on)
+			divTempo
+				.querySelectorAll('input')
+				.forEach((i) => ((i as HTMLInputElement).disabled = !on))
+		}
+
+		chkRetirada?.addEventListener('change', () =>
+			applyUI(chkRetirada, txtRetirada, divTempoRetirada, btnSalvarRetirada)
+		)
+		chkDelivery?.addEventListener('change', () =>
+			applyUI(chkDelivery, txtDelivery, divTempoDelivery, btnSalvarDelivery)
+		)
+
+		// 3. Botões de Salvar (Avisa o Banco de Dados!)
+		btnSalvarRetirada?.addEventListener('click', async (e) => {
+			e.preventDefault()
+			if (btnSalvarRetirada.classList.contains('disabled')) return
+			try {
+				await updateDeliveryType(idRetirada, {
+					ativo: chkRetirada.checked ? 1 : 0,
+					tempominimo: Number(minRetirada.value) || 0,
+					tempomaximo: Number(maxRetirada.value) || 0,
+				})
+				alert('Configurações de Retirada atualizadas!')
+			} catch (err) {
+				alert('Erro ao salvar Retirada')
+			}
+		})
+
+		btnSalvarDelivery?.addEventListener('click', async (e) => {
+			e.preventDefault()
+			if (btnSalvarDelivery.classList.contains('disabled')) return
+			try {
+				await updateDeliveryType(idDelivery, {
+					ativo: chkDelivery.checked ? 1 : 0,
+					tempominimo: Number(minDelivery.value) || 0,
+					tempomaximo: Number(maxDelivery.value) || 0,
+				})
+				alert('Configurações de Delivery atualizadas!')
+			} catch (err) {
+				alert('Erro ao salvar Delivery')
+			}
+		})
+	} catch (error) {
+		console.error('Erro ao carregar configurações de entrega', error)
 	}
 }
 

@@ -9,8 +9,9 @@ import orderRoutes from './orders.routes.js'
 import companyRoutes from './company.routes.js'
 import pagamentosRoutes from './pagamentos.routes.js'
 import taxasRoutes from './taxas.routes.js'
-// Se o seu upload.routes for exportado como default, use a linha abaixo:
-// import uploadRoutes from './upload.routes.js';
+import deliveryRoutes from './delivery.routes.js'
+
+import uploadRoutes from './upload.routes.js'
 
 const routes = Router()
 
@@ -19,9 +20,11 @@ routes.use(authRoutes)
 routes.use(categoryRoutes)
 routes.use(productRoutes)
 routes.use(opcionaisRoutes)
+routes.use(uploadRoutes)
 routes.use(orderRoutes)
 routes.use(companyRoutes)
 routes.use(pagamentosRoutes)
 routes.use(taxasRoutes)
+routes.use(deliveryRoutes)
 
 export default routes
