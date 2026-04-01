@@ -3,6 +3,7 @@ import { renderCompany } from '../pages/company'
 import { renderDashboard } from '../pages/dashboard'
 import { renderMenuAdmin } from '../pages/menu'
 import { renderSettings } from '../pages/settings'
+import { renderOrders } from '../pages/orders'
 
 // Exportamos a função 'router' que o main.ts está desesperado procurando!
 export function router() {
@@ -41,6 +42,9 @@ export function router() {
 			break
 		case '#/settings':
 			renderSettings(appRoot)
+			break
+		case '#/orders':
+			renderOrders(appRoot)
 			break
 
 		default:

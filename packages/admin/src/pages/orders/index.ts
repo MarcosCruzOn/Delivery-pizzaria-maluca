@@ -1,6 +1,15 @@
 import { AdminLayout } from '../../components/AdminLayout/AdminLayout'
+import { getOrders } from '../../api/orders'
 
-export function renderOrders(root: HTMLElement) {
+export async function renderOrders(root: HTMLElement) {
+	// 1. Busca os pedidos reias do banco!
+	let pedidosReais = []
+	try {
+		pedidosReais = await getOrders()
+	} catch (error) {
+		console.error('Erro ao buscar pedidos', error)
+	}
+
 	root.innerHTML = AdminLayout({
 		title: 'Painel de Pedidos',
 		iconClass: 'fas fa-utensils',
@@ -13,23 +22,16 @@ export function renderOrders(root: HTMLElement) {
             <div class="menus-pedido" id="orderStatusTabs">
               <a href="#" class="btn btn-white btn-sm active" data-status="pending">
                 <i class="far fa-dot-circle"></i> Pendentes
-                <span class="badge-total-pedidos">2</span>
               </a>
-
               <a href="#" class="btn btn-white btn-sm" data-status="accepted">
                 <i class="far fa-thumbs-up"></i> Aceito
-                <span class="badge-total-pedidos">1</span>
               </a>
-
               <a href="#" class="btn btn-white btn-sm" data-status="preparing">
                 <i class="far fa-clock"></i> Em preparo
-                <span class="badge-total-pedidos">1</span>
               </a>
-
               <a href="#" class="btn btn-white btn-sm" data-status="delivering">
                 <i class="fas fa-motorcycle"></i> Em entrega
               </a>
-
               <a href="#" class="btn btn-white btn-sm" data-status="done">
                 <i class="far fa-check-circle"></i> Concluído
               </a>
@@ -38,8 +40,11 @@ export function renderOrders(root: HTMLElement) {
 
           <div class="col-12">
             <div class="row lista-pedidos mt-5" id="ordersGrid">
-              ${mockOrderCard(1, 'Weverton Lima')}
-              ${mockOrderCard(2, 'Weverton de Lima Teste teste teste')}
+              ${
+					pedidosReais.length > 0
+						? pedidosReais.map(renderOrderCard).join('')
+						: '<p class="text-muted w-100 text-center">Nenhum pedido encontrado.</p>'
+				}
             </div>
           </div>
 
@@ -59,14 +64,17 @@ export function renderOrders(root: HTMLElement) {
 
 		tabs.querySelectorAll('a').forEach((x) => x.classList.remove('active'))
 		a.classList.add('active')
-
-		// depois a gente filtra por status aqui (quando vier do backend)
-		// const status = a.getAttribute("data-status");
 	})
 }
 
-function mockOrderCard(orderId: number, customerName: string) {
-	// Estrutura baseada no seu HTML: dropdown + card-content abrindo modal :contentReference[oaicite:2]{index=2}
+// Transformamos o Mock antigo em um Render real
+function renderOrderCard(pedido: any) {
+	// Formatar a data para algo bonito (ex: 18:30)
+	const dataFormatada = new Date(pedido.datacadastro).toLocaleTimeString('pt-BR', {
+		hour: '2-digit',
+		minute: '2-digit',
+	})
+
 	return `
     <div class="col-3">
       <div class="card card-pedido">
@@ -79,7 +87,7 @@ function mockOrderCard(orderId: number, customerName: string) {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              Pendente
+              ${pedido.status}
             </button>
 
             <div class="dropdown-menu">
@@ -91,29 +99,28 @@ function mockOrderCard(orderId: number, customerName: string) {
             </div>
           </div>
 
-          <p class="numero-pedido mt-2">#${orderId}</p>
+          <p class="numero-pedido mt-2">#${pedido.idpedido}</p>
         </div>
 
         <div class="card-content" data-bs-toggle="modal" data-bs-target="#modalDetalhes">
 
           <div class="card-pedido-body mt-3">
             <p class="info-pedido">
-              <i class="fas fa-user"></i> ${customerName}
+              <i class="fas fa-user"></i> ${pedido.nomecliente}
             </p>
             <p class="info-pedido">
-              <i class="fas fa-motorcycle"></i> Entrega
+              <i class="fas fa-motorcycle"></i> ${pedido.tipo_entrega}
             </p>
             <p class="info-pedido">
-              <i class="fas fa-coins"></i> Dinheiro
-              <span>Troco para R$ 50,00</span>
+              <i class="fas fa-coins"></i> ${pedido.pagamento}
             </p>
           </div>
 
           <div class="separate"></div>
 
           <div class="card-pedido-footer">
-            <p class="horario-pedido">Recebido há 33 minutos</p>
-            <p class="total-pedido"><b>R$ 143,50</b></p>
+            <p class="horario-pedido">Recebido às ${dataFormatada}</p>
+            <p class="total-pedido"><b>R$ ${Number(pedido.total).toFixed(2).replace('.', ',')}</b></p>
           </div>
 
         </div>
@@ -124,6 +131,7 @@ function mockOrderCard(orderId: number, customerName: string) {
 }
 
 function mockOrderModal() {
+	// ... Mantenha o seu código atual do mockOrderModal aqui ...
 	// Modal do seu HTML :contentReference[oaicite:3]{index=3}
 	return `
     <div id="modalDetalhes" class="modal fade" tabindex="-1" role="dialog">
