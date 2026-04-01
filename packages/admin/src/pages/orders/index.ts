@@ -1,14 +1,23 @@
 import { AdminLayout } from '../../components/AdminLayout/AdminLayout'
-import { getOrders } from '../../api/orders'
+import { getOrders, updateOrderStatus } from '../../api/orders'
 
 export async function renderOrders(root: HTMLElement) {
-	// 1. Busca os pedidos reias do banco!
-	let pedidosReais = []
+	let todosPedidos: any[] = []
 	try {
-		pedidosReais = await getOrders()
+		todosPedidos = await getOrders()
 	} catch (error) {
 		console.error('Erro ao buscar pedidos', error)
 	}
+
+	const statusMap: Record<string, string> = {
+		pending: 'Pendente',
+		accepted: 'Aceito',
+		preparing: 'Em preparo',
+		delivering: 'Em entrega',
+		done: 'Concluído',
+	}
+
+	const contar = (status: string) => todosPedidos.filter((p) => p.status === status).length
 
 	root.innerHTML = AdminLayout({
 		title: 'Painel de Pedidos',
@@ -20,32 +29,32 @@ export async function renderOrders(root: HTMLElement) {
 
           <div class="col-12">
             <div class="menus-pedido" id="orderStatusTabs">
-              <a href="#" class="btn btn-white btn-sm active" data-status="pending">
+              <a href="javascript:void(0)" class="btn btn-white btn-sm active" data-status="pending">
                 <i class="far fa-dot-circle"></i> Pendentes
+				${contar('Pendente') > 0 ? `<span class="badge-total-pedidos">${contar('Pendente')}</span>` : ''}
               </a>
-              <a href="#" class="btn btn-white btn-sm" data-status="accepted">
+              <a href="javascript:void(0)" class="btn btn-white btn-sm" data-status="accepted">
                 <i class="far fa-thumbs-up"></i> Aceito
+				${contar('Aceito') > 0 ? `<span class="badge-total-pedidos">${contar('Aceito')}</span>` : ''}
               </a>
-              <a href="#" class="btn btn-white btn-sm" data-status="preparing">
+              <a href="javascript:void(0)" class="btn btn-white btn-sm" data-status="preparing">
                 <i class="far fa-clock"></i> Em preparo
+				${contar('Em preparo') > 0 ? `<span class="badge-total-pedidos">${contar('Em preparo')}</span>` : ''}
               </a>
-              <a href="#" class="btn btn-white btn-sm" data-status="delivering">
+              <a href="javascript:void(0)" class="btn btn-white btn-sm" data-status="delivering">
                 <i class="fas fa-motorcycle"></i> Em entrega
+				${contar('Em entrega') > 0 ? `<span class="badge-total-pedidos">${contar('Em entrega')}</span>` : ''}
               </a>
-              <a href="#" class="btn btn-white btn-sm" data-status="done">
+              <a href="javascript:void(0)" class="btn btn-white btn-sm" data-status="done">
                 <i class="far fa-check-circle"></i> Concluído
+				${contar('Concluído') > 0 ? `<span class="badge-total-pedidos">${contar('Concluído')}</span>` : ''}
               </a>
             </div>
           </div>
 
           <div class="col-12">
             <div class="row lista-pedidos mt-5" id="ordersGrid">
-              ${
-					pedidosReais.length > 0
-						? pedidosReais.map(renderOrderCard).join('')
-						: '<p class="text-muted w-100 text-center">Nenhum pedido encontrado.</p>'
-				}
-            </div>
+              </div>
           </div>
 
         </div>
@@ -55,8 +64,23 @@ export async function renderOrders(root: HTMLElement) {
     `,
 	})
 
-	// tabs (bem simples: só troca "active")
+	const grid = root.querySelector('#ordersGrid') as HTMLElement
 	const tabs = root.querySelector('#orderStatusTabs')
+
+	function filtrarE_DesenharPedidos(statusIngles: string) {
+		const statusBanco = statusMap[statusIngles]
+		const pedidosFiltrados = todosPedidos.filter((p) => p.status === statusBanco)
+
+		if (grid) {
+			grid.innerHTML =
+				pedidosFiltrados.length > 0
+					? pedidosFiltrados.map(renderOrderCard).join('')
+					: '<p class="text-muted w-100 text-center mt-5">Nenhum pedido nesta etapa.</p>'
+		}
+	}
+
+	filtrarE_DesenharPedidos('pending')
+
 	tabs?.addEventListener('click', (e) => {
 		const a = (e.target as HTMLElement).closest('a')
 		if (!a) return
@@ -64,12 +88,37 @@ export async function renderOrders(root: HTMLElement) {
 
 		tabs.querySelectorAll('a').forEach((x) => x.classList.remove('active'))
 		a.classList.add('active')
-	})
-}
 
-// Transformamos o Mock antigo em um Render real
+		const statusClicado = a.getAttribute('data-status') || 'pending'
+		filtrarE_DesenharPedidos(statusClicado)
+	})
+	// ... (código do tabs.addEventListener continua acima)
+
+	// 7. O Evento de clique para MUDAR O STATUS DO PEDIDO
+	grid?.addEventListener('click', async (e) => {
+		const btnMudarStatus = (e.target as HTMLElement).closest(
+			'.btn-change-status'
+		) as HTMLElement
+		if (!btnMudarStatus) return // Se não clicou em um botão de status, ignora!
+
+		e.preventDefault()
+		const idpedido = Number(btnMudarStatus.dataset.id)
+		const idnovoStatus = Number(btnMudarStatus.dataset.status)
+		const nomeNovoStatus = btnMudarStatus.dataset.nome
+
+		if (confirm(`Deseja mover o pedido #${idpedido} para "${nomeNovoStatus}"?`)) {
+			try {
+				await updateOrderStatus(idpedido, idnovoStatus)
+				// Recarrega a página para o pedido sumir da aba atual e aparecer na aba nova!
+				location.reload()
+			} catch (err) {
+				alert('Erro ao atualizar o status do pedido!')
+			}
+		}
+	})
+} // 👈 Aqui é a chave que fecha a função renderOrders()
+
 function renderOrderCard(pedido: any) {
-	// Formatar a data para algo bonito (ex: 18:30)
 	const dataFormatada = new Date(pedido.datacadastro).toLocaleTimeString('pt-BR', {
 		hour: '2-digit',
 		minute: '2-digit',
@@ -90,19 +139,28 @@ function renderOrderCard(pedido: any) {
               ${pedido.status}
             </button>
 
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#">Mover para <b>Aceito</b> <i class="far fa-thumbs-up"></i></a>
-              <a class="dropdown-item" href="#">Mover para <b>Em preparo</b> <i class="far fa-clock"></i></a>
-              <a class="dropdown-item" href="#">Mover para <b>Em entrega</b> <i class="fas fa-motorcycle"></i></a>
-              <a class="dropdown-item" href="#">Mover para <b>Concluído</b> <i class="far fa-check-circle"></i></a>
-              <a class="dropdown-item" href="#">Recusar Pedido <i class="far fa-times-circle"></i></a>
+          <div class="dropdown-menu">
+              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="2" data-nome="Aceito">
+                Mover para <b>Aceito</b> <i class="far fa-thumbs-up"></i>
+              </a>
+              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="3" data-nome="Em preparo">
+                Mover para <b>Em preparo</b> <i class="far fa-clock"></i>
+              </a>
+              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="4" data-nome="Em entrega">
+                Mover para <b>Em entrega</b> <i class="fas fa-motorcycle"></i>
+              </a>
+              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="5" data-nome="Concluído">
+                Mover para <b>Concluído</b> <i class="far fa-check-circle"></i>
+              </a>
+              <a class="dropdown-item btn-change-status text-danger" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="6" data-nome="Recusado">
+                Recusar Pedido <i class="far fa-times-circle"></i>
+              </a>
             </div>
-          </div>
 
           <p class="numero-pedido mt-2">#${pedido.idpedido}</p>
         </div>
 
-        <div class="card-content" data-bs-toggle="modal" data-bs-target="#modalDetalhes">
+        <div class="card-content" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalDetalhes">
 
           <div class="card-pedido-body mt-3">
             <p class="info-pedido">
@@ -131,8 +189,6 @@ function renderOrderCard(pedido: any) {
 }
 
 function mockOrderModal() {
-	// ... Mantenha o seu código atual do mockOrderModal aqui ...
-	// Modal do seu HTML :contentReference[oaicite:3]{index=3}
 	return `
     <div id="modalDetalhes" class="modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -146,124 +202,7 @@ function mockOrderModal() {
           </div>
 
           <div class="modal-body">
-
-            <div class="container-dados-pedido pt-1">
-              <div class="row">
-
-                <div class="col-12">
-                  <div class="card card-address cursor-default">
-                    <div class="img-icon-details">
-                      <i class="fas fa-user"></i>
-                    </div>
-                    <div class="infos pr-0">
-                      <div class="d-flex">
-                        <p class="name mb-0"><b>Weverton Lima</b></p>
-                        <span class="text mb-0">(99) 99107-0707</span>
-                      </div>
-                      <div class="d-flex">
-                        <span class="info-pedido mb-0">Recebido em 21/08 às 18:00</span>
-                        <span class="info-pedido mb-0 link">
-                          <i class="fas fa-motorcycle"></i> Entrega
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <div class="card card-address cursor-default mt-2">
-                    <div class="img-icon-details">
-                      <i class="fas fa-coins"></i>
-                    </div>
-                    <div class="infos pr-0">
-                      <p class="name mb-0"><b>Dinheiro</b></p>
-                      <span class="text mb-0">Troco para: R$ 50,00</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <div class="card card-address mt-2">
-                    <div class="img-icon-details">
-                      <i class="fas fa-map-marked-alt"></i>
-                    </div>
-                    <div class="infos pr-0">
-                      <p class="name mb-0"><b>Rua Olá Mundo, 123, Meu Bairro</b></p>
-                      <span class="text mb-0">Cidade-SP / CEP: 12345-678</span>
-                    </div>
-                    <div class="icon-edit">
-                      <i class="fas fa-location-arrow"></i>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <div class="container-itens-pedido carrinho">
-              <div id="itensPedido">
-
-                <div class="card-item mb-2 pr-0">
-                  <div class="container-detalhes">
-                    <div class="detalhes-produto">
-                      <div class="infos-produto">
-                        <p class="name"><b>1x Calabresa</b></p>
-                        <p class="price"><b>R$ 39,90</b></p>
-                      </div>
-
-                      <div class="infos-produto">
-                        <p class="name-opcional mb-0">1x Borda de Catupiry</p>
-                        <p class="price-opcional mb-0">+ R$ 8,90</p>
-                      </div>
-
-                      <div class="infos-produto">
-                        <p class="obs-opcional mb-0">- Observação para enviar talheres de plastico</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card-item mb-2 pr-0">
-                  <div class="container-detalhes">
-                    <div class="detalhes-produto">
-                      <div class="infos-produto">
-                        <p class="name"><b>1x 4 Queijos</b></p>
-                        <p class="price"><b>R$ 39,90</b></p>
-                      </div>
-
-                      <div class="infos-produto">
-                        <p class="name-opcional mb-0">1x Borda de Catupiry</p>
-                        <p class="price-opcional mb-0">+ R$ 8,90</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card-item mb-2">
-                  <div class="detalhes-produto">
-                    <div class="infos-produto">
-                      <p class="name mb-0"><i class="fas fa-motorcycle"></i>&nbsp; <b>Taxa de entrega</b></p>
-                      <p class="price mb-0"><b>+ R$ 15,00</b></p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card-item mb-2">
-                  <div class="detalhes-produto">
-                    <div class="infos-produto">
-                      <p class="name-total mb-0"><b>Total</b></p>
-                      <p class="price-total mb-0"><b>R$ 105,50</b></p>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              <div class="footer-btn mt-3">
-                <button type="button" class="btn btn-yellow btn-sm">Aceitar Pedido</button>
-              </div>
-            </div>
-
+            <h6 class="text-center mt-3">Em breve buscaremos o recibo real do banco...</h6>
           </div>
         </div>
       </div>
