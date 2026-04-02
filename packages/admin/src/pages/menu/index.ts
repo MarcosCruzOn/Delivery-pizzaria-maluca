@@ -9,11 +9,7 @@ import {
 import { menuState } from './state/menuState'
 
 // Importando nossos Garçons da API
-import {
-	getCategories,
-	createCategory,
-	deleteCategory,
-} from '../../api/categories'
+import { getCategories, createCategory, deleteCategory } from '../../api/categories'
 import {
 	getProducts,
 	createProduct,
@@ -29,9 +25,9 @@ import {
 	updateOpcional,
 	deleteOpcional,
 	updateOpcionalItem,
-	deleteOpcionalItem, // 👈 ADICIONE ESTES AQUI!
+	deleteOpcionalItem,
 } from '../../api/opcionais'
-import { uploadProductImage } from '../../api/upload' // Ajuste o caminho se necessário
+import { uploadProductImage } from '../../api/upload'
 
 // --- 1. RENDERIZAÇÃO PRINCIPAL ---
 export async function renderMenuAdmin(root: HTMLElement) {
@@ -78,8 +74,8 @@ async function loadData() {
 			id: o.idopcional,
 			name: o.nome,
 			required: o.tiposimples === 1,
-			min: o.minimo, // 🚨 ADICIONE ISTO
-			max: o.maximo, // 🚨 E ISTO
+			min: o.minimo,
+			max: o.maximo,
 			items: [],
 		}))
 
@@ -102,9 +98,7 @@ async function loadData() {
 
 		// Prepara os produtos e joga dentro das categorias
 		productsData.forEach((p: any) => {
-			const category = menuState.categories.find(
-				(cat) => Number(cat.id) === p.idcategoria
-			)
+			const category = menuState.categories.find((cat) => Number(cat.id) === p.idcategoria)
 			if (!category) return
 
 			category.products.push({
@@ -125,30 +119,24 @@ async function loadData() {
 	}
 }
 
-// --- 3. CONTROLE DA TELA (O FIM DOS BUGS) ---
 function setupEvents(root: HTMLElement) {
 	// UPLOAD DE IMAGEM IMEDIATO
-	root.querySelector('#novoProdutoImagem')?.addEventListener(
-		'change',
-		async (e) => {
-			const input = e.target as HTMLInputElement
-			const file = input.files?.[0]
-			if (!file) return
+	root.querySelector('#novoProdutoImagem')?.addEventListener('change', async (e) => {
+		const input = e.target as HTMLInputElement
+		const file = input.files?.[0]
+		if (!file) return
 
-			const preview = root.querySelector(
-				'#previewNovoProduto'
-			) as HTMLImageElement
-			preview.src = URL.createObjectURL(file)
-			preview.style.display = 'block'
+		const preview = root.querySelector('#previewNovoProduto') as HTMLImageElement
+		preview.src = URL.createObjectURL(file)
+		preview.style.display = 'block'
 
-			try {
-				const result = await uploadProductImage(file)
-				menuState.uploadedImageUrl = result.filename || result.imageUrl
-			} catch {
-				alert('Erro ao enviar imagem ao servidor')
-			}
+		try {
+			const result = await uploadProductImage(file)
+			menuState.uploadedImageUrl = result.filename || result.imageUrl
+		} catch {
+			alert('Erro ao enviar imagem ao servidor')
 		}
-	)
+	})
 
 	// EVENTOS DE CLIQUE GERAIS DA TELA
 	root.addEventListener('click', async (e) => {
@@ -167,32 +155,16 @@ function setupEvents(root: HTMLElement) {
 			menuState.uploadedImageUrl = ''
 
 			// 2. Limpa o formulário visualmente
-			;(
-				root.querySelector('#novoProdutoNome') as HTMLInputElement
-			).value = ''
-			;(
-				root.querySelector(
-					'#novoProdutoDescricao'
-				) as HTMLTextAreaElement
-			).value = ''
-			;(
-				root.querySelector('#novoProdutoValor') as HTMLInputElement
-			).value = ''
-			;(
-				root.querySelector('#novoProdutoImagem') as HTMLInputElement
-			).value = ''
-			;(
-				root.querySelector('#previewNovoProduto') as HTMLImageElement
-			).style.display = 'none'
+			;(root.querySelector('#novoProdutoNome') as HTMLInputElement).value = ''
+			;(root.querySelector('#novoProdutoDescricao') as HTMLTextAreaElement).value = ''
+			;(root.querySelector('#novoProdutoValor') as HTMLInputElement).value = ''
+			;(root.querySelector('#novoProdutoImagem') as HTMLInputElement).value = ''
+			;(root.querySelector('#previewNovoProduto') as HTMLImageElement).style.display = 'none'
 
 			// 3. Seleciona a categoria certa no dropdown
 			const catId = btnAddProduct.dataset.categoryId
 			if (catId)
-				(
-					root.querySelector(
-						'#novoProdutoCategoria'
-					) as HTMLSelectElement
-				).value = catId
+				(root.querySelector('#novoProdutoCategoria') as HTMLSelectElement).value = catId
 
 			// 4. Limpa e desenha os checkboxes de opcionais
 			renderOpcionaisNoModal()
@@ -213,24 +185,15 @@ function setupEvents(root: HTMLElement) {
 			menuState.uploadedImageUrl = '' // Limpa uploads pendentes
 
 			// Preenche o formulário com os dados do botão
-			;(
-				root.querySelector('#novoProdutoNome') as HTMLInputElement
-			).value = btnEditProduct.dataset.name || ''
-			;(
-				root.querySelector(
-					'#novoProdutoDescricao'
-				) as HTMLTextAreaElement
-			).value = btnEditProduct.dataset.description || ''
-			;(
-				root.querySelector('#novoProdutoValor') as HTMLInputElement
-			).value = btnEditProduct.dataset.price || ''
-			;(
-				root.querySelector('#novoProdutoImagem') as HTMLInputElement
-			).value = '' // Input file sempre começa vazio
+			;(root.querySelector('#novoProdutoNome') as HTMLInputElement).value =
+				btnEditProduct.dataset.name || ''
+			;(root.querySelector('#novoProdutoDescricao') as HTMLTextAreaElement).value =
+				btnEditProduct.dataset.description || ''
+			;(root.querySelector('#novoProdutoValor') as HTMLInputElement).value =
+				btnEditProduct.dataset.price || ''
+			;(root.querySelector('#novoProdutoImagem') as HTMLInputElement).value = '' // Input file sempre começa vazio
 
-			const preview = root.querySelector(
-				'#previewNovoProduto'
-			) as HTMLImageElement
+			const preview = root.querySelector('#previewNovoProduto') as HTMLImageElement
 			if (menuState.currentImageUrl) {
 				preview.src = menuState.currentImageUrl
 				preview.style.display = 'block'
@@ -240,21 +203,13 @@ function setupEvents(root: HTMLElement) {
 			renderOpcionaisNoModal()
 			try {
 				const opcionaisVinculados = await getProductOpcionais(productId)
-				const idsVinculados = opcionaisVinculados.map(
-					(o: any) => o.idopcional
-				)
+				const idsVinculados = opcionaisVinculados.map((o: any) => o.idopcional)
 
-				root.querySelectorAll('.opcional-grupo-checkbox').forEach(
-					(checkbox: any) => {
-						if (
-							idsVinculados.includes(
-								Number(checkbox.dataset.opcional)
-							)
-						) {
-							checkbox.checked = true
-						}
+				root.querySelectorAll('.opcional-grupo-checkbox').forEach((checkbox: any) => {
+					if (idsVinculados.includes(Number(checkbox.dataset.opcional))) {
+						checkbox.checked = true
 					}
-				)
+				})
 			} catch (err) {
 				console.log('Erro ao buscar opcionais vinculados')
 			}
@@ -268,46 +223,33 @@ function setupEvents(root: HTMLElement) {
 		if (target.id === 'btnSalvarNovoProduto') {
 			e.preventDefault()
 
-			const nome = (
-				root.querySelector('#novoProdutoNome') as HTMLInputElement
-			).value.trim()
+			const nome = (root.querySelector('#novoProdutoNome') as HTMLInputElement).value.trim()
 			const descricao = (
-				root.querySelector(
-					'#novoProdutoDescricao'
-				) as HTMLTextAreaElement
+				root.querySelector('#novoProdutoDescricao') as HTMLTextAreaElement
 			).value.trim()
 			const valor = Number(
-				(root.querySelector('#novoProdutoValor') as HTMLInputElement)
-					.value
+				(root.querySelector('#novoProdutoValor') as HTMLInputElement).value
 			)
 			const idcategoria = Number(
-				(
-					root.querySelector(
-						'#novoProdutoCategoria'
-					) as HTMLSelectElement
-				).value
+				(root.querySelector('#novoProdutoCategoria') as HTMLSelectElement).value
 			)
 
 			// Pega os opcionais marcados
 			const checkboxes = Array.from(
 				root.querySelectorAll('.opcional-grupo-checkbox:checked')
 			) as HTMLInputElement[]
-			const opcionaisSelecionados = checkboxes.map((cb) =>
-				Number(cb.dataset.opcional)
-			)
+			const opcionaisSelecionados = checkboxes.map((cb) => Number(cb.dataset.opcional))
 			// const opcionaisSelecionados = [
 			// 	...new Set(checkboxes.map((cb) => Number(cb.dataset.opcional))),
 			// ]
 
 			// Decide a imagem
-			const imagemFinal =
-				menuState.uploadedImageUrl || menuState.currentImageUrl
+			const imagemFinal = menuState.uploadedImageUrl || menuState.currentImageUrl
 
 			// Validações Justas
 			if (!nome || !descricao || !idcategoria)
 				return alert('Preencha nome, descrição e categoria!')
-			if (isNaN(valor) || valor <= 0)
-				return alert('Informe um valor válido (ex: 45.90)')
+			if (isNaN(valor) || valor <= 0) return alert('Informe um valor válido (ex: 45.90)')
 			if (!menuState.selectedProductId && !imagemFinal)
 				return alert('Selecione uma imagem para o novo produto!')
 
@@ -340,9 +282,7 @@ function setupEvents(root: HTMLElement) {
 		// ==========================================
 
 		// 1. Abrir o Modal
-		const btnAbrirOpcionais = target.closest(
-			'.btnGerenciarOpcionais'
-		) as HTMLElement
+		const btnAbrirOpcionais = target.closest('.btnGerenciarOpcionais') as HTMLElement
 		if (btnAbrirOpcionais) {
 			e.preventDefault()
 			atualizarListasDeOpcionaisNoModal(root)
@@ -352,22 +292,14 @@ function setupEvents(root: HTMLElement) {
 		// 2. Salvar NOVO GRUPO
 		if (target.id === 'btnSalvarGrupoOpcional') {
 			e.preventDefault()
-			const nome = (
-				root.querySelector('#inputNomeGrupo') as HTMLInputElement
-			).value.trim()
+			const nome = (root.querySelector('#inputNomeGrupo') as HTMLInputElement).value.trim()
 			const minimo = Math.max(
 				0,
-				Number(
-					(root.querySelector('#inputMinimo') as HTMLInputElement)
-						.value
-				) || 0
+				Number((root.querySelector('#inputMinimo') as HTMLInputElement).value) || 0
 			)
 			const maximo = Math.max(
 				0,
-				Number(
-					(root.querySelector('#inputMaximo') as HTMLInputElement)
-						.value
-				) || 0
+				Number((root.querySelector('#inputMaximo') as HTMLInputElement).value) || 0
 			)
 
 			if (!nome) return alert('Digite o nome do grupo!')
@@ -385,25 +317,18 @@ function setupEvents(root: HTMLElement) {
 		if (target.id === 'btnSalvarItemOpcional') {
 			e.preventDefault()
 			const idopcional = Number(
-				(
-					root.querySelector(
-						'#selectGrupoOpcional'
-					) as HTMLSelectElement
-				).value
+				(root.querySelector('#selectGrupoOpcional') as HTMLSelectElement).value
 			)
-			const nome = (
-				root.querySelector('#inputItemNome') as HTMLInputElement
-			).value.trim()
-			const valor = Math.max(
-				0,
-				Number(
-					(root.querySelector('#inputItemValor') as HTMLInputElement)
-						.value
-				) || 0
-			)
+			const nome = (root.querySelector('#inputItemNome') as HTMLInputElement).value.trim()
+
+			// Tiramos o Math.max e pegamos o número puro!
+			const valor = Number((root.querySelector('#inputItemValor') as HTMLInputElement).value)
 
 			if (!idopcional) return alert('Selecione um grupo primeiro!')
 			if (!nome) return alert('Digite o nome do item!')
+
+			// Nossa nova trava de segurança (Usamos < 0 em vez de <= 0 porque opcionais podem ser grátis / R$ 0.00)
+			if (isNaN(valor) || valor < 0) return alert('Informe um valor válido (ex: 5.50)')
 
 			try {
 				await createOpcionalItem({ idopcional, nome, valor })
@@ -417,17 +342,11 @@ function setupEvents(root: HTMLElement) {
 		// ==========================================
 		// DELETAR PRODUTO
 		// ==========================================
-		const btnDeleteProduct = target.closest(
-			'.delete-product'
-		) as HTMLElement
+		const btnDeleteProduct = target.closest('.delete-product') as HTMLElement
 		if (btnDeleteProduct) {
 			e.preventDefault()
 			// Mudando a frase aqui:
-			if (
-				confirm(
-					'Você tem certeza que deseja excluir este produto do cardápio?'
-				)
-			) {
+			if (confirm('Você tem certeza que deseja excluir este produto do cardápio?')) {
 				await deleteProduct(Number(btnDeleteProduct.dataset.id))
 				location.reload()
 			}
@@ -438,23 +357,16 @@ function setupEvents(root: HTMLElement) {
 		// ==========================================
 		if (target.closest('#btnAddCategory')) {
 			e.preventDefault()
-			;(
-				root.querySelector('#novaCategoriaNome') as HTMLInputElement
-			).value = '' // Limpa o fantasma da categoria também!
+			;(root.querySelector('#novaCategoriaNome') as HTMLInputElement).value = '' // Limpa o fantasma da categoria também!
 			abrirModal('modalNovaCategoria')
 		}
 
 		if (target.id === 'btnSalvarCategoria') {
 			e.preventDefault()
-			const nome = (
-				root.querySelector('#novaCategoriaNome') as HTMLInputElement
-			).value.trim()
-			const icone = (
-				root.querySelector('#novaCategoriaIcone') as HTMLSelectElement
-			).value
+			const nome = (root.querySelector('#novaCategoriaNome') as HTMLInputElement).value.trim()
+			const icone = (root.querySelector('#novaCategoriaIcone') as HTMLSelectElement).value
 			const ordem = Number(
-				(root.querySelector('#novaCategoriaOrdem') as HTMLSelectElement)
-					.value
+				(root.querySelector('#novaCategoriaOrdem') as HTMLSelectElement).value
 			)
 
 			if (!nome) return alert('Informe o nome da categoria!')
@@ -462,9 +374,7 @@ function setupEvents(root: HTMLElement) {
 			location.reload()
 		}
 
-		const btnDeleteCategory = target.closest(
-			'.delete-category'
-		) as HTMLElement
+		const btnDeleteCategory = target.closest('.delete-category') as HTMLElement
 		if (btnDeleteCategory) {
 			e.preventDefault()
 			// SUA FRASE CUSTOMIZADA AQUI:
@@ -483,16 +393,10 @@ function setupEvents(root: HTMLElement) {
 		// ==========================================
 
 		// Excluir Grupo
-		const btnDeleteGrupo = target.closest(
-			'.btn-delete-grupo'
-		) as HTMLElement
+		const btnDeleteGrupo = target.closest('.btn-delete-grupo') as HTMLElement
 		if (btnDeleteGrupo) {
 			e.preventDefault()
-			if (
-				confirm(
-					'Tem certeza? Isso apagará o grupo e TODOS os itens dentro dele!'
-				)
-			) {
+			if (confirm('Tem certeza? Isso apagará o grupo e TODOS os itens dentro dele!')) {
 				try {
 					await deleteOpcional(Number(btnDeleteGrupo.dataset.id))
 					location.reload()
@@ -522,20 +426,11 @@ function setupEvents(root: HTMLElement) {
 			e.preventDefault()
 			const id = Number(btnEditGrupo.dataset.id)
 
-			const novoNome = prompt(
-				'Novo nome do grupo:',
-				btnEditGrupo.dataset.nome
-			)
+			const novoNome = prompt('Novo nome do grupo:', btnEditGrupo.dataset.nome)
 			if (novoNome === null || novoNome.trim() === '') return
 
-			const novoMin = prompt(
-				'Quantidade mínima (ex: 0):',
-				btnEditGrupo.dataset.min
-			)
-			const novoMax = prompt(
-				'Quantidade máxima (ex: 1):',
-				btnEditGrupo.dataset.max
-			)
+			const novoMin = prompt('Quantidade mínima (ex: 0):', btnEditGrupo.dataset.min)
+			const novoMax = prompt('Quantidade máxima (ex: 1):', btnEditGrupo.dataset.max)
 
 			try {
 				await updateOpcional(id, {
@@ -555,21 +450,22 @@ function setupEvents(root: HTMLElement) {
 			e.preventDefault()
 			const id = Number(btnEditItem.dataset.id)
 
-			const novoNome = prompt(
-				'Novo nome do item:',
-				btnEditItem.dataset.nome
-			)
+			const novoNome = prompt('Novo nome do item:', btnEditItem.dataset.nome)
 			if (novoNome === null || novoNome.trim() === '') return
 
-			const novoValor = prompt(
-				'Novo preço (ex: 5.50):',
-				btnEditItem.dataset.valor
-			)
+			const novoValorRaw = prompt('Novo preço (ex: 5.50):', btnEditItem.dataset.valor)
+			if (novoValorRaw === null) return // Se o usuário apertar "Cancelar" no prompt
+
+			const novoValor = Number(novoValorRaw)
+
+			// A mesma trava de segurança aqui!
+			if (isNaN(novoValor) || novoValor < 0)
+				return alert('Informe um valor válido (ex: 5.50)')
 
 			try {
 				await updateOpcionalItem(id, {
 					nome: novoNome,
-					valor: Number(novoValor) || 0,
+					valor: novoValor,
 				})
 				location.reload()
 			} catch (err: any) {
@@ -591,9 +487,7 @@ function abrirModal(id: string) {
 
 // Essa função lê os dados do banco (salvos no menuState) e desenha a lista de opcionais bonita na tela
 function atualizarListasDeOpcionaisNoModal(root: HTMLElement) {
-	const select = root.querySelector(
-		'#selectGrupoOpcional'
-	) as HTMLSelectElement
+	const select = root.querySelector('#selectGrupoOpcional') as HTMLSelectElement
 	const lista = root.querySelector('#listaOpcionaisGerenciar') as HTMLElement
 
 	// Preenche o campo de "Selecionar Grupo" para o usuário adicionar itens nele

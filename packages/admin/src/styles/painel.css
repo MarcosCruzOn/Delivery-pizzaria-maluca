@@ -666,3 +666,109 @@ input:checked + .slider::before {
 .data-table {
 	font-size: 14px !important;
 }
+
+/* ---- NOVOS ESTILOS DAS CONFIGURAÇÕES (MATCH COM O LAYOUT) ---- */
+
+/* Card Horizontal Largo */
+.card-horizontal {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 25px 30px;
+	border-radius: 15px;
+	background-color: #ffffff;
+	box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.03) !important;
+	border: none !important;
+}
+
+/* Ícones com fundo amarelinho suave */
+.icon-box-yellow {
+	width: 50px;
+	height: 50px;
+	border-radius: 12px;
+	background-color: #fff8e1; /* Amarelo bem claro */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* Campos de Input mais limpos (Estilo Pílula/Sem Borda Forte) */
+.form-control-light {
+	background-color: #f8f9fa !important;
+	border: 1px solid transparent !important;
+	border-radius: 12px !important;
+	height: 45px;
+	padding-left: 20px;
+	font-weight: 500;
+	color: #4f4f4f !important;
+	transition: all 0.3s ease;
+}
+
+.form-control-light:focus {
+	background-color: #ffffff !important;
+	border-color: var(--color-primary) !important;
+	box-shadow: 0 0 0 0.2rem rgba(255, 191, 0, 0.2) !important;
+}
+
+.form-control-light:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Rádio Buttons customizados (Aba Taxas) */
+.custom-radio {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background-color: #eee;
+	border: 2px solid #ddd;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.2s ease;
+}
+
+.fee-option {
+	transition: border 0.3s ease;
+	border: 2px solid transparent;
+}
+
+/* Ajustes da Tabela de Distâncias */
+.taxa-table td {
+	font-size: 15px;
+}
+.taxa-table thead th {
+	font-weight: 600;
+	color: #6c757d;
+	font-size: 14px;
+}
+
+/* Rádio Buttons customizados (Aba Taxas) */
+.custom-radio {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	/* Usando variáveis globais ao invés de cor chumbada! */
+	background-color: var(--color-input-out);
+	border: 2px solid var(--color-separate);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.2s ease;
+}
+
+.fee-option {
+	transition: border 0.3s ease;
+	border: 2px solid transparent;
+}
+
+/* O Pulo do Gato: Quando o JS adiciona o active-fee, o CSS injeta a cor primária! */
+.fee-option.active-fee {
+	border-color: var(--color-primary);
+}
+
+.fee-option.active-fee .custom-radio {
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
+}
