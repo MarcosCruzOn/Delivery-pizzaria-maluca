@@ -49,3 +49,25 @@ export async function obterDadosRelatorio(dataInicio: string, dataFim: string) {
 		grafico: graficoFormatado,
 	}
 }
+
+export async function obterHistoricoPedidos(dataInicio: string, dataFim: string) {
+	const query = `
+		SELECT 
+			p.idpedido,
+			p.nomecliente,
+			te.nome AS tipo_entrega,
+			pag.nome AS pagamento,
+			p.datacadastro,
+			ps.descricao AS status,
+			p.total
+		FROM pedido p
+		INNER JOIN tipoentrega te ON p.idtipoentrega = te.idtipoentrega
+		INNER JOIN pagamentos pag ON p.idpagamentos = pag.idpagamentos
+		INNER JOIN pedidostatus ps ON p.idpedidostatus = ps.idpedidostatus
+		WHERE DATE(p.datacadastro) BETWEEN ? AND ?
+		ORDER BY p.datacadastro DESC
+	`
+
+	const [linhas] = await pool.query(query, [dataInicio, dataFim])
+	return linhas
+}

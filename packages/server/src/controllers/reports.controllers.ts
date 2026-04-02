@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { obterDadosRelatorio } from '../services/reports.services.js'
+import { obterDadosRelatorio, obterHistoricoPedidos } from '../services/reports.services.js'
 
 export async function getReportsController(req: Request, res: Response): Promise<Response | void> {
 	try {
@@ -15,5 +15,21 @@ export async function getReportsController(req: Request, res: Response): Promise
 	} catch (error) {
 		console.error('Erro ao gerar relatório:', error)
 		return res.status(500).json({ erro: 'Erro interno ao gerar o relatório.' })
+	}
+}
+
+export async function getOrderHistoryController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		const { inicio, fim } = req.query
+		if (!inicio || !fim) return res.status(400).json({ erro: 'Datas obrigatórias' })
+
+		const historico = await obterHistoricoPedidos(String(inicio), String(fim))
+		return res.json(historico)
+	} catch (error) {
+		console.error('Erro ao buscar histórico:', error)
+		return res.status(500).json({ erro: 'Erro interno ao buscar histórico' })
 	}
 }

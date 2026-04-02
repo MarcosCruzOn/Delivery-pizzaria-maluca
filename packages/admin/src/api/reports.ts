@@ -10,3 +10,11 @@ export async function getReports(inicio: string, fim: string) {
 	if (!res.ok) throw new Error('Erro ao buscar relatórios')
 	return res.json()
 }
+
+export async function getOrderHistory(inicio: string, fim: string) {
+	const res = await fetch(`/api/admin/reports/history?inicio=${inicio}&fim=${fim}`, {
+		headers: getAuthHeaders(),
+	})
+	if (!res.ok) throw new Error('Erro ao buscar histórico')
+	return res.json()
+}
