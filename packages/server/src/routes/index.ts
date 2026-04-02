@@ -10,6 +10,7 @@ import companyRoutes from './company.routes.js'
 import pagamentosRoutes from './pagamentos.routes.js'
 import taxasRoutes from './taxas.routes.js'
 import deliveryRoutes from './delivery.routes.js'
+import dashboardRoutes from './home.routes.js'
 
 import uploadRoutes from './upload.routes.js'
 
@@ -26,5 +27,6 @@ routes.use(companyRoutes)
 routes.use(pagamentosRoutes)
 routes.use(taxasRoutes)
 routes.use(deliveryRoutes)
+routes.use(dashboardRoutes)
 
 export default routes

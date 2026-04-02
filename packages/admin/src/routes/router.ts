@@ -1,12 +1,13 @@
 import { renderLogin } from '../pages/login' // Importa a tela de login que arrumamos
 import { renderCompany } from '../pages/company'
-import { renderDashboard } from '../pages/dashboard'
+import { renderDashboard } from '../pages/home'
 import { renderMenuAdmin } from '../pages/menu'
 import { renderSettings } from '../pages/settings'
 import { renderOrders } from '../pages/orders'
+import { renderReports } from '../pages/reports'
 
 // Exportamos a função 'router' que o main.ts está desesperado procurando!
-export function router() {
+export async function router() {
 	// Pegamos a div <div id="app"></div> lá do seu index.html raiz
 	const appRoot = document.querySelector<HTMLElement>('#app')
 
@@ -26,12 +27,9 @@ export function router() {
 		case '':
 		case '#/':
 		case '#/login':
-			// Se for a raiz ou login, chamamos a função que desenha o Login
 			renderLogin(appRoot)
 			break
-
 		case '#/home':
-			// Um placeholder rápido só para testarmos se o redirecionamento funciona!
 			renderDashboard(appRoot)
 			break
 		case '#/company':
@@ -45,6 +43,9 @@ export function router() {
 			break
 		case '#/orders':
 			renderOrders(appRoot)
+			break
+		case '#/reports':
+			renderReports(appRoot)
 			break
 
 		default:
