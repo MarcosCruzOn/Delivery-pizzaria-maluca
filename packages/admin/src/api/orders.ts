@@ -18,3 +18,9 @@ export async function updateOrderStatus(idpedido: number, idpedidostatus: number
 	if (!res.ok) throw new Error('Erro ao atualizar status do pedido')
 	return res.json()
 }
+
+export async function getOrderDetails(idpedido: number) {
+	const res = await fetch(`/api/admin/orders/${idpedido}/details`, { headers: getAuthHeaders() })
+	if (!res.ok) throw new Error('Erro ao buscar detalhes do pedido')
+	return res.json()
+}

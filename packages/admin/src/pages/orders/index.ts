@@ -1,5 +1,5 @@
 import { AdminLayout } from '../../components/AdminLayout/AdminLayout'
-import { getOrders, updateOrderStatus } from '../../api/orders'
+import { getOrders, updateOrderStatus, getOrderDetails } from '../../api/orders'
 
 export async function renderOrders(root: HTMLElement) {
 	let todosPedidos: any[] = []
@@ -92,7 +92,6 @@ export async function renderOrders(root: HTMLElement) {
 		const statusClicado = a.getAttribute('data-status') || 'pending'
 		filtrarE_DesenharPedidos(statusClicado)
 	})
-	// ... (código do tabs.addEventListener continua acima)
 
 	// 7. O Evento de clique para MUDAR O STATUS DO PEDIDO
 	grid?.addEventListener('click', async (e) => {
@@ -115,6 +114,15 @@ export async function renderOrders(root: HTMLElement) {
 				alert('Erro ao atualizar o status do pedido!')
 			}
 		}
+	})
+
+	// 8. O Evento de clique para ABRIR O RECIBO DO PEDIDO
+	grid?.addEventListener('click', async (e) => {
+		const cardContent = (e.target as HTMLElement).closest('.card-content') as HTMLElement
+		if (!cardContent) return // Se não clicou na área do recibo, ignora
+
+		const idpedido = Number(cardContent.dataset.id)
+		await carregarEMontarModal(idpedido)
 	})
 } // 👈 Aqui é a chave que fecha a função renderOrders()
 
@@ -160,7 +168,7 @@ function renderOrderCard(pedido: any) {
           <p class="numero-pedido mt-2">#${pedido.idpedido}</p>
         </div>
 
-        <div class="card-content" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalDetalhes">
+        <div class="card-content" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalDetalhes" data-id="${pedido.idpedido}">
 
           <div class="card-pedido-body mt-3">
             <p class="info-pedido">
@@ -188,23 +196,158 @@ function renderOrderCard(pedido: any) {
   `
 }
 
+// Essa função injeta os dados reais do banco de dados direto no Modal!
+async function carregarEMontarModal(idpedido: number) {
+	const modalContent = document.querySelector('#modalDetalhes .modal-content')
+	if (!modalContent) return
+
+	// Coloca um ícone de carregamento enquanto busca do banco
+	modalContent.innerHTML = `<div class="p-5 text-center"><i class="fas fa-spinner fa-spin fa-2x text-muted"></i><p class="mt-3">Carregando recibo...</p></div>`
+
+	try {
+		const pedido = await getOrderDetails(idpedido)
+		const dataFormatada = new Date(pedido.datacadastro).toLocaleString('pt-BR')
+
+		// Lógica do Endereço (Se for Retirada, não mostra rua!)
+		const enderecoHtml =
+			pedido.idtipoentrega === 1
+				? `
+			<div class="col-12">
+				<div class="card card-address mt-2">
+					<div class="img-icon-details"><i class="fas fa-map-marked-alt"></i></div>
+					<div class="infos pr-0">
+						<p class="name mb-0"><b>${pedido.endereço || ''}, ${pedido.numero || ''} ${pedido.complemento ? '- ' + pedido.complemento : ''}</b></p>
+						<span class="text mb-0">${pedido.bairro || ''} - ${pedido.cidade || ''}-${pedido.estado || ''} / CEP: ${pedido.cep || ''}</span>
+					</div>
+				</div>
+			</div>
+		`
+				: `
+			<div class="col-12">
+				<div class="card card-address mt-2">
+					<div class="img-icon-details"><i class="fas fa-box"></i></div>
+					<div class="infos pr-0"><p class="name mb-0"><b>Retirada no Balcão</b></p></div>
+				</div>
+			</div>
+		`
+
+		// Lógica das Pizzas e Bordas
+		const itensHtml = pedido.itens
+			.map(
+				(item: any) => `
+			<div class="card-item mb-2 pr-0">
+				<div class="container-detalhes">
+					<div class="detalhes-produto">
+						<div class="infos-produto">
+							<p class="name"><b>${item.quantidade}x ${item.produto_nome}</b></p>
+							<p class="price"><b>R$ ${Number(item.produto_valor).toFixed(2).replace('.', ',')}</b></p>
+						</div>
+						${
+							item.opcionais
+								? item.opcionais
+										.map(
+											(op: any) => `
+						<div class="infos-produto">
+							<p class="name-opcional mb-0">1x ${op.opcional_nome}</p>
+							<p class="price-opcional mb-0">+ R$ ${Number(op.opcional_valor).toFixed(2).replace('.', ',')}</p>
+						</div>`
+										)
+										.join('')
+								: ''
+						}
+						
+						${
+							item.observacao
+								? `
+						<div class="infos-produto mt-1">
+							<p class="obs-opcional mb-0 text-danger"><i class="fas fa-exclamation-circle"></i> Obs: ${item.observacao}</p>
+						</div>`
+								: ''
+						}
+					</div>
+				</div>
+			</div>
+		`
+			)
+			.join('')
+
+		// Monta o Modal Final
+		modalContent.innerHTML = `
+			<div class="modal-top d-flex justify-content-between px-4 py-3 align-items-center">
+				<h5 class="modal-title">Pedido #${pedido.idpedido} <span class="horario-pedido" style="font-size: 0.8em; margin-left: 10px;">${dataFormatada}</span></h5>
+				<button class="btn btn-white btn-sm" type="button" data-bs-dismiss="modal" aria-label="Close">
+					<i class="fas fa-times"></i> Fechar
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="container-dados-pedido pt-1">
+					<div class="row">
+						<div class="col-12">
+							<div class="card card-address cursor-default">
+								<div class="img-icon-details"><i class="fas fa-user"></i></div>
+								<div class="infos pr-0">
+									<div class="d-flex"><p class="name mb-0"><b>${pedido.nomecliente}</b></p><span class="text mb-0 ml-2">&nbsp;(${pedido.telefonecliente})</span></div>
+									<div class="d-flex mt-1"><span class="info-pedido mb-0 link"><i class="fas fa-motorcycle"></i> ${pedido.tipo_entrega}</span></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="card card-address cursor-default mt-2">
+								<div class="img-icon-details"><i class="fas fa-coins"></i></div>
+								<div class="infos pr-0">
+									<p class="name mb-0"><b>${pedido.pagamento}</b></p>
+									${pedido.troco ? `<span class="text mb-0">Troco para: R$ ${Number(pedido.troco).toFixed(2).replace('.', ',')}</span>` : ''}
+								</div>
+							</div>
+						</div>
+						${enderecoHtml}
+					</div>
+				</div>
+
+				<div class="container-itens-pedido carrinho mt-4">
+					<div id="itensPedido">
+						${itensHtml}
+
+						${
+							pedido.taxa_nome
+								? `
+						<div class="card-item mb-2 mt-3">
+							<div class="detalhes-produto">
+								<div class="infos-produto">
+									<p class="name mb-0"><i class="fas fa-motorcycle"></i>&nbsp; <b>${pedido.taxa_nome}</b></p>
+									<p class="price mb-0"><b>+ R$ ${Number(pedido.taxa_valor || 0)
+										.toFixed(2)
+										.replace('.', ',')}</b></p>
+								</div>
+							</div>
+						</div>`
+								: ''
+						}
+
+						<div class="card-item mb-2 mt-3 border-top pt-3">
+							<div class="detalhes-produto">
+								<div class="infos-produto">
+									<p class="name-total mb-0"><b>Total</b></p>
+									<p class="price-total mb-0 text-success" style="font-size: 1.2rem;"><b>R$ ${Number(pedido.total).toFixed(2).replace('.', ',')}</b></p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		`
+	} catch (error) {
+		modalContent.innerHTML = `<div class="p-5 text-center text-danger"><i class="fas fa-exclamation-triangle fa-2x"></i><p class="mt-3">Erro ao carregar recibo!</p></div>`
+	}
+}
+
+// O Esqueleto inicial do Modal (O Bootstrap abre isso instantaneamente enquanto o JS busca no banco)
 function mockOrderModal() {
 	return `
     <div id="modalDetalhes" class="modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-
-          <div class="modal-top d-flex justify-content-between px-4 py-3 align-items-center">
-            <h5 class="modal-title">#1 <span class="horario-pedido">Recebido há 33 minutos</span></h5>
-            <button class="btn btn-white btn-sm " type="button" data-bs-dismiss="modal" aria-label="Close">
-              <i class="fas fa-times"></i>&nbsp; Fechar
-            </button>
-          </div>
-
-          <div class="modal-body">
-            <h6 class="text-center mt-3">Em breve buscaremos o recibo real do banco...</h6>
-          </div>
-        </div>
+			</div>
       </div>
     </div>
   `

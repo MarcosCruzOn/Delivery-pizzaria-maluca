@@ -35,12 +35,7 @@ export async function criarPedidoCompletoNoBanco(dadosDoPedido: any) {
 		for (const item of dadosDoPedido.itens) {
 			const [resultadoItem]: any = await conexao.query(
 				`INSERT INTO pedidoitem (idpedido, idproduto, quantidade, observacao) VALUES (?, ?, ?, ?)`,
-				[
-					idPedidoGerado,
-					item.idproduto,
-					item.quantidade,
-					item.observacao,
-				]
+				[idPedidoGerado, item.idproduto, item.quantidade, item.observacao]
 			)
 
 			const idItemGerado = resultadoItem.insertId
@@ -96,10 +91,7 @@ export async function listarPedidosDoBanco() {
 }
 
 // Função para atualizar o status do pedido
-export async function atualizarStatusDoPedido(
-	idpedido: number,
-	idpedidostatus: number
-) {
+export async function atualizarStatusDoPedido(idpedido: number, idpedidostatus: number) {
 	// O comando UPDATE vai alterar apenas a coluna idpedidostatus daquele pedido específico
 	const [resultado] = await pool.query(
 		'UPDATE pedido SET idpedidostatus = ? WHERE idpedido = ?',
@@ -107,4 +99,62 @@ export async function atualizarStatusDoPedido(
 	)
 
 	return resultado
+}
+
+// Adicione esta função no final do seu orders.services.ts
+
+export async function buscarDetalhesDoPedido(idpedido: number) {
+	// 1. Busca a "Capa" do pedido (Endereço, totais, pagamento e O TIPO DA TAXA)
+	const queryPedido = `
+		SELECT 
+			p.*, 
+			te.nome AS tipo_entrega, 
+			pag.nome AS pagamento,
+            txtipo.nome AS taxa_nome,
+            tx.valor AS taxa_valor
+		FROM pedido p
+		INNER JOIN tipoentrega te ON p.idtipoentrega = te.idtipoentrega
+		INNER JOIN pagamentos pag ON p.idpagamentos = pag.idpagamentos
+        LEFT JOIN taxaentrega tx ON p.idtaxaentrega = tx.idtaxaentrega
+        LEFT JOIN taxaentregatipo txtipo ON tx.idtaxaentregatipo = txtipo.idtaxaentregatipo
+		WHERE p.idpedido = ?
+	`
+	const [pedidoRows]: any = await pool.query(queryPedido, [idpedido])
+
+	if (pedidoRows.length === 0) throw new Error('Pedido não encontrado')
+	const pedido = pedidoRows[0]
+
+	// 2. Busca os Itens do pedido (As Pizzas)
+	const queryItens = `
+		SELECT 
+			pi.idpedidoitem, 
+			pi.quantidade, 
+			pi.observacao, 
+			pr.nome AS produto_nome, 
+			pr.valor AS produto_valor
+		FROM pedidoitem pi
+		INNER JOIN produtos pr ON pi.idproduto = pr.idproduto
+		WHERE pi.idpedido = ?
+	`
+	const [itensRows]: any = await pool.query(queryItens, [idpedido])
+
+	// 3. Busca os Opcionais de cada Item (As Bordas, Adicionais)
+	for (let item of itensRows) {
+		const queryOpcionais = `
+			SELECT 
+				oi.nome AS opcional_nome, 
+				oi.valor AS opcional_valor
+			FROM pedidoitemopcional pio
+			INNER JOIN opcionalitem oi ON pio.idopcionalitem = oi.idopcionalitem
+			WHERE pio.idpedidoitem = ?
+		`
+		const [opcionaisRows]: any = await pool.query(queryOpcionais, [item.idpedidoitem])
+
+		// Colocamos os opcionais dentro do item!
+		item.opcionais = opcionaisRows
+	}
+
+	// 4. Colocamos os itens dentro do pedido e devolvemos o pacote completo!
+	pedido.itens = itensRows
+	return pedido
 }

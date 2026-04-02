@@ -3,26 +3,20 @@ import {
 	criarPedidoCompletoNoBanco,
 	listarPedidosDoBanco,
 	atualizarStatusDoPedido,
+	buscarDetalhesDoPedido,
 } from '../services/orders.services.js'
 
-export async function createOrderController(
-	req: Request,
-	res: Response
-): Promise<Response | void> {
+export async function createOrderController(req: Request, res: Response): Promise<Response | void> {
 	try {
 		const dadosDoPedido = req.body
 
 		// Uma validação básica para garantir que o cliente mandou o carrinho com itens
 		if (!dadosDoPedido.itens || dadosDoPedido.itens.length === 0) {
-			return res
-				.status(400)
-				.json({ erro: 'O pedido não pode estar vazio!' })
+			return res.status(400).json({ erro: 'O pedido não pode estar vazio!' })
 		}
 
 		if (!dadosDoPedido.nomecliente || !dadosDoPedido.telefonecliente) {
-			return res
-				.status(400)
-				.json({ erro: 'Nome e telefone do cliente são obrigatórios!' })
+			return res.status(400).json({ erro: 'Nome e telefone do cliente são obrigatórios!' })
 		}
 
 		const idNovoPedido = await criarPedidoCompletoNoBanco(dadosDoPedido)
@@ -40,18 +34,13 @@ export async function createOrderController(
 }
 
 // Controller para listar os pedidos
-export async function listOrdersController(
-	req: Request,
-	res: Response
-): Promise<Response | void> {
+export async function listOrdersController(req: Request, res: Response): Promise<Response | void> {
 	try {
 		const pedidos = await listarPedidosDoBanco()
 		return res.json(pedidos)
 	} catch (erro) {
 		console.error('Erro ao listar pedidos:', erro)
-		return res
-			.status(500)
-			.json({ erro: 'Erro interno ao listar os pedidos.' })
+		return res.status(500).json({ erro: 'Erro interno ao listar os pedidos.' })
 	}
 }
 
@@ -68,11 +57,9 @@ export async function updateOrderStatusController(
 		const { idpedidostatus } = req.body
 
 		if (!idpedido || !idpedidostatus) {
-			return res
-				.status(400)
-				.json({
-					erro: 'Envie o id do pedido na URL e o novo idpedidostatus no corpo!',
-				})
+			return res.status(400).json({
+				erro: 'Envie o id do pedido na URL e o novo idpedidostatus no corpo!',
+			})
 		}
 
 		await atualizarStatusDoPedido(Number(idpedido), Number(idpedidostatus))
@@ -82,8 +69,21 @@ export async function updateOrderStatusController(
 		})
 	} catch (erro) {
 		console.error('Erro ao atualizar status do pedido:', erro)
-		return res
-			.status(500)
-			.json({ erro: 'Erro interno ao atualizar o status.' })
+		return res.status(500).json({ erro: 'Erro interno ao atualizar o status.' })
+	}
+}
+
+export async function getOrderDetailsController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		const { idpedido } = req.params
+		const detalhes = await buscarDetalhesDoPedido(Number(idpedido))
+
+		return res.json(detalhes)
+	} catch (erro) {
+		console.error('Erro ao buscar detalhes do pedido:', erro)
+		return res.status(500).json({ erro: 'Erro interno ao buscar os detalhes do pedido.' })
 	}
 }
