@@ -11,6 +11,7 @@ import pagamentosRoutes from './pagamentos.routes.js'
 import taxasRoutes from './taxas.routes.js'
 import deliveryRoutes from './delivery.routes.js'
 import dashboardRoutes from './home.routes.js'
+import reportsRoutes from './reports.routes.js'
 
 import uploadRoutes from './upload.routes.js'
 
@@ -28,5 +29,6 @@ routes.use(pagamentosRoutes)
 routes.use(taxasRoutes)
 routes.use(deliveryRoutes)
 routes.use(dashboardRoutes)
+routes.use(reportsRoutes)
 
 export default routes
