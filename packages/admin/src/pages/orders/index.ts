@@ -93,12 +93,12 @@ export async function renderOrders(root: HTMLElement) {
 		filtrarE_DesenharPedidos(statusClicado)
 	})
 
-	// 7. O Evento de clique para MUDAR O STATUS DO PEDIDO
-	grid?.addEventListener('click', async (e) => {
+	// Evento para mudar status do pedido
+	root.addEventListener('click', async (e) => {
 		const btnMudarStatus = (e.target as HTMLElement).closest(
 			'.btn-change-status'
 		) as HTMLElement
-		if (!btnMudarStatus) return // Se não clicou em um botão de status, ignora!
+		if (!btnMudarStatus) return
 
 		e.preventDefault()
 		const idpedido = Number(btnMudarStatus.dataset.id)
@@ -108,7 +108,6 @@ export async function renderOrders(root: HTMLElement) {
 		if (confirm(`Deseja mover o pedido #${idpedido} para "${nomeNovoStatus}"?`)) {
 			try {
 				await updateOrderStatus(idpedido, idnovoStatus)
-				// Recarrega a página para o pedido sumir da aba atual e aparecer na aba nova!
 				location.reload()
 			} catch (err) {
 				alert('Erro ao atualizar o status do pedido!')
@@ -116,15 +115,15 @@ export async function renderOrders(root: HTMLElement) {
 		}
 	})
 
-	// 8. O Evento de clique para ABRIR O RECIBO DO PEDIDO
+	// Evento para abrir o recibo
 	grid?.addEventListener('click', async (e) => {
 		const cardContent = (e.target as HTMLElement).closest('.card-content') as HTMLElement
-		if (!cardContent) return // Se não clicou na área do recibo, ignora
+		if (!cardContent) return
 
 		const idpedido = Number(cardContent.dataset.id)
 		await carregarEMontarModal(idpedido)
 	})
-} // 👈 Aqui é a chave que fecha a função renderOrders()
+}
 
 function renderOrderCard(pedido: any) {
 	const dataFormatada = new Date(pedido.datacadastro).toLocaleTimeString('pt-BR', {
@@ -138,47 +137,27 @@ function renderOrderCard(pedido: any) {
 
         <div class="card-pedido-header">
           <div class="dropdown">
-            <button
-              class="btn btn-white btn-sm dropdown-toggle active"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+            <button class="btn btn-white btn-sm dropdown-toggle active" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               ${pedido.status}
             </button>
-
-          <div class="dropdown-menu">
-              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="2" data-nome="Aceito">
-                Mover para <b>Aceito</b> <i class="far fa-thumbs-up"></i>
-              </a>
-              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="3" data-nome="Em preparo">
-                Mover para <b>Em preparo</b> <i class="far fa-clock"></i>
-              </a>
-              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="4" data-nome="Em entrega">
-                Mover para <b>Em entrega</b> <i class="fas fa-motorcycle"></i>
-              </a>
-              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="5" data-nome="Concluído">
-                Mover para <b>Concluído</b> <i class="far fa-check-circle"></i>
-              </a>
-              <a class="dropdown-item btn-change-status text-danger" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="6" data-nome="Recusado">
-                Recusar Pedido <i class="far fa-times-circle"></i>
-              </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="2" data-nome="Aceito">Mover para <b>Aceito</b> <i class="far fa-thumbs-up"></i></a>
+              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="3" data-nome="Em preparo">Mover para <b>Em preparo</b> <i class="far fa-clock"></i></a>
+              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="4" data-nome="Em entrega">Mover para <b>Em entrega</b> <i class="fas fa-motorcycle"></i></a>
+              <a class="dropdown-item btn-change-status" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="5" data-nome="Concluído">Mover para <b>Concluído</b> <i class="far fa-check-circle"></i></a>
+              <a class="dropdown-item btn-change-status text-danger" href="javascript:void(0)" data-id="${pedido.idpedido}" data-status="6" data-nome="Recusado">Recusar Pedido <i class="far fa-times-circle"></i></a>
             </div>
-
+          </div>
           <p class="numero-pedido mt-2">#${pedido.idpedido}</p>
         </div>
 
-        <div class="card-content" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalDetalhes" data-id="${pedido.idpedido}">
-
+        <div class="card-content" data-bs-toggle="modal" data-bs-target="#modalDetalhes" data-id="${pedido.idpedido}">
           <div class="card-pedido-body mt-3">
-            <p class="info-pedido">
-              <i class="fas fa-user"></i> ${pedido.nomecliente}
-            </p>
-            <p class="info-pedido">
-              <i class="fas fa-motorcycle"></i> ${pedido.tipo_entrega}
-            </p>
+            <p class="info-pedido"><i class="fas fa-user"></i> ${pedido.nomecliente}</p>
+            <p class="info-pedido"><i class="fas fa-motorcycle"></i> ${pedido.tipo_entrega}</p>
             <p class="info-pedido">
               <i class="fas fa-coins"></i> ${pedido.pagamento}
+              ${pedido.troco ? `<span>Troco para R$ ${Number(pedido.troco).toFixed(2).replace('.', ',')}</span>` : ''}
             </p>
           </div>
 
@@ -188,7 +167,6 @@ function renderOrderCard(pedido: any) {
             <p class="horario-pedido">Recebido às ${dataFormatada}</p>
             <p class="total-pedido"><b>R$ ${Number(pedido.total).toFixed(2).replace('.', ',')}</b></p>
           </div>
-
         </div>
 
       </div>
@@ -196,19 +174,19 @@ function renderOrderCard(pedido: any) {
   `
 }
 
-// Essa função injeta os dados reais do banco de dados direto no Modal!
 async function carregarEMontarModal(idpedido: number) {
 	const modalContent = document.querySelector('#modalDetalhes .modal-content')
 	if (!modalContent) return
 
-	// Coloca um ícone de carregamento enquanto busca do banco
 	modalContent.innerHTML = `<div class="p-5 text-center"><i class="fas fa-spinner fa-spin fa-2x text-muted"></i><p class="mt-3">Carregando recibo...</p></div>`
 
 	try {
 		const pedido = await getOrderDetails(idpedido)
-		const dataFormatada = new Date(pedido.datacadastro).toLocaleString('pt-BR')
+		const dataFormatada = new Date(pedido.datacadastro).toLocaleString('pt-BR', {
+			dateStyle: 'short',
+			timeStyle: 'short',
+		})
 
-		// Lógica do Endereço (Se for Retirada, não mostra rua!)
 		const enderecoHtml =
 			pedido.idtipoentrega === 1
 				? `
@@ -219,6 +197,7 @@ async function carregarEMontarModal(idpedido: number) {
 						<p class="name mb-0"><b>${pedido.endereço || ''}, ${pedido.numero || ''} ${pedido.complemento ? '- ' + pedido.complemento : ''}</b></p>
 						<span class="text mb-0">${pedido.bairro || ''} - ${pedido.cidade || ''}-${pedido.estado || ''} / CEP: ${pedido.cep || ''}</span>
 					</div>
+					<div class="icon-edit"><i class="fas fa-location-arrow"></i></div>
 				</div>
 			</div>
 		`
@@ -231,7 +210,6 @@ async function carregarEMontarModal(idpedido: number) {
 			</div>
 		`
 
-		// Lógica das Pizzas e Bordas
 		const itensHtml = pedido.itens
 			.map(
 				(item: any) => `
@@ -250,18 +228,19 @@ async function carregarEMontarModal(idpedido: number) {
 						<div class="infos-produto">
 							<p class="name-opcional mb-0">1x ${op.opcional_nome}</p>
 							<p class="price-opcional mb-0">+ R$ ${Number(op.opcional_valor).toFixed(2).replace('.', ',')}</p>
-						</div>`
+						</div>
+						`
 										)
 										.join('')
 								: ''
 						}
-						
 						${
 							item.observacao
 								? `
-						<div class="infos-produto mt-1">
-							<p class="obs-opcional mb-0 text-danger"><i class="fas fa-exclamation-circle"></i> Obs: ${item.observacao}</p>
-						</div>`
+						<div class="infos-produto">
+							<p class="obs-opcional mb-0">- ${item.observacao}</p>
+						</div>
+						`
 								: ''
 						}
 					</div>
@@ -271,12 +250,23 @@ async function carregarEMontarModal(idpedido: number) {
 			)
 			.join('')
 
-		// Monta o Modal Final
+		let btnAcaoHtml = ''
+		if (pedido.idpedidostatus === 1)
+			btnAcaoHtml = `<button type="button" class="btn btn-yellow btn-sm btn-change-status" data-id="${pedido.idpedido}" data-status="2" data-nome="Aceito">Aceitar Pedido</button>`
+		else if (pedido.idpedidostatus === 2)
+			btnAcaoHtml = `<button type="button" class="btn btn-yellow btn-sm btn-change-status" data-id="${pedido.idpedido}" data-status="3" data-nome="Em preparo">Iniciar Preparo</button>`
+		else if (pedido.idpedidostatus === 3)
+			btnAcaoHtml = `<button type="button" class="btn btn-yellow btn-sm btn-change-status" data-id="${pedido.idpedido}" data-status="4" data-nome="Em entrega">Saiu para Entrega</button>`
+		else if (pedido.idpedidostatus === 4)
+			btnAcaoHtml = `<button type="button" class="btn btn-yellow btn-sm btn-change-status" data-id="${pedido.idpedido}" data-status="5" data-nome="Concluído">Concluir Pedido</button>`
+
 		modalContent.innerHTML = `
-			<div class="modal-top d-flex justify-content-between px-4 py-3 align-items-center">
-				<h5 class="modal-title">Pedido #${pedido.idpedido} <span class="horario-pedido" style="font-size: 0.8em; margin-left: 10px;">${dataFormatada}</span></h5>
+			<div class="modal-header">
+				<h5 class="modal-title">#${pedido.idpedido} 
+					<span class="horario-pedido">Recebido em ${dataFormatada}</span>
+				</h5>
 				<button class="btn btn-white btn-sm" type="button" data-bs-dismiss="modal" aria-label="Close">
-					<i class="fas fa-times"></i> Fechar
+					<i class="fas fa-times"></i>&nbsp; Fechar 
 				</button>
 			</div>
 			<div class="modal-body">
@@ -286,32 +276,40 @@ async function carregarEMontarModal(idpedido: number) {
 							<div class="card card-address cursor-default">
 								<div class="img-icon-details"><i class="fas fa-user"></i></div>
 								<div class="infos pr-0">
-									<div class="d-flex"><p class="name mb-0"><b>${pedido.nomecliente}</b></p><span class="text mb-0 ml-2">&nbsp;(${pedido.telefonecliente})</span></div>
-									<div class="d-flex mt-1"><span class="info-pedido mb-0 link"><i class="fas fa-motorcycle"></i> ${pedido.tipo_entrega}</span></div>
+									<div class="d-flex">
+										<p class="name mb-0"><b>${pedido.nomecliente}</b></p>
+										<span class="text mb-0">${pedido.telefonecliente}</span>
+									</div>
+									<div class="d-flex">
+										<span class="info-pedido mb-0">Recebido em ${dataFormatada}</span>
+										<span class="info-pedido mb-0 link"><i class="fas fa-motorcycle"></i> ${pedido.tipo_entrega}</span>
+									</div>
 								</div>
 							</div>
 						</div>
+
 						<div class="col-12">
 							<div class="card card-address cursor-default mt-2">
 								<div class="img-icon-details"><i class="fas fa-coins"></i></div>
 								<div class="infos pr-0">
 									<p class="name mb-0"><b>${pedido.pagamento}</b></p>
-									${pedido.troco ? `<span class="text mb-0">Troco para: R$ ${Number(pedido.troco).toFixed(2).replace('.', ',')}</span>` : ''}
+									<span class="text mb-0">${pedido.troco ? `Troco para: R$ ${Number(pedido.troco).toFixed(2).replace('.', ',')}` : 'Sem troco'}</span>
 								</div>
 							</div>
 						</div>
+
 						${enderecoHtml}
 					</div>
 				</div>
 
-				<div class="container-itens-pedido carrinho mt-4">
+				<div class="container-itens-pedido carrinho">
 					<div id="itensPedido">
 						${itensHtml}
 
 						${
 							pedido.taxa_nome
 								? `
-						<div class="card-item mb-2 mt-3">
+						<div class="card-item mb-2">
 							<div class="detalhes-produto">
 								<div class="infos-produto">
 									<p class="name mb-0"><i class="fas fa-motorcycle"></i>&nbsp; <b>${pedido.taxa_nome}</b></p>
@@ -323,15 +321,19 @@ async function carregarEMontarModal(idpedido: number) {
 						</div>`
 								: ''
 						}
-
-						<div class="card-item mb-2 mt-3 border-top pt-3">
+			
+						<div class="card-item mb-2">
 							<div class="detalhes-produto">
 								<div class="infos-produto">
 									<p class="name-total mb-0"><b>Total</b></p>
-									<p class="price-total mb-0 text-success" style="font-size: 1.2rem;"><b>R$ ${Number(pedido.total).toFixed(2).replace('.', ',')}</b></p>
+									<p class="price-total mb-0"><b>R$ ${Number(pedido.total).toFixed(2).replace('.', ',')}</b></p>
 								</div>
 							</div>
 						</div>
+					</div>
+
+					<div class="footer-btn mt-3">
+						${btnAcaoHtml}
 					</div>
 				</div>
 			</div>
@@ -341,13 +343,12 @@ async function carregarEMontarModal(idpedido: number) {
 	}
 }
 
-// O Esqueleto inicial do Modal (O Bootstrap abre isso instantaneamente enquanto o JS busca no banco)
 function mockOrderModal() {
 	return `
     <div id="modalDetalhes" class="modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-			</div>
+        </div>
       </div>
     </div>
   `

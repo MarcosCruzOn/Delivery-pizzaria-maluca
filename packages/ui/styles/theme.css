@@ -1,11 +1,11 @@
 @font-face {
 	font-family: 'PoppinsMedium';
-	src: url('/fonts/Poppins-Medium.otf');
+	src: url('../public/fonts/Poppins-Medium.otf');
 }
 
 @font-face {
 	font-family: 'PoppinsRegular';
-	src: url('/fonts/Poppins-Regular.otf');
+	src: url('../public/fonts/Poppins-Regular.otf');
 }
 
 :root {
@@ -35,6 +35,21 @@ b {
 	font-family: 'PoppinsMedium', 'Rubik', sans-serif;
 }
 
+.hidden {
+	display: none !important;
+}
+
+.pr-0 {
+	padding-right: 0px !important;
+}
+
+.infos {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
 .card {
 	border-radius: 20px;
 	padding: 15px 20px;
@@ -54,15 +69,72 @@ b {
 	flex: none;
 }
 
+.carrinho .infos-produto .name-total {
+	font-size: 18px;
+	color: var(--color-black);
+}
+
+.carrinho .infos-produto .price-total {
+	font-size: 18px;
+	color: var(--color-primary);
+}
+
+.card-select {
+	border: 2px dashed var(--color-primary) !important;
+	cursor: pointer;
+}
+
+.color-primary {
+	color: var(--color-primary);
+}
+
+.card-address {
+	display: flex;
+	flex-direction: row;
+	/* justify-content: center; */
+	align-items: center;
+}
+
+.card-address .infos {
+	padding-left: 15px;
+	padding-right: 15px;
+	font-size: 14px;
+}
+
+.card-address .infos .name {
+	color: var(--color-black);
+}
+
+.img-icon-details {
+	width: 50px;
+	height: 50px;
+	background-color: var(--color-secondary);
+	color: var(--color-black);
+	font-size: 22px;
+	border-radius: 11px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.icon-edit {
+	font-size: 16px;
+	color: var(--color-primary);
+}
+
 .form-control {
 	background-color: var(--color-white);
 	color: var(--color-black) !important;
-	border-radius: 20px;
+	border-radius: 8px;
 	padding: 15px 25px;
 	font-size: 16px;
 	box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
 	border: none !important;
 	height: 50px;
+}
+
+textarea {
+	height: 150px !important;
 }
 
 .link {
@@ -112,33 +184,8 @@ b {
 	background: var(--color-primary-out);
 }
 
-.btn-google {
-	background: #fff;
-	color: #333;
-	border: 1px solid #ccc;
-}
-
-.hidden {
-	display: none !important;
-}
-
-.loader {
-	width: 30px;
-	height: 30px;
-	border: 3px solid #ccc;
-	border-top: 3px solid #000;
-	border-radius: 50%;
-	animation: spin 1s linear infinite;
-	margin: 20px auto;
-}
 .border-pri {
 	border: 1px solid var(--color-primary);
 	border-radius: 50%;
 	box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-@keyframes spin {
-	to {
-		transform: rotate(360deg);
-	}
 }

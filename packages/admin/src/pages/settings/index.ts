@@ -30,11 +30,16 @@ export async function renderSettings(root: HTMLElement) {
 				</div>
 
 				<div class="col-12 mt-5 hidden" id="delivery-retirada">
-					<p class="title-categoria mb-4 text-dark"><b>Selecione as opções de entrega da sua loja</b></p>
-					
-					<div class="card card-horizontal mb-3">
+					<p class="title-categoria mb-4 text-dark">
+						<b>Selecione as opções de entrega da sua loja</b>
+					</p>
+
+					<!-- Card Retirada -->
+					<div class="card card-address mt-3">
 						<div class="d-flex align-items-center flex-grow-1">
-							<div class="icon-box-yellow me-4"><i class="fas fa-box text-dark fa-lg"></i></div>
+							<div class="img-icon-details me-4">
+								<i class="fas fa-box text-dark fa-lg"></i>
+							</div>
 							<div class="infos config" style="min-width: 150px;">
 								<p class="name mb-2 text-dark"><b>Retirada</b></p>
 								<div class="d-flex align-items-center gap-2">
@@ -47,24 +52,29 @@ export async function renderSettings(root: HTMLElement) {
 							</div>
 						</div>
 						
-						<div class="d-flex align-items-center gap-4 disabled" id="tempoRetirada">
+						<div class="d-flex align-items-center gap-4 disabled tempo" id="tempoRetirada">
 							<div class="form-group mb-0">
-								<label class="text-muted" style="font-size: 0.8em;">Tempo mínimo retirada (min)</label>
-								<input type="number" id="minRetirada" class="form-control form-control-light" placeholder="00" disabled />
+								<label class="text-muted" >
+									<b>Tempo mínimo retirada (min)</b>
+								</label>
+								<input type="number" min="0" id="minRetirada" class="form-control form-control-light" placeholder="00" disabled />
 							</div>
 							<div class="form-group mb-0">
-								<label class="text-muted" style="font-size: 0.8em;">Tempo máximo retirada (min)</label>
-								<input type="number" id="maxRetirada" class="form-control form-control-light" placeholder="00" disabled />
+								<label class="text-muted" >
+									<b>Tempo máximo retirada (min)</b>
+								</label>
+								<input type="number" min="0" id="maxRetirada" class="form-control form-control-light" placeholder="00" disabled />
 							</div>
-							<a href="javascript:void(0)" class="btn btn-yellow px-4 disabled mt-3" id="btnSalvarRetirada" style="border-radius: 20px;">
+							<a href="javascript:void(0)" class="btn btn-yellow px-4 disabled mt-3" id="btnSalvarRetirada">
 								<i class="fas fa-check"></i> Salvar
 							</a>
 						</div>
 					</div>
 
-					<div class="card card-horizontal mb-3">
+					<!-- Card Delivery -->
+					<div class="card card-address mt-3">
 						<div class="d-flex align-items-center flex-grow-1">
-							<div class="icon-box-yellow me-4"><i class="fas fa-motorcycle text-dark fa-lg"></i></div>
+							<div class="img-icon-details me-4"><i class="fas fa-motorcycle text-dark fa-lg"></i></div>
 							<div class="infos config" style="min-width: 150px;">
 								<p class="name mb-2 text-dark"><b>Delivery</b></p>
 								<div class="d-flex align-items-center gap-2">
@@ -77,16 +87,16 @@ export async function renderSettings(root: HTMLElement) {
 							</div>
 						</div>
 						
-						<div class="d-flex align-items-center gap-4 disabled" id="tempoDelivery">
+						<div class="d-flex align-items-center gap-4 disabled tempo" id="tempoDelivery">
 							<div class="form-group mb-0">
-								<label class="text-muted" style="font-size: 0.8em;">Tempo mínimo entrega (min)</label>
+								<label class="text-muted"><b>Tempo mínimo entrega (min)</b></label>
 								<input type="number" id="minDelivery" class="form-control form-control-light" placeholder="00" disabled />
 							</div>
 							<div class="form-group mb-0">
-								<label class="text-muted" style="font-size: 0.8em;">Tempo máximo entrega (min)</label>
+								<label class="text-muted"><b>Tempo máximo entrega (min)</b></label>
 								<input type="number" id="maxDelivery" class="form-control form-control-light" placeholder="00" disabled />
 							</div>
-							<a href="javascript:void(0)" class="btn btn-yellow px-4 disabled mt-3" id="btnSalvarDelivery" style="border-radius: 20px;">
+							<a href="javascript:void(0)" class="btn btn-yellow px-4 disabled mt-3" id="btnSalvarDelivery">
 								<i class="fas fa-check"></i> Salvar
 							</a>
 						</div>
