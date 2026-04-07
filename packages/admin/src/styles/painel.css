@@ -377,7 +377,7 @@ h1.title-page {
 /* Modal detalhes */
 
 .modal-content {
-	background: transparent;
+	/* background: transparent; */
 	border: none;
 }
 
@@ -648,4 +648,439 @@ input:checked + .slider::before {
 
 .tempo.disabled input {
 	background-color: #f5f5f5 !important;
+}
+
+.container-group.inline {
+	display: flex;
+	column-gap: 15px;
+}
+
+.group-select {
+	display: flex;
+}
+
+.group-select .container-check {
+	font-size: 16px;
+	color: var(--color-black);
+	font-weight: bold;
+	padding-left: 35px;
+	margin-right: 20px;
+	margin-bottom: 0;
+}
+
+.form-sm {
+	width: 150px;
+}
+
+.table {
+	font-size: 16px;
+}
+
+.table td {
+	color: var(--color-text);
+	vertical-align: middle;
+}
+
+.badge {
+	padding: 10px 15px;
+	border-radius: 50px;
+}
+.badge-success {
+	border: 1px solid var(--color-green);
+	color: var(--color-green);
+}
+
+.badge-danger {
+	border: 1px solid var(--color-red);
+	color: var(--color-red);
+}
+
+.color-red {
+	color: var(--color-red) !important;
+}
+
+.opacity-05 {
+	opacity: 0.5;
+}
+
+/* Rádio Buttons customizados (Aba Taxas) */
+.custom-radio {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background-color: var(--color-input-out);
+	border: 2px solid var(--color-separate);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.2s ease;
+}
+
+.fee-option {
+	transition: border 0.3s ease;
+	border: 2px solid transparent;
+}
+
+.fee-option.active-fee {
+	border-color: var(--color-primary);
+}
+
+.fee-option.active-fee .custom-radio {
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
+}
+
+/* Empresa */
+
+.logo-empresa .container-img-sobre {
+	position: relative;
+	margin-top: 0;
+	width: 110px;
+	height: 110px;
+	right: 0;
+	margin-right: 20px;
+}
+
+.logo-empresa .icon-action {
+	position: absolute;
+	right: -10px;
+	bottom: -10px;
+}
+
+.detalhes-empresa {
+	flex: 1;
+}
+
+.detalhes-empresa textarea {
+	height: 250px !important;
+}
+
+.container-cep .form-control {
+	padding-right: 75px;
+}
+
+.container-cep .btn {
+	float: right;
+	margin-top: -45px;
+	margin-right: 10px;
+}
+
+.horario .form-control {
+	height: 52px;
+}
+
+.horario .btn-red {
+	margin-top: 30px;
+}
+
+/* Relatórios */
+
+.value-card {
+	font-size: 20px;
+	color: var(--color-black);
+}
+
+.card-table,
+.data-table {
+	font-size: 14px !important;
+}
+
+/* ---- NOVOS ESTILOS DAS CONFIGURAÇÕES (MATCH COM O LAYOUT) ---- */
+
+/* Card Horizontal Largo */
+.card-horizontal {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 25px 30px;
+	border-radius: 15px;
+	background-color: #ffffff;
+	box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.03) !important;
+	border: none !important;
+}
+
+/* Campos de Input mais limpos (Estilo Pílula/Sem Borda Forte) */
+.form-control-light {
+	background-color: #f8f9fa !important;
+	border: 1px solid transparent !important;
+	border-radius: 12px !important;
+	height: 45px;
+	padding-left: 20px;
+	font-weight: 500;
+	color: #4f4f4f !important;
+	transition: all 0.3s ease;
+}
+
+.form-control-light:focus {
+	background-color: #ffffff !important;
+	border-color: var(--color-primary) !important;
+	box-shadow: 0 0 0 0.2rem rgba(255, 191, 0, 0.2) !important;
+}
+
+.form-control-light:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Rádio Buttons customizados (Aba Taxas) */
+.custom-radio {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background-color: #eee;
+	border: 2px solid #ddd;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.2s ease;
+}
+
+.fee-option {
+	transition: border 0.3s ease;
+	border: 2px solid transparent;
+}
+
+/* Ajustes da Tabela de Distâncias */
+.taxa-table td {
+	font-size: 15px;
+}
+.taxa-table thead th {
+	font-weight: 600;
+	color: #6c757d;
+	font-size: 14px;
+}
+
+/* ---- ESTILOS DO MODAL RECIBO (CUPOM FISCAL) ---- */
+
+.receipt-modal {
+	border: none;
+	background-color: #ffffff;
+	border-radius: 20px 20px 0 0 !important; /* Arredonda só em cima */
+	position: relative;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* O Efeito Serrilhado (Zig-Zag) no rodapé do modal */
+.receipt-modal::after {
+	content: '';
+	position: absolute;
+	bottom: -8px;
+	left: 0;
+	width: 100%;
+	height: 8px;
+	background:
+		linear-gradient(135deg, #ffffff 4px, transparent 0),
+		linear-gradient(-135deg, #ffffff 4px, transparent 0);
+	background-position: left bottom;
+	background-repeat: repeat-x;
+	background-size: 8px 8px;
+}
+
+/* Os mini-cards de Cliente, Pagamento e Endereço dentro do modal */
+.card-horizontal-sm {
+	display: flex;
+	align-items: center;
+	padding: 15px 20px;
+	border-radius: 15px;
+	background-color: #ffffff;
+	box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.04);
+	border: 1px solid #f8f9fa;
+}
+
+.item-row {
+	border-bottom: 1px dashed #eee;
+	padding-bottom: 15px;
+}
+
+.item-row:last-child {
+	border-bottom: none;
+}
+
+/* =========================================
+   RESPONSIVIDADE: PAINEL (TABLET E CELULAR)
+   ========================================= */
+
+/* Tablets (até 992px) */
+@media (max-width: 992px) {
+	.menu-left {
+		width: 200px;
+	}
+	.conteudo {
+		padding-left: 215px;
+	}
+	.lista-pedidos > .col-3 {
+		width: 50% !important;
+		max-width: 50% !important;
+		flex: 0 0 50% !important;
+		margin-bottom: 20px;
+	}
+}
+
+/* Celulares (até 768px) */
+@media (max-width: 768px) {
+	/* Transforma a Barra Lateral em Menu Inferior (App Bar) */
+	.menu-left {
+		top: auto;
+		bottom: 0;
+		width: 100%;
+		height: 70px;
+		flex-direction: row;
+		padding: 0;
+		z-index: 9999;
+		box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+	}
+	.menu-left .logo {
+		display: none;
+	}
+	.menu-left .menus {
+		margin-top: 0;
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		justify-content: space-around;
+		align-items: center;
+		overflow-x: auto;
+	}
+
+	.menu-item {
+		padding: 8px 5px;
+		font-size: 11px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+	}
+	.menu-item i {
+		margin-right: 0;
+		margin-bottom: 4px;
+		font-size: 18px;
+		width: auto;
+	}
+	.menu-item.active {
+		background-color: transparent;
+		color: var(--color-primary) !important;
+		border-radius: 0;
+		border-top: 3px solid var(--color-primary);
+	}
+	.menu-item.active::before,
+	.menu-item.active::after {
+		display: none;
+	}
+
+	/* Conteúdo Principal */
+	.conteudo {
+		padding-left: 15px;
+		padding-right: 15px;
+		padding-bottom: 90px;
+	}
+	.conteudo-inner {
+		margin-top: 20px;
+	}
+
+	/* Topo (Logo e Usuário) */
+	.menu-top .col-12 {
+		flex-direction: column;
+		align-items: flex-start !important;
+	}
+	h1.title-page {
+		font-size: 24px;
+		margin-bottom: 20px;
+		margin-top: 15px;
+	}
+	.container-right {
+		width: 100%;
+		justify-content: space-between;
+		margin-bottom: 15px;
+	}
+	.container-dados p,
+	.container-dados span {
+		text-align: left;
+	}
+
+	/* Kanban Pedidos */
+	.menus-pedido {
+		display: flex;
+		overflow-x: auto;
+		white-space: nowrap;
+		padding-bottom: 10px;
+	}
+	.lista-pedidos > .col-3 {
+		width: 100% !important;
+		max-width: 100% !important;
+		flex: 0 0 100% !important;
+		margin-bottom: 20px;
+	}
+	.card-pedido-body {
+		height: auto;
+		padding-bottom: 15px;
+	}
+
+	/* Configurações, Taxas e Delivery */
+	.menus-config {
+		flex-wrap: wrap;
+	}
+	.menus-config a {
+		width: 100%;
+		margin-bottom: 10px;
+		margin-right: 0;
+		text-align: center;
+	}
+
+	.card-horizontal,
+	.card-horizontal-sm {
+		flex-direction: column;
+		align-items: flex-start !important;
+		padding: 20px;
+		gap: 15px;
+	}
+	.card-horizontal .d-flex {
+		flex-direction: column;
+		align-items: flex-start !important;
+		width: 100%;
+		gap: 10px;
+	}
+	.card-horizontal .icon-box-yellow {
+		margin-bottom: 10px;
+	}
+
+	#tempoRetirada,
+	#tempoDelivery {
+		flex-direction: column;
+		width: 100%;
+		gap: 15px !important;
+	}
+	.form-group,
+	.form-control-light {
+		width: 100% !important;
+	}
+	#feeModes {
+		flex-wrap: wrap;
+	}
+	.fee-option {
+		width: 100%;
+		justify-content: flex-start;
+	}
+
+	/* Modal Cupom Fiscal */
+	.receipt-modal {
+		border-radius: 15px 15px 0 0 !important;
+	}
+	.modal-top {
+		flex-direction: column;
+		align-items: flex-start !important;
+		gap: 15px;
+	}
+	.card-horizontal-sm .infos {
+		width: 100%;
+	}
+
+	/* Login */
+	.login {
+		padding: 15px;
+	}
+	.card-login {
+		padding: 30px 20px;
+	}
 }

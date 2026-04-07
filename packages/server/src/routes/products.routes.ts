@@ -7,6 +7,7 @@ import {
 	listProductOpcionaisController,
 	updateProductController,
 	deleteProductController,
+	listProductsByCategoryController,
 } from '../controllers/products.controllers.js'
 import { verificarToken } from '../middlewares/auth.js'
 
@@ -24,5 +25,8 @@ productRoutes.get('/admin/products/:idproduto/opcionais', listProductOpcionaisCo
 // NOVO: Atualizar e Deletar
 productRoutes.put('/admin/products/:idproduto', verificarToken, updateProductController)
 productRoutes.delete('/admin/products/:idproduto', verificarToken, deleteProductController)
+
+// Rota pública para listar produtos por categoria
+productRoutes.get('/products/category/:idcategoria', listProductsByCategoryController)
 
 export default productRoutes

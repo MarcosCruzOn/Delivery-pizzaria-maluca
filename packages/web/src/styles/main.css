@@ -322,3 +322,82 @@ textarea {
 	font-size: 16px;
 	color: var(--color-primary);
 }
+
+/* =========================================
+   RESPONSIVIDADE: CLIENTE (CELULAR)
+   ========================================= */
+
+@media (max-width: 768px) {
+	.bg-top {
+		height: 80px;
+	}
+	.bg-top.sobre,
+	.bg-top.pedido {
+		height: 120px;
+	}
+
+	.img-item {
+		height: 160px;
+		margin-block: 15px;
+		border-radius: 15px;
+	}
+
+	.infos-produto-opcional {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 5px;
+	}
+	.opcionais .badge {
+		float: none;
+		display: inline-block;
+		margin-top: 10px;
+	}
+
+	.btn-full {
+		width: calc(100% - 30px);
+		padding: 12px 20px;
+		font-size: 16px;
+	}
+
+	.carrinho .infos-produto {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 5px;
+	}
+	.carrinho .infos-produto .obs-opcional {
+		margin-right: 0;
+		padding-left: 0;
+	}
+
+	.card-address {
+		flex-direction: column;
+		align-items: flex-start;
+		text-align: left;
+		gap: 10px;
+		padding: 15px;
+	}
+	.img-icon-details {
+		width: 40px;
+		height: 40px;
+		font-size: 18px;
+		margin-bottom: 10px;
+	}
+
+	.container-img-sobre {
+		width: 70px;
+		height: 70px;
+		margin-top: -35px;
+		right: 15px;
+	}
+	.img-sobre {
+		width: 50px;
+		height: 50px;
+		top: 10px;
+		left: 10px;
+	}
+
+	.title-sobre {
+		margin-right: 0;
+		font-size: 20px;
+	}
+}

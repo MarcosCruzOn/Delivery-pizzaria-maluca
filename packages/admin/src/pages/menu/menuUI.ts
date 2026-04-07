@@ -87,6 +87,11 @@ export function renderCategoryModal() {
                 <option value="fas fa-pizza-slice">🍕 Pizza</option>
                 <option value="fas fa-hamburger">🍔 Burger</option>
                 <option value="fas fa-glass-martini-alt">🥤 Bebidas</option>
+				<option value="fas fa-ice-cream">🍦 Sorvetes</option>
+				<option value="fas fa-birthday-cake">🎂 Sobremesas</option>
+				<option value="fas fa-coffee">☕ Cafés</option>
+				<option value="fas fa-leaf">🥗 Saladas</option>
+				<option value="fas fa-drumstick-bite">🍗 Aves</option>
               </select>
           </div>
           <div class="mb-3">

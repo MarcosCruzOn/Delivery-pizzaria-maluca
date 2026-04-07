@@ -7,6 +7,7 @@ import {
 	listarOpcionaisDoProduto,
 	atualizarProdutoNoBanco,
 	deletarProdutoNoBanco,
+	listarProdutosPorCategoriaDoBanco,
 } from '../services/products.services.js'
 
 // Controller para o POST (Criar Produto)
@@ -17,12 +18,18 @@ export async function createProductController(
 	try {
 		const { idcategoria, nome, descricao, valor, imagem, ordem } = req.body
 
+		// 👇 TRAVA DE SEGURANÇA DA IMAGEM 👇
+		let imagemFormatada = imagem
+		if (imagemFormatada && !imagemFormatada.startsWith('/uploads/')) {
+			imagemFormatada = `/uploads/${imagemFormatada}`
+		}
+
 		// Validação: Verifica se os campos obrigatórios foram enviados
 		if (
 			!idcategoria ||
 			!nome ||
 			valor === undefined ||
-			!imagem === undefined ||
+			!imagemFormatada === undefined ||
 			ordem === undefined
 		) {
 			return res.status(400).json({
@@ -30,23 +37,12 @@ export async function createProductController(
 			})
 		}
 
-		await criarProdutoNoBanco(
-			idcategoria,
-			nome,
-			descricao,
-			valor,
-			imagem,
-			ordem
-		)
+		await criarProdutoNoBanco(idcategoria, nome, descricao, valor, imagemFormatada, ordem)
 
-		return res
-			.status(201)
-			.json({ mensagem: 'Produto criado com sucesso! 🍕' })
+		return res.status(201).json({ mensagem: 'Produto criado com sucesso! 🍕' })
 	} catch (erro) {
 		console.error('Erro ao criar produto:', erro)
-		return res
-			.status(500)
-			.json({ erro: 'Erro interno ao criar o produto.' })
+		return res.status(500).json({ erro: 'Erro interno ao criar o produto.' })
 	}
 }
 
@@ -60,9 +56,7 @@ export async function listProductsController(
 		return res.json(produtos)
 	} catch (erro) {
 		console.error('Erro ao listar produtos:', erro)
-		return res
-			.status(500)
-			.json({ erro: 'Erro interno ao listar os produtos.' })
+		return res.status(500).json({ erro: 'Erro interno ao listar os produtos.' })
 	}
 }
 
@@ -123,9 +117,7 @@ export async function linkOpcionalController(
 		})
 	} catch (erro) {
 		console.error('Erro ao vincular opcional:', erro)
-		return res
-			.status(500)
-			.json({ erro: 'Erro interno ao vincular o opcional.' })
+		return res.status(500).json({ erro: 'Erro interno ao vincular o opcional.' })
 	}
 }
 
@@ -140,9 +132,7 @@ export async function listProductOpcionaisController(
 		return res.json(opcionais)
 	} catch (erro) {
 		console.error('Erro ao listar opcionais do produto:', erro)
-		return res
-			.status(500)
-			.json({ erro: 'Erro interno ao listar os opcionais.' })
+		return res.status(500).json({ erro: 'Erro interno ao listar os opcionais.' })
 	}
 }
 
@@ -154,19 +144,20 @@ export async function updateProductController(
 		const { idproduto } = req.params
 		const dados = req.body
 
+		// 👇 TRAVA DE SEGURANÇA DA IMAGEM 👇
+		if (dados.imagem && !dados.imagem.startsWith('/uploads/')) {
+			dados.imagem = `/uploads/${dados.imagem}`
+		}
+
 		if (!dados.nome || !dados.valor || !dados.idcategoria) {
-			return res
-				.status(400)
-				.json({ erro: 'Nome, valor e categoria são obrigatórios!' })
+			return res.status(400).json({ erro: 'Nome, valor e categoria são obrigatórios!' })
 		}
 
 		await atualizarProdutoNoBanco(Number(idproduto), dados)
 		return res.json({ mensagem: 'Produto atualizado com sucesso! 🍕' })
 	} catch (erro) {
 		console.error('Erro ao atualizar produto:', erro)
-		return res
-			.status(500)
-			.json({ erro: 'Erro interno ao atualizar o produto.' })
+		return res.status(500).json({ erro: 'Erro interno ao atualizar o produto.' })
 	}
 }
 
@@ -184,5 +175,20 @@ export async function deleteProductController(
 		return res.status(500).json({
 			erro: 'Não foi possível apagar o produto. Talvez ele já esteja em um pedido finalizado!',
 		})
+	}
+}
+
+// Controller para o GET (Listar Produtos por Categoria - Rota Pública)
+export async function listProductsByCategoryController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		const { idcategoria } = req.params
+		const produtos = await listarProdutosPorCategoriaDoBanco(Number(idcategoria))
+		return res.json(produtos)
+	} catch (erro) {
+		console.error('Erro ao listar produtos por categoria:', erro)
+		return res.status(500).json({ erro: 'Erro interno ao listar os produtos da categoria.' })
 	}
 }

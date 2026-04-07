@@ -9,7 +9,8 @@ import { verificarToken } from '../middlewares/auth.js'
 const categoryRoutes = Router()
 categoryRoutes.post('/admin/categories', verificarToken, createCategoryController)
 categoryRoutes.get('/admin/categories', listCategoriesController)
-// NOVO: A rota da lixeira
 categoryRoutes.delete('/admin/categories/:id', verificarToken, deleteCategoryController)
 
+// Rota pública para listar categorias
+categoryRoutes.get('/categories', listCategoriesController)
 export default categoryRoutes

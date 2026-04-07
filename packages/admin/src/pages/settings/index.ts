@@ -17,13 +17,13 @@ export async function renderSettings(root: HTMLElement) {
 
 				<div class="col-12 mt-3">
 					<div class="menus-config d-flex gap-3" id="tabs-config">
-						<a href="javascript:void(0)" class="btn btn-white px-4 py-2" data-tab="delivery" style="border-radius: 50px;">
+						<a href="javascript:void(0)" class="btn btn-white btn-sm px-4 py-2" data-tab="delivery" style="border-radius: 50px;">
 							<i class="fas fa-shopping-bag"></i> Delivery e retirada
 						</a>
-						<a href="javascript:void(0)" class="btn btn-white px-4 py-2" data-tab="taxa" style="border-radius: 50px;">
+						<a href="javascript:void(0)" class="btn btn-white btn-sm px-4 py-2" data-tab="taxa" style="border-radius: 50px;">
 							<i class="fas fa-motorcycle"></i> Taxa de entrega
 						</a>
-						<a href="javascript:void(0)" class="btn btn-white px-4 py-2 active" data-tab="pagamento" style="border-radius: 50px;">
+						<a href="javascript:void(0)" class="btn btn-white btn-sm px-4 py-2 active" data-tab="pagamento" style="border-radius: 50px;">
 							<i class="fas fa-coins"></i> Formas de pagamento
 						</a>
 					</div>
@@ -103,11 +103,14 @@ export async function renderSettings(root: HTMLElement) {
 					</div>
 				</div>
 
+				<!-- Aba Taxas de Entrega -->
 				<div class="col-12 mt-5 hidden" id="taxa-entrega">
-					<p class="title-categoria mb-4 text-dark"><b>Selecione as opções de taxas de entrega</b></p>
+					<p class="title-categoria mb-4 text-dark">
+						<b>Selecione as opções de taxas de entrega</b>
+					</p>
 
 					<div class="d-flex gap-3 mb-4" id="feeModes">
-						<label class="fee-option card px-4 py-3 d-flex flex-row align-items-center m-0" style="cursor: pointer; border-radius: 50px;">
+						<label class="fee-option card px-4 py-3 d-flex flex-row align-items-center m-0">
 							<input type="checkbox" data-fee="sem" class="d-none" />
 							<div class="custom-radio me-2"></div>
 							<span class="text-dark">Sem taxa</span>
@@ -218,7 +221,7 @@ async function carregarE_RenderizarPagamentos(root: HTMLElement) {
 				(p: any) => `
 			<div class="card card-horizontal mb-3">
 				<div class="d-flex align-items-center w-100">
-					<div class="icon-box-yellow me-4">
+					<div class="img-icon-details me-4">
 						<i class="fas ${p.nome.toLowerCase().includes('dinheiro') ? 'fa-coins' : p.nome.toLowerCase().includes('pix') ? 'fa-qrcode' : 'fa-credit-card'} text-dark fa-lg"></i>
 					</div>
 					<div class="infos flex-grow-1">
@@ -245,7 +248,7 @@ async function carregarE_RenderizarPagamentos(root: HTMLElement) {
 			</p>
 			<div class="card card-horizontal opacity-05" style="background-color: #fafafa;">
 				<div class="d-flex align-items-center w-100">
-					<div class="icon-box-yellow" style="background-color: #eee;"><i class="fas fa-mobile-alt text-muted fa-lg"></i></div>
+					<div class="img-icon-details" style="background-color: #eee;"><i class="fas fa-mobile-alt text-muted fa-lg"></i></div>
 					<div class="infos ms-4">
 						<p class="name mb-1 text-muted"><b>Em construção...</b></p>
 						<small class="text-muted">Esta função será liberada em breve.</small>
