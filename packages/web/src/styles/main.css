@@ -15,12 +15,13 @@
 
 .img-item {
 	height: 240px;
-	width: 100%;
+	/* width: 100%; */
 	background-position: center;
 	background-repeat: no-repeat;
-
+	object-fit: fill;
+	object-position: center; /* Centraliza a imagem no corte */
 	position: relative;
-	border-radius: 20px;
+	/* border-radius: 20px; */
 	margin: 0 auto;
 	margin-block: 20px;
 }

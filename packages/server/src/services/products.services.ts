@@ -133,3 +133,26 @@ export async function buscarProdutoPorIdNoBanco(idproduto: number) {
 	// Como a busca por ID retorna no máximo um resultado, devolvemos a primeira linha (linhas[0])
 	return linhas[0]
 }
+
+// Nova função que busca os Grupos e os Itens de Opcionais da Pizza
+export async function buscarOpcionaisComItens(idproduto: number) {
+	// 1. Busca os grupos (Ex: "Deseja borda?", "Adicionais")
+	const [grupos]: any = await pool.query(
+		`SELECT o.idopcional, o.nome, o.tiposimples, o.minimo, o.maximo 
+         FROM opcional o
+         INNER JOIN produtoopcional po ON o.idopcional = po.idopcional
+         WHERE po.idproduto = ?`,
+		[idproduto]
+	)
+
+	// 2. Para cada grupo, busca os itens dele (Ex: Catupiry, Cheddar, Bacon)
+	for (let grupo of grupos) {
+		// Dica: Se a sua tabela de itens se chamar diferente no banco (ex: opcional_item), só ajustar aqui!
+		const [itens]: any = await pool.query('SELECT * FROM opcionalitem WHERE idopcional = ?', [
+			grupo.idopcional,
+		])
+		grupo.itens = itens // Guarda os itens dentro do grupo correspondente
+	}
+
+	return grupos
+}

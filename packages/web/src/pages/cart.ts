@@ -1,119 +1,109 @@
 import { mount } from '@delivery/shared/dom'
 ;('../utils/dom')
 import { TitleHeader } from '../components/TitleHeader/TitleHeader'
+import { getCart, clearCart } from '../utils/cartManager'
+import { createOrder } from '../api/orders'
 
 export function renderCart(root: HTMLElement) {
+	const cart = getCart()
+
+	// Recupera os dados salvos do cliente (A "Memória de Elefante")
+	const clienteSalvo = JSON.parse(localStorage.getItem('maluca_cliente') || '{}')
+	const temEnderecoSalvo = !!clienteSalvo.rua
+
+	// 1. MONTA O HTML DOS ITENS DO CARRINHO
+	let cartItemsHtml = ''
+
+	if (cart.itens.length > 0) {
+		cartItemsHtml = cart.itens
+			.map(
+				(item: any) => `
+			<div class="card mb-2 pr-0">
+				<div class="container-detalhes">
+					<div class="detalhes-produto">
+						<div class="infos-produto">
+							<p class="name"><b>${item.quantidade}x ${item.nome}</b></p>
+							<p class="price"><b>R$ ${Number(item.precoTotal).toFixed(2).replace('.', ',')}</b></p>
+						</div>
+
+						${item.opcionais
+							.map(
+								(op: any) => `
+							<div class="infos-produto">
+								<p class="name-opcional mb-0">1x ${op.nome}</p>
+								<p class="price-opcional mb-0">+ R$ ${Number(op.valor).toFixed(2).replace('.', ',')}</p>
+							</div>
+						`
+							)
+							.join('')}
+
+						${
+							item.observacao
+								? `
+							<div class="infos-produto mt-1">
+								<p class="obs-opcional mb-0">- ${item.observacao}</p>
+							</div>
+						`
+								: ''
+						}
+					</div>
+					<div class="detalhes-produto-edit text-danger" title="Limpar carrinho" onclick="localStorage.clear(); location.reload();">
+						<i class="fas fa-trash-alt"></i>
+					</div>
+				</div>
+			</div>
+		`
+			)
+			.join('')
+	}
+
+	// 2. RENDERIZA A TELA INTEIRA
 	root.innerHTML = `
-    
     <div id="app-title-header"></div>
 
-    <!-- ESTADO: carrinho vazio (no seu HTML ele existe) -->
-    <section class="carrinho width-fix mt-4" id="cart-empty">
+    <section class="carrinho width-fix mt-4 ${cart.itens.length > 0 ? 'hidden' : ''}" id="cart-empty">
       <div class="card card-address">
-        <div class="img-icon-details">
-          <i class="fas fa-cart-plus"></i>
-        </div>
+        <div class="img-icon-details"><i class="fas fa-cart-plus"></i></div>
         <div class="infos">
           <p class="name mb-0"><b>Seu carrinho está vazio</b></p>
-          <span class="text mb-0">
-            Volte ao cardápio, selecione os itens e adicione ao seu carrinho.
-          </span>
+          <span class="text mb-0">Volte ao cardápio, selecione os itens e adicione ao seu carrinho.</span>
         </div>
       </div>
     </section>
 
-    <!-- ESTADO: carrinho com itens (no seu HTML ele também existe) -->
-    <section class="carrinho width-fix mt-4" id="cart-items">
-      <div class="card mb-2 pr-0">
-        <div class="container-detalhes">
-          <div class="detalhes-produto">
+    <section class="carrinho width-fix mt-4 ${cart.itens.length === 0 ? 'hidden' : ''}" id="cart-items">
+      
+	  ${cartItemsHtml}
 
-            <div class="infos-produto">
-              <p class="name"><b>1x Calabresa</b></p>
-              <p class="price"><b>R$ 39,90</b></p>
-            </div>
-
-            <div class="infos-produto">
-              <p class="name-opcional mb-0">1x Borda de Catupiry</p>
-              <p class="price-opcional mb-0">+ R$ 8,90</p>
-            </div>
-
-            <div class="infos-produto">
-              <p class="obs-opcional mb-0">- Observação para enviar talheres de plastico</p>
-            </div>
-
-          </div>
-
-          <div class="detalhes-produto-edit" title="Editar item">
-            <i class="fas fa-pencil-alt"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="card mb-2 pr-0">
-        <div class="container-detalhes">
-          <div class="detalhes-produto">
-
-            <div class="infos-produto">
-              <p class="name"><b>1x 4 Queijos</b></p>
-              <p class="price"><b>R$ 39,90</b></p>
-            </div>
-
-            <div class="infos-produto">
-              <p class="name-opcional mb-0">1x Borda de Catupiry</p>
-              <p class="price-opcional mb-0">+ R$ 8,90</p>
-            </div>
-
-          </div>
-
-          <div class="detalhes-produto-edit" title="Editar item">
-            <i class="fas fa-pencil-alt"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="card mb-2">
+      <div class="card mb-2 mt-4 border-top pt-3">
         <div class="detalhes-produto">
           <div class="infos-produto">
-            <p class="name mb-0"><i class="fas fa-motorcycle"></i>&nbsp; <b>Taxa de entrega</b></p>
-            <p class="price mb-0"><b>+ R$ 15,00</b></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card mb-2">
-        <div class="detalhes-produto">
-          <div class="infos-produto">
-            <p class="name-total mb-0"><b>Total</b></p>
-            <p class="price-total mb-0"><b>R$ 105,50</b></p>
+            <p class="name-total mb-0"><b>Total do Pedido</b></p>
+            <p class="price-total mb-0"><b>R$ ${Number(cart.total).toFixed(2).replace('.', ',')}</b></p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="opcionais width-fix mt-5 pb-5">
-      <div class="container-group mb-5">
-        <span class="badge">Obrigatório</span>
-
+	<section class="opcionais width-fix mt-5 pb-5 ${cart.itens.length === 0 ? 'hidden' : ''}">
+      
+	  <div class="container-group mb-5">
+        <span class="badge" style="float: right; background-color: #fff2cc;">Obrigatório</span>
         <p class="title-categoria mb-0"><b>Escolha uma opção</b></p>
         <span class="sub-title-categoria">Como quer receber o pedido?</span>
 
         <div class="card card-opcionais mt-2">
-          <div class="infos-produto-opcional">
-            <p class="name mb-0"><b>Entrega (60-90min)</b></p>
-          </div>
+          <div class="infos-produto-opcional"><p class="name mb-0"><b>Entrega na minha casa</b></p></div>
           <div class="checks">
             <label class="container-check">
-              <input type="checkbox" name="deliveryMode" value="delivery" />
+              <input type="checkbox" name="deliveryMode" value="delivery" checked />
               <span class="checkmark"></span>
             </label>
           </div>
         </div>
 
         <div class="card card-opcionais mt-2">
-          <div class="infos-produto-opcional">
-            <p class="name mb-0"><b>Retirar no estabelecimento</b></p>
-          </div>
+          <div class="infos-produto-opcional"><p class="name mb-0"><b>Retirar no estabelecimento</b></p></div>
           <div class="checks">
             <label class="container-check">
               <input type="checkbox" name="deliveryMode" value="pickup" />
@@ -124,108 +114,174 @@ export function renderCart(root: HTMLElement) {
       </div>
 
       <div class="container-group mb-5">
-        <span class="badge">Obrigatório</span>
-
-        <p class="title-categoria mb-0"><b>Qual o seu endereço?</b></p>
-        <span class="sub-title-categoria">Informe o endereço da entrega</span>
-
-        <div class="card card-select mt-2">
-          <div class="infos-produto-opcional">
-            <p class="mb-0 color-primary">
-              <i class="fas fa-plus-circle"></i>&nbsp; Nenhum endereço selecionado
-            </p>
-          </div>
-        </div>
-
-        <div class="card card-address mt-2">
-          <div class="img-icon-details">
-            <i class="fas fa-map-marked-alt"></i>
-          </div>
-          <div class="infos">
-            <p class="name mb-0"><b>Rua Olá Mundo, 123, Meu Mairro</b></p>
-            <span class="text mb-0">Cidade-SP / 12345-678</span>
-          </div>
-          <div class="icon-edit">
-            <i class="fas fa-pencil-alt"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="container-group mb-5">
-        <span class="badge">Obrigatório</span>
-
+        <span class="badge" style="float: right; background-color: #fff2cc;">Obrigatório</span>
         <p class="title-categoria mb-0"><b>Nome e Sobrenome</b></p>
-        <span class="sub-title-categoria">Como vamos te chamar?</span>
-
-        <input type="text" class="form-control mt-2" placeholder="* Informe o nome e sobrenome" />
+        <input type="text" id="inputNome" class="form-control mt-2" placeholder="* Como vamos te chamar?" value="${clienteSalvo.nome || ''}" />
       </div>
 
       <div class="container-group mb-5">
-        <span class="badge">Obrigatório</span>
-
-        <p class="title-categoria mb-0"><b>Número do seu celular</b></p>
-        <span class="sub-title-categoria">Para mais informações do pedido</span>
-
-        <input type="text" class="form-control mt-2" placeholder="(00) 0000-0000" />
+        <span class="badge" style="float: right; background-color: #fff2cc;">Obrigatório</span>
+        <p class="title-categoria mb-0"><b>Número do celular</b></p>
+        <input type="text" id="inputTelefone" class="form-control mt-2" placeholder="(00) 00000-0000" value="${clienteSalvo.telefone || ''}" />
       </div>
 
-      <div class="container-group mb-5">
-        <span class="badge">Obrigatório</span>
+	  <div class="container-group mb-5" id="blocoEndereco">
+        <span class="badge" style="float: right; background-color: #fff2cc;">Obrigatório</span>
+        <p class="title-categoria mb-0"><b>Seu Endereço</b></p>
+		
+		<div id="address-card" class="${temEnderecoSalvo ? '' : 'hidden'}">
+			<div class="card card-address mt-2">
+				<div class="img-icon-details">
+					<i class="fas fa-map-marked-alt"></i>
+				</div>
+				<div class="infos">
+					<p class="name mb-0"><b id="display-rua">${clienteSalvo.rua || ''}, ${clienteSalvo.numero || ''}</b></p>
+					<span class="text mb-0" id="display-bairro">${clienteSalvo.bairro || ''}</span>
+				</div>
+				<div class="icon-edit" id="btn-edit-address" style="cursor: pointer;">
+					<i class="fas fa-pencil-alt"></i>
+				</div>
+			</div>
+		</div>
 
-        <p class="title-categoria mb-0"><b>Como você prefere pagar?</b></p>
-        <span class="sub-title-categoria">* Pagamento na entrega</span>
-
-        <div class="card card-select mt-2">
-          <div class="infos-produto-opcional">
-            <p class="mb-0 color-primary">
-              <i class="fas fa-plus-circle"></i>&nbsp; Nenhuma forma selecionada
-            </p>
-          </div>
-        </div>
-
-        <div class="card card-address mt-2">
-          <div class="img-icon-details">
-            <i class="fas fa-credit-card"></i>
-          </div>
-          <div class="infos">
-            <p class="name mb-0"><b>Cartão de Crédito</b></p>
-            <span class="text mb-0">Levar maquininha</span>
-          </div>
-          <div class="icon-edit">
-            <i class="fas fa-pencil-alt"></i>
-          </div>
-        </div>
+		<div id="address-form" class="${temEnderecoSalvo ? 'hidden' : ''}">
+			<input type="text" id="inputRua" class="form-control mt-2" placeholder="Rua / Avenida" value="${clienteSalvo.rua || ''}" />
+			<div class="d-flex mt-2" style="gap: 10px;">
+				<input type="text" id="inputNumero" class="form-control w-50" placeholder="Número" value="${clienteSalvo.numero || ''}" />
+				<input type="text" id="inputBairro" class="form-control w-50" placeholder="Bairro" value="${clienteSalvo.bairro || ''}" />
+			</div>
+		</div>
       </div>
+
+	  <div class="container-group mb-5">
+        <span class="badge" style="float: right; background-color: #fff2cc;">Obrigatório</span>
+        <p class="title-categoria mb-0"><b>Forma de Pagamento</b></p>
+		<select id="selectPagamento" class="form-control mt-2 shadow-sm" style="background-color: #fff; cursor: pointer;">
+			<option value="1">Pix</option>
+			<option value="2">Dinheiro (Pagamento na entrega)</option>
+			<option value="3">Cartão de Crédito</option>
+			<option value="4">Cartão de Débito</option>
+		</select>
+      </div>
+
     </section>
 
-    <!-- SPA: em vez de voltar pro index.html, vamos para #/order (ou pode ser #/confirm depois) -->
-    <a href="#/order" class="btn btn-yellow btn-full">
-      Fazer pedido <span>R$ 105,50</span>
+    <a href="javascript:void(0)" id="btnFinalizar" class="btn btn-yellow btn-full ${cart.itens.length === 0 ? 'hidden' : ''}">
+      Finalizar pedido <span>R$ ${Number(cart.total).toFixed(2).replace('.', ',')}</span>
     </a>
-
-    
   `
-
-	// O carrinho tem o botão grande "Fazer pedido", então o BottomMenu pode ficar oculto (opcional).
-	// Se você quiser manter, deixamos ativo:
 
 	mount('#app-title-header', TitleHeader({ title: 'Meu carrinho' }))
 
-	// EXTRA simples: “comportamento de radio” para as duas opções (entrega/retirada)
-	const checks = Array.from(
-		root.querySelectorAll<HTMLInputElement>('input[name="deliveryMode"]')
-	)
+	// --- LÓGICA DE MÁSCARA DO TELEFONE ---
+	const inputTelefone = root.querySelector('#inputTelefone') as HTMLInputElement
+	inputTelefone?.addEventListener('input', (e) => {
+		// Remove tudo que não for número e limita a 11 dígitos
+		let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').substring(0, 11)
+		let formatado = v
+
+		if (v.length > 2) {
+			formatado = `(${v.substring(0, 2)}) ${v.substring(2)}`
+		}
+		if (v.length > 7) {
+			formatado = `(${v.substring(0, 2)}) ${v.substring(2, 7)}-${v.substring(7)}`
+		}
+		;(e.target as HTMLInputElement).value = formatado
+	})
+
+	// --- LÓGICA DE EDITAR ENDEREÇO ---
+	const btnEditAddress = root.querySelector('#btn-edit-address')
+	const addressCard = root.querySelector('#address-card')
+	const addressForm = root.querySelector('#address-form')
+
+	btnEditAddress?.addEventListener('click', () => {
+		addressCard?.classList.add('hidden')
+		addressForm?.classList.remove('hidden')
+	})
+
+	// --- LÓGICA DO TIPO DE ENTREGA (ESCONDER ENDEREÇO) ---
+	const checks = Array.from(root.querySelectorAll<HTMLInputElement>('input[name="deliveryMode"]'))
+	const blocoEndereco = root.querySelector('#blocoEndereco') as HTMLElement
+
 	checks.forEach((ck) => {
 		ck.addEventListener('change', () => {
-			if (ck.checked)
-				checks
-					.filter((x) => x !== ck)
-					.forEach((x) => (x.checked = false))
+			if (ck.checked) {
+				checks.filter((x) => x !== ck).forEach((x) => (x.checked = false))
+				if (ck.value === 'pickup') blocoEndereco.classList.add('hidden')
+				else blocoEndereco.classList.remove('hidden')
+			}
 		})
 	})
 
-	// Por enquanto, só pra não aparecer os dois estados ao mesmo tempo:
-	// deixe apenas o carrinho com itens visível.
-	const empty = root.querySelector<HTMLElement>('#cart-empty')
-	if (empty) empty.style.display = 'none'
+	// --- BOTÃO FINALIZAR (DISPARO E SALVAMENTO) ---
+	const btnFinalizar = root.querySelector('#btnFinalizar') as HTMLElement
+	btnFinalizar?.addEventListener('click', async () => {
+		try {
+			const nome = (root.querySelector('#inputNome') as HTMLInputElement)?.value
+			const telefone = (root.querySelector('#inputTelefone') as HTMLInputElement)?.value
+			const rua = (root.querySelector('#inputRua') as HTMLInputElement)?.value
+			const numero = (root.querySelector('#inputNumero') as HTMLInputElement)?.value
+			const bairro = (root.querySelector('#inputBairro') as HTMLInputElement)?.value
+			const idPagamento = Number(
+				(root.querySelector('#selectPagamento') as HTMLSelectElement).value
+			)
+
+			let idTipoEntrega = 1 // Delivery
+			const checkRetirada = root.querySelector('input[value="pickup"]') as HTMLInputElement
+			if (checkRetirada && checkRetirada.checked) idTipoEntrega = 2 // Pickup
+
+			// Travas de segurança precisas!
+			if (!nome || !telefone)
+				return alert('Por favor, preencha o seu nome e número de celular!')
+			if (idTipoEntrega === 1 && (!rua || !numero || !bairro)) {
+				// Se a pessoa tentou finalizar com os campos vazios, forçamos o form a aparecer
+				addressCard?.classList.add('hidden')
+				addressForm?.classList.remove('hidden')
+				return alert('Por favor, preencha a Rua, Número e Bairro para a entrega!')
+			}
+
+			btnFinalizar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando seu pedido...'
+			btnFinalizar.style.pointerEvents = 'none'
+
+			// SALVA NA MEMÓRIA DA MÁQUINA PARA A PRÓXIMA COMPRA!
+			localStorage.setItem(
+				'maluca_cliente',
+				JSON.stringify({
+					nome,
+					telefone,
+					rua,
+					numero,
+					bairro,
+				})
+			)
+
+			const itensFormatados = cart.itens.map((item: any) => ({
+				idproduto: item.idproduto,
+				quantidade: item.quantidade,
+				observacao: item.observacao || '',
+				opcionais: item.opcionais ? item.opcionais.map((op: any) => op.idopcionalitem) : [],
+			}))
+
+			const pacoteDoPedido = {
+				idtipoentrega: idTipoEntrega,
+				idpagamentos: idPagamento,
+				total: cart.total,
+				nomecliente: nome,
+				telefonecliente: telefone,
+				endereco: idTipoEntrega === 1 ? rua : '',
+				numero: idTipoEntrega === 1 ? numero : '',
+				bairro: idTipoEntrega === 1 ? bairro : '',
+				itens: itensFormatados,
+			}
+
+			await createOrder(pacoteDoPedido)
+
+			clearCart()
+			window.location.hash = '#/order'
+		} catch (error: any) {
+			alert(error.message)
+			btnFinalizar.innerHTML = `Tentar novamente <span>R$ ${Number(cart.total).toFixed(2).replace('.', ',')}</span>`
+			btnFinalizar.style.pointerEvents = 'auto'
+		}
+	})
 }

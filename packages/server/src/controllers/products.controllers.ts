@@ -9,6 +9,7 @@ import {
 	deletarProdutoNoBanco,
 	listarProdutosPorCategoriaDoBanco,
 	buscarProdutoPorIdNoBanco,
+	buscarOpcionaisComItens,
 } from '../services/products.services.js'
 
 // Controller para o POST (Criar Produto)
@@ -200,18 +201,17 @@ export async function getProductDetailsController(
 	res: Response
 ): Promise<Response | void> {
 	try {
-		// Pegamos o ID que vem na URL (ex: /products/5/details)
 		const { idproduto } = req.params
 
-		// Pede para o Service buscar a pizza no banco
-		const produto = await buscarProdutoPorIdNoBanco(Number(idproduto))
+		// 1. Busca a pizza principal
+		const produto: any = await buscarProdutoPorIdNoBanco(Number(idproduto))
 
-		// Se a pizza não existir (ou estiver inativa), avisamos o cliente
 		if (!produto) {
 			return res.status(404).json({ erro: 'Produto não encontrado.' })
 		}
 
-		// (No futuro, é exatamente aqui que vamos buscar os Opcionais para anexar na pizza!)
+		// 2. A MÁGICA: Busca os opcionais e anexa dentro do objeto do produto!
+		produto.opcionais = await buscarOpcionaisComItens(Number(idproduto))
 
 		return res.json(produto)
 	} catch (erro) {
