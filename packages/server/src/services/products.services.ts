@@ -67,8 +67,6 @@ export async function listarOpcionaisDoProduto(idproduto: number) {
 	return linhas
 }
 
-// ... (suas funções anteriores de criar e listar produtos)
-
 // NOVO: Atualizar Produto
 export async function atualizarProdutoNoBanco(idproduto: number, dados: any) {
 	// 1. Atualiza os dados básicos na tabela 'produtos'
@@ -122,4 +120,16 @@ export async function listarProdutosPorCategoriaDoBanco(idcategoria: number) {
 		[idcategoria]
 	)
 	return linhas
+}
+
+// Nova função para buscar UM único produto pelo ID
+export async function buscarProdutoPorIdNoBanco(idproduto: number) {
+	// Buscamos o produto e garantimos que ele está ATIVO (1)
+	const [linhas]: any = await pool.query(
+		'SELECT * FROM produtos WHERE idproduto = ? AND ATIVO = 1',
+		[idproduto]
+	)
+
+	// Como a busca por ID retorna no máximo um resultado, devolvemos a primeira linha (linhas[0])
+	return linhas[0]
 }

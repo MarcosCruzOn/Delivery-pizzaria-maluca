@@ -8,6 +8,7 @@ import {
 	atualizarProdutoNoBanco,
 	deletarProdutoNoBanco,
 	listarProdutosPorCategoriaDoBanco,
+	buscarProdutoPorIdNoBanco,
 } from '../services/products.services.js'
 
 // Controller para o POST (Criar Produto)
@@ -190,5 +191,31 @@ export async function listProductsByCategoryController(
 	} catch (erro) {
 		console.error('Erro ao listar produtos por categoria:', erro)
 		return res.status(500).json({ erro: 'Erro interno ao listar os produtos da categoria.' })
+	}
+}
+
+// Controller para o GET (Detalhes de um Produto Específico - Rota Pública)
+export async function getProductDetailsController(
+	req: Request,
+	res: Response
+): Promise<Response | void> {
+	try {
+		// Pegamos o ID que vem na URL (ex: /products/5/details)
+		const { idproduto } = req.params
+
+		// Pede para o Service buscar a pizza no banco
+		const produto = await buscarProdutoPorIdNoBanco(Number(idproduto))
+
+		// Se a pizza não existir (ou estiver inativa), avisamos o cliente
+		if (!produto) {
+			return res.status(404).json({ erro: 'Produto não encontrado.' })
+		}
+
+		// (No futuro, é exatamente aqui que vamos buscar os Opcionais para anexar na pizza!)
+
+		return res.json(produto)
+	} catch (erro) {
+		console.error('Erro ao buscar detalhes do produto:', erro)
+		return res.status(500).json({ erro: 'Erro interno ao buscar os detalhes do produto.' })
 	}
 }

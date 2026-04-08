@@ -8,6 +8,7 @@ import {
 	updateProductController,
 	deleteProductController,
 	listProductsByCategoryController,
+	getProductDetailsController,
 } from '../controllers/products.controllers.js'
 import { verificarToken } from '../middlewares/auth.js'
 
@@ -28,5 +29,7 @@ productRoutes.delete('/admin/products/:idproduto', verificarToken, deleteProduct
 
 // Rota pública para listar produtos por categoria
 productRoutes.get('/products/category/:idcategoria', listProductsByCategoryController)
+// Nova rota pública para os detalhes de um único produto
+productRoutes.get('/products/:idproduto/details', getProductDetailsController)
 
 export default productRoutes
