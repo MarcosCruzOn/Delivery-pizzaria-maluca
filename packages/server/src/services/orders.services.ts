@@ -161,3 +161,15 @@ export async function buscarDetalhesDoPedido(idpedido: number) {
 	pedido.itens = itensRows
 	return pedido
 }
+
+// Serviço para o cliente rastrear o pedido dele
+export async function rastrearPedido(idpedido: number) {
+	const [linhas]: any = await pool.query(
+		`SELECT p.idpedido, p.total, p.idpedidostatus, s.descricao AS status 
+         FROM pedido p
+         INNER JOIN pedidostatus s ON p.idpedidostatus = s.idpedidostatus
+         WHERE p.idpedido = ?`,
+		[idpedido]
+	)
+	return linhas[0]
+}

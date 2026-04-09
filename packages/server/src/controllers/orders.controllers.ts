@@ -4,6 +4,7 @@ import {
 	listarPedidosDoBanco,
 	atualizarStatusDoPedido,
 	buscarDetalhesDoPedido,
+	rastrearPedido,
 } from '../services/orders.services.js'
 
 export async function createOrderController(req: Request, res: Response): Promise<Response | void> {
@@ -85,5 +86,19 @@ export async function getOrderDetailsController(
 	} catch (erro) {
 		console.error('Erro ao buscar detalhes do pedido:', erro)
 		return res.status(500).json({ erro: 'Erro interno ao buscar os detalhes do pedido.' })
+	}
+}
+
+export async function trackOrderController(req: Request, res: Response): Promise<Response | void> {
+	try {
+		const { idpedido } = req.params
+		const pedido = await rastrearPedido(Number(idpedido))
+
+		if (!pedido) return res.status(404).json({ erro: 'Pedido não encontrado' })
+
+		return res.json(pedido)
+	} catch (erro) {
+		console.error('Erro ao rastrear pedido:', erro)
+		return res.status(500).json({ erro: 'Erro ao rastrear pedido' })
 	}
 }

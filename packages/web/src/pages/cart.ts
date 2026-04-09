@@ -295,7 +295,11 @@ export function renderCart(root: HTMLElement) {
 				itens: itensFormatados,
 			}
 
-			await createOrder(pacoteDoPedido)
+			// Envia o pedido para o servidor e PEGA A RESPOSTA
+			const resposta = await createOrder(pacoteDoPedido)
+
+			// SALVA O ID DO PEDIDO NA MÁQUINA DO CLIENTE! 🧠
+			localStorage.setItem('maluca_pedido_ativo', resposta.idpedido.toString())
 
 			clearCart()
 			window.location.hash = '#/order'

@@ -16,3 +16,9 @@ export async function createOrder(orderData: any) {
 
 	return response.json()
 }
+
+export async function trackOrder(idpedido: number) {
+	const response = await fetch(`${API_URL}/api/orders/${idpedido}/tracking`)
+	if (!response.ok) throw new Error('Erro ao rastrear pedido')
+	return response.json()
+}
