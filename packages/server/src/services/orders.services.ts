@@ -12,8 +12,8 @@ export async function criarPedidoCompletoNoBanco(dadosDoPedido: any) {
 		// Vamos fixar idpedidostatus como 1 (Ex: "Pendente/Novo")
 		const [resultadoPedido]: any = await conexao.query(
 			`INSERT INTO pedido 
-      (idpedidostatus, idtipoentrega, idpagamentos, total, nomecliente, telefonecliente, endereço, numero, bairro) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (idpedidostatus, idtipoentrega, idpagamentos, total, nomecliente, telefonecliente, endereço, numero, bairro, cep, complemento, troco) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			[
 				1, // Status do pedido (Novo)
 				dadosDoPedido.idtipoentrega,
@@ -24,6 +24,9 @@ export async function criarPedidoCompletoNoBanco(dadosDoPedido: any) {
 				dadosDoPedido.endereco, // Sem cedilha no JSON do Vite
 				dadosDoPedido.numero,
 				dadosDoPedido.bairro,
+				dadosDoPedido.cep || null, // 👈 Agora o banco salva o CEP!
+				dadosDoPedido.complemento || null, // 👈 Agora o banco salva o Complemento!
+				dadosDoPedido.troco || null,
 			]
 		)
 

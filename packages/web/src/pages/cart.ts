@@ -7,11 +7,9 @@ import { createOrder } from '../api/orders'
 export function renderCart(root: HTMLElement) {
 	const cart = getCart()
 
-	// Recupera os dados salvos do cliente (A "Memória de Elefante")
 	const clienteSalvo = JSON.parse(localStorage.getItem('maluca_cliente') || '{}')
 	const temEnderecoSalvo = !!clienteSalvo.rua
 
-	// 1. MONTA O HTML DOS ITENS DO CARRINHO
 	let cartItemsHtml = ''
 
 	if (cart.itens.length > 0) {
@@ -57,7 +55,6 @@ export function renderCart(root: HTMLElement) {
 			.join('')
 	}
 
-	// 2. RENDERIZA A TELA INTEIRA
 	root.innerHTML = `
     <div id="app-title-header"></div>
 
@@ -136,7 +133,7 @@ export function renderCart(root: HTMLElement) {
 				</div>
 				<div class="infos">
 					<p class="name mb-0"><b id="display-rua">${clienteSalvo.rua || ''}, ${clienteSalvo.numero || ''}</b></p>
-					<span class="text mb-0" id="display-bairro">${clienteSalvo.bairro || ''}</span>
+					<span class="text mb-0" id="display-bairro">${clienteSalvo.bairro || ''} ${clienteSalvo.cep ? ' / CEP: ' + clienteSalvo.cep : ''}</span>
 				</div>
 				<div class="icon-edit" id="btn-edit-address" style="cursor: pointer;">
 					<i class="fas fa-pencil-alt"></i>
@@ -145,11 +142,13 @@ export function renderCart(root: HTMLElement) {
 		</div>
 
 		<div id="address-form" class="${temEnderecoSalvo ? 'hidden' : ''}">
+			<input type="text" id="inputCEP" class="form-control mt-2" placeholder="CEP" value="${clienteSalvo.cep || ''}" maxlength="9" />
 			<input type="text" id="inputRua" class="form-control mt-2" placeholder="Rua / Avenida" value="${clienteSalvo.rua || ''}" />
 			<div class="d-flex mt-2" style="gap: 10px;">
 				<input type="text" id="inputNumero" class="form-control w-50" placeholder="Número" value="${clienteSalvo.numero || ''}" />
 				<input type="text" id="inputBairro" class="form-control w-50" placeholder="Bairro" value="${clienteSalvo.bairro || ''}" />
 			</div>
+			<input type="text" id="inputComplemento" class="form-control mt-2" placeholder="Complemento (Opcional)" value="${clienteSalvo.complemento || ''}" />
 		</div>
       </div>
 
@@ -164,6 +163,11 @@ export function renderCart(root: HTMLElement) {
 		</select>
       </div>
 
+	  <div class="container-group mb-5 hidden" id="blocoTroco">
+        <p class="title-categoria mb-0"><b>Precisa de troco?</b></p>
+        <input type="text" id="inputTroco" class="form-control mt-2" placeholder="Troco para quanto? (Ex: 50,00)" />
+      </div>
+
     </section>
 
     <a href="javascript:void(0)" id="btnFinalizar" class="btn btn-yellow btn-full ${cart.itens.length === 0 ? 'hidden' : ''}">
@@ -176,17 +180,32 @@ export function renderCart(root: HTMLElement) {
 	// --- LÓGICA DE MÁSCARA DO TELEFONE ---
 	const inputTelefone = root.querySelector('#inputTelefone') as HTMLInputElement
 	inputTelefone?.addEventListener('input', (e) => {
-		// Remove tudo que não for número e limita a 11 dígitos
 		let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').substring(0, 11)
 		let formatado = v
-
-		if (v.length > 2) {
-			formatado = `(${v.substring(0, 2)}) ${v.substring(2)}`
-		}
-		if (v.length > 7) {
+		if (v.length > 2) formatado = `(${v.substring(0, 2)}) ${v.substring(2)}`
+		if (v.length > 7)
 			formatado = `(${v.substring(0, 2)}) ${v.substring(2, 7)}-${v.substring(7)}`
-		}
 		;(e.target as HTMLInputElement).value = formatado
+	})
+
+	// --- LÓGICA DE MÁSCARA DO CEP ---
+	const inputCEP = root.querySelector('#inputCEP') as HTMLInputElement
+	inputCEP?.addEventListener('input', (e) => {
+		let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').substring(0, 8)
+		if (v.length > 5) v = `${v.substring(0, 5)}-${v.substring(5)}`
+		;(e.target as HTMLInputElement).value = v
+	})
+
+	// --- LÓGICA DE MOSTRAR CAMPO DE TROCO ---
+	const selectPagamento = root.querySelector('#selectPagamento') as HTMLSelectElement
+	const blocoTroco = root.querySelector('#blocoTroco') as HTMLElement
+	selectPagamento?.addEventListener('change', () => {
+		if (selectPagamento.value === '2') {
+			// 2 = Dinheiro
+			blocoTroco.classList.remove('hidden')
+		} else {
+			blocoTroco.classList.add('hidden')
+		}
 	})
 
 	// --- LÓGICA DE EDITAR ENDEREÇO ---
@@ -199,7 +218,7 @@ export function renderCart(root: HTMLElement) {
 		addressForm?.classList.remove('hidden')
 	})
 
-	// --- LÓGICA DO TIPO DE ENTREGA (ESCONDER ENDEREÇO) ---
+	// --- LÓGICA DO TIPO DE ENTREGA (ESCONDER ENDEREÇO E TROCO) ---
 	const checks = Array.from(root.querySelectorAll<HTMLInputElement>('input[name="deliveryMode"]'))
 	const blocoEndereco = root.querySelector('#blocoEndereco') as HTMLElement
 
@@ -213,28 +232,34 @@ export function renderCart(root: HTMLElement) {
 		})
 	})
 
-	// --- BOTÃO FINALIZAR (DISPARO E SALVAMENTO) ---
+	// --- BOTÃO FINALIZAR ---
 	const btnFinalizar = root.querySelector('#btnFinalizar') as HTMLElement
 	btnFinalizar?.addEventListener('click', async () => {
 		try {
 			const nome = (root.querySelector('#inputNome') as HTMLInputElement)?.value
 			const telefone = (root.querySelector('#inputTelefone') as HTMLInputElement)?.value
 			const rua = (root.querySelector('#inputRua') as HTMLInputElement)?.value
+			const complemento = (root.querySelector('#inputComplemento') as HTMLInputElement)?.value
+			const cep = (root.querySelector('#inputCEP') as HTMLInputElement)?.value
 			const numero = (root.querySelector('#inputNumero') as HTMLInputElement)?.value
 			const bairro = (root.querySelector('#inputBairro') as HTMLInputElement)?.value
-			const idPagamento = Number(
-				(root.querySelector('#selectPagamento') as HTMLSelectElement).value
-			)
+			const idPagamento = Number(selectPagamento.value)
+
+			// Capturando e formatando o troco (se houver)
+			const trocoString = (root.querySelector('#inputTroco') as HTMLInputElement)?.value
+			let trocoFinal = null
+			if (idPagamento === 2 && trocoString) {
+				// Remove letras e converte vírgula para ponto
+				trocoFinal = parseFloat(trocoString.replace(/[^\d,.-]/g, '').replace(',', '.'))
+			}
 
 			let idTipoEntrega = 1 // Delivery
 			const checkRetirada = root.querySelector('input[value="pickup"]') as HTMLInputElement
 			if (checkRetirada && checkRetirada.checked) idTipoEntrega = 2 // Pickup
 
-			// Travas de segurança precisas!
 			if (!nome || !telefone)
 				return alert('Por favor, preencha o seu nome e número de celular!')
 			if (idTipoEntrega === 1 && (!rua || !numero || !bairro)) {
-				// Se a pessoa tentou finalizar com os campos vazios, forçamos o form a aparecer
 				addressCard?.classList.add('hidden')
 				addressForm?.classList.remove('hidden')
 				return alert('Por favor, preencha a Rua, Número e Bairro para a entrega!')
@@ -243,16 +268,9 @@ export function renderCart(root: HTMLElement) {
 			btnFinalizar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando seu pedido...'
 			btnFinalizar.style.pointerEvents = 'none'
 
-			// SALVA NA MEMÓRIA DA MÁQUINA PARA A PRÓXIMA COMPRA!
 			localStorage.setItem(
 				'maluca_cliente',
-				JSON.stringify({
-					nome,
-					telefone,
-					rua,
-					numero,
-					bairro,
-				})
+				JSON.stringify({ nome, telefone, rua, complemento, cep, numero, bairro })
 			)
 
 			const itensFormatados = cart.itens.map((item: any) => ({
@@ -265,11 +283,14 @@ export function renderCart(root: HTMLElement) {
 			const pacoteDoPedido = {
 				idtipoentrega: idTipoEntrega,
 				idpagamentos: idPagamento,
+				troco: trocoFinal,
 				total: cart.total,
 				nomecliente: nome,
 				telefonecliente: telefone,
 				endereco: idTipoEntrega === 1 ? rua : '',
+				complemento: idTipoEntrega === 1 ? complemento : '',
 				numero: idTipoEntrega === 1 ? numero : '',
+				cep: idTipoEntrega === 1 ? cep : '',
 				bairro: idTipoEntrega === 1 ? bairro : '',
 				itens: itensFormatados,
 			}
