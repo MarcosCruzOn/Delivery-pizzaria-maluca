@@ -11,7 +11,7 @@ export function AboutHeader(company: any): HTMLElement {
 	container.innerHTML = `
 		<div class="d-flex align-items-start gap-3 p-3">
 			<img 
-				src="http://localhost:3333/${company.logotipo || ''}" 
+				src="http://localhost:3333/uploads/${company.logotipo || ''}" 
 				style="width:80px;height:80px;border-radius:10px;object-fit:cover;"
 			/>
 			<div>

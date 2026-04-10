@@ -1,52 +1,59 @@
 export function isLojaAberta(horarios: any[]): boolean {
-	// Se não houver horários cadastrados no banco, por segurança a loja está fechada
 	if (!horarios || horarios.length === 0) return false
 
-	const dataAtual = new Date()
-	const diaAtual = dataAtual.getDay() // Retorna de 0 (Domingo) a 6 (Sábado)
-	const horaAtual = dataAtual.getHours()
-	const minutoAtual = dataAtual.getMinutes()
+	const agora = new Date()
+	const diaAtual = agora.getDay() // 0 (Dom) a 6 (Sab)
+	const horaAtual = agora.getHours()
+	const minutoAtual = agora.getMinutes()
 	const tempoAtualEmMinutos = horaAtual * 60 + minutoAtual
 
-	// Função que transforma "18:30" em "1110 minutos" para facilitar a conta de maior e menor
 	const converterParaMinutos = (horaString: string) => {
-		if (!horaString) return null
+		if (!horaString || horaString.trim() === '' || horaString === '0') return null
 		const [h, m] = horaString.split(':').map(Number)
 		return h * 60 + m
 	}
 
-	// Varre todas as regras de horário cadastradas
+	console.log(
+		`🕒 Verificando Loja: Dia ${diaAtual}, Hora ${horaAtual}:${minutoAtual} (${tempoAtualEmMinutos}min)`
+	)
+
 	for (const h of horarios) {
-		let diaValido = false
 		const diaInicio = Number(h.diainicio)
 		const diaFim = Number(h.diafim)
 
-		// Verifica se o dia de hoje cai dentro da regra (ex: Segunda a Sexta)
+		// Verifica se o dia de hoje está no intervalo
+		let diaValido = false
 		if (diaInicio <= diaFim) {
 			diaValido = diaAtual >= diaInicio && diaAtual <= diaFim
 		} else {
-			// Cobre o caso maluco de passar pela semana (ex: Sábado a Segunda)
 			diaValido = diaAtual >= diaInicio || diaAtual <= diaFim
 		}
 
 		if (diaValido) {
 			const inicio1 = converterParaMinutos(h.iniciohorarioum)
 			const fim1 = converterParaMinutos(h.fimhorarioum)
-			const inicio2 = converterParaMinutos(h.iniciohorariodois)
-			const fim2 = converterParaMinutos(h.fimhorariodois)
 
-			// Verifica se está dentro do 1º Turno
+			console.log(
+				`📅 Regra encontrada: Dia ${diaInicio}-${diaFim}. Turno 1: ${inicio1}min até ${fim1}min`
+			)
+
 			if (inicio1 !== null && fim1 !== null) {
-				if (tempoAtualEmMinutos >= inicio1 && tempoAtualEmMinutos <= fim1) return true
+				// Se o horário de fim for menor que o de início (ex: fecha 01:00 da manhã)
+				if (fim1 < inicio1) {
+					if (tempoAtualEmMinutos >= inicio1 || tempoAtualEmMinutos <= fim1) return true
+				} else {
+					if (tempoAtualEmMinutos >= inicio1 && tempoAtualEmMinutos <= fim1) return true
+				}
 			}
 
-			// Verifica se está dentro do 2º Turno (Almoço / Janta)
+			// Repete para o turno 2 se existir
+			const inicio2 = converterParaMinutos(h.iniciohorariodois)
+			const fim2 = converterParaMinutos(h.fimhorariodois)
 			if (inicio2 !== null && fim2 !== null) {
 				if (tempoAtualEmMinutos >= inicio2 && tempoAtualEmMinutos <= fim2) return true
 			}
 		}
 	}
 
-	// Se varreu tudo e não caiu em nenhum horário válido, está fechada!
 	return false
 }

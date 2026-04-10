@@ -12,8 +12,15 @@
                 └── 📁api
                     ├── auth.ts
                     ├── categories.ts
+                    ├── company.ts
+                    ├── delivery.ts
+                    ├── home.ts
                     ├── opcionais.ts
+                    ├── orders.ts
+                    ├── pagamentos.ts
                     ├── products.ts
+                    ├── reports.ts
+                    ├── taxas.ts
                     ├── upload.ts
                 └── 📁components
                     └── 📁AdminLayout
@@ -23,10 +30,16 @@
                 └── 📁pages
                     └── 📁company
                         ├── index.ts
-                    └── 📁dashboard
+                    └── 📁home
                         ├── index.ts
                     └── 📁login
                         ├── index.ts
+                    └── 📁menu
+                        └── 📁state
+                            ├── menuState.ts
+                        ├── index.ts
+                        ├── menuUI.ts
+                        ├── types.ts
                     └── 📁opcionais
                         ├── index.ts
                     └── 📁orders
@@ -52,11 +65,14 @@
                     ├── auth.controllers.ts
                     ├── categories.controllers.ts
                     ├── company.controllers.ts
-                    ├── horario.controllers.ts
+                    ├── delivery.controllers.ts
+                    ├── home.controllers.ts
                     ├── opcioinais.controllers.ts
                     ├── orders.controllers.ts
+                    ├── pagamentos.controllers.ts
                     ├── products.controllers.ts
-                    ├── settings.controllers.ts
+                    ├── reports.controllers.ts
+                    ├── taxas.controllers.ts
                     ├── upload.controllers.ts
                 └── 📁database
                     ├── connection.ts
@@ -71,27 +87,48 @@
                     ├── auth.routes.ts
                     ├── categories.routes.ts
                     ├── company.routes.ts
+                    ├── delivery.routes.ts
+                    ├── home.routes.ts
                     ├── index.ts
                     ├── opcionais.routes.ts
                     ├── orders.routes.ts
+                    ├── pagamentos.routes.ts
                     ├── products.routes.ts
-                    ├── settings.routes.ts
+                    ├── reports.routes.ts
+                    ├── taxas.routes.ts
                     ├── upload.routes.ts
                 └── 📁services
                     ├── auth.services.ts
                     ├── categories.services.ts
                     ├── company.services.ts
-                    ├── horario.services.ts
+                    ├── delivery.services.ts
+                    ├── home.services.ts.ts
                     ├── opcionais.services.ts
                     ├── orders.services.ts
+                    ├── pagamentos.services.ts
                     ├── products.services.ts
-                    ├── settings.services.ts
+                    ├── reports.services.ts
+                    ├── taxas.services.ts
                 └── 📁utils
                     ├── pathUtils.ts
                 ├── server.ts
             └── 📁uploads
                 ├── 1774721608487-calabresa.jpg
                 ├── 1774725250007-calabresa.jpg
+                ├── 1774793908198-logo.png
+                ├── 1774815319348-calabresa.jpg
+                ├── 1774815598757-calabresa.jpg
+                ├── 1774816532414-calabresa.jpg
+                ├── 1774816842779-mussarela.jpg
+                ├── 1774817699022-mussarela.jpg
+                ├── 1774817711383-calabresa.jpg
+                ├── 1775190912228-palmito.jpg
+                ├── 1775602685966-romeuejulieta.jpg
+                ├── 1775602757506-Confete.jpg
+                ├── 1775604604324-canadense.jpg
+                ├── 1775604886276-romeuejulieta.jpg
+                ├── 1775604890607-Confete.jpg
+                ├── 1775604967388-romeuejulieta.jpg
             ├── .env
             ├── package.json
             ├── tsconfig.json
@@ -120,6 +157,9 @@
                     ├── Poppins-Medium.otf
                     ├── Poppins-Regular.otf
             └── 📁styles
+                ├── animate.css
+                ├── bootstrap.min.css
+                ├── fontawesome.css
                 ├── theme.css
             ├── package.json
         └── 📁web
@@ -161,6 +201,7 @@
                 └── 📁api
                     ├── categories.ts
                     ├── company.ts
+                    ├── orders.ts
                     ├── products.ts
                 └── 📁components
                     └── 📁about
@@ -185,7 +226,6 @@
                     └── 📁MenuItemsList
                         ├── MenuItemsList.ts
                         ├── style.css
-                    └── 📁Order
                     └── 📁TitleHeader
                         ├── style.css
                         ├── TitleHeader.ts
@@ -199,6 +239,9 @@
                     ├── cart.css
                     ├── main.css
                     ├── order.css
+                └── 📁utils
+                    ├── cartManager.ts
+                    ├── storeState.ts
                 ├── main.ts
                 ├── typescript.svg
             ├── .gitignore
@@ -208,9 +251,8 @@
             ├── vite.config.ts
     ├── .gitignore
     ├── api.http
-    ├── calabresa.jpg
     ├── package-lock.json
     ├── package.json
-    ├── pizza.jpg
+    ├── README.md
     └── tsconfig.base.json
 ```
