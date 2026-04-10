@@ -1,17 +1,18 @@
 import pool from '../database/connection.js'
 
-// Função para buscar os dados da empresa (perfil)
+// ==========================================
+// MÓDULO EMPRESA
+// ==========================================
+
 export async function buscarEmpresaPorId(idempresa: number) {
-	// Fazemos o SELECT de tudo, EXCETO a senha (por segurança, nunca devolvemos a senha pro frontend!)
 	const [linhas]: any = await pool.query(
 		`SELECT idempresa, nome, email, sobre, logotipo, cep, endereco, numero, bairro, complemento, cidade, estado 
      FROM empresa WHERE idempresa = ?`,
 		[idempresa]
 	)
-	return linhas[0] // Retorna a primeira (e única) empresa encontrada
+	return linhas[0]
 }
 
-// Função para atualizar os dados de texto e endereço
 export async function atualizarDadosEmpresa(idempresa: number, dados: any) {
 	const [resultado] = await pool.query(
 		`UPDATE empresa SET 
@@ -34,14 +35,50 @@ export async function atualizarDadosEmpresa(idempresa: number, dados: any) {
 	return resultado
 }
 
-// Função específica para atualizar APENAS a logotipo (igual fizemos com a pizza)
-export async function atualizarLogotipoEmpresa(
-	idempresa: number,
-	nomeDaImagem: string
-) {
+export async function atualizarLogotipoEmpresa(idempresa: number, nomeDaImagem: string) {
+	const [resultado] = await pool.query('UPDATE empresa SET logotipo = ? WHERE idempresa = ?', [
+		nomeDaImagem,
+		idempresa,
+	])
+	return resultado
+}
+
+export async function buscarDadosPublicosEmpresa() {
+	const [linhas]: any = await pool.query(
+		'SELECT nome, sobre, logotipo, cep, endereco, numero, bairro, complemento, cidade, estado FROM empresa LIMIT 1'
+	)
+	return linhas[0]
+}
+
+export async function buscarPagamentosAtivos() {
+	const [linhas]: any = await pool.query(
+		'SELECT idpagamentos, nome FROM pagamentos WHERE ATIVO = 1'
+	)
+	return linhas
+}
+
+// ==========================================
+// MÓDULO HORÁRIOS (Agora moram aqui!)
+// ==========================================
+
+export async function criarHorarioNoBanco(dados: any) {
 	const [resultado] = await pool.query(
-		'UPDATE empresa SET logotipo = ? WHERE idempresa = ?',
-		[nomeDaImagem, idempresa]
+		`INSERT INTO horario 
+      (diainicio, diafim, iniciohorarioum, fimhorarioum, iniciohorariodois, fimhorariodois) 
+     VALUES (?, ?, ?, ?, ?, ?)`,
+		[
+			dados.diainicio,
+			dados.diafim,
+			dados.iniciohorarioum,
+			dados.fimhorarioum,
+			dados.iniciohorariodois,
+			dados.fimhorariodois,
+		]
 	)
 	return resultado
+}
+
+export async function listarHorariosDoBanco() {
+	const [linhas] = await pool.query('SELECT * FROM horario')
+	return linhas
 }

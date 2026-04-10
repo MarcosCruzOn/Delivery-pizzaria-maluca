@@ -1,12 +1,14 @@
 import { mount } from '@delivery/shared/dom'
 import { TitleHeader } from '../components/TitleHeader/TitleHeader'
-
 import { getCompany, getHorarios } from '../api/company'
 
 import { AboutHeader } from '../components/about/AboutHeader'
 import { AboutAddress } from '../components/about/AboutAddress'
 import { AboutSchedule } from '../components/about/AboutSchedule'
 import { AboutPayments } from '../components/about/AboutPayments'
+
+// 1. IMPORTA O NOSSO CÉREBRO DE HORÁRIOS!
+import { isLojaAberta } from '../utils/storeState'
 
 export async function renderAbout(root: HTMLElement) {
 	let horarios: any[] = []
@@ -19,11 +21,24 @@ export async function renderAbout(root: HTMLElement) {
 		console.log('Erro ao carregar dados')
 	}
 
+	// 2. PERGUNTA AO CÉREBRO SE A LOJA ESTÁ ABERTA AGORA MESMO
+	const lojaAberta = isLojaAberta(horarios)
+
+	// 3. CRIA A BADGE VISUAL ANIMADA
+	const statusBadge = lojaAberta
+		? '<span class="badge shadow-sm" style="background-color: var(--color-green); color: white; padding: 8px 15px; border-radius: 50px; font-size: 14px;"><i class="fas fa-door-open"></i> Aberta Agora</span>'
+		: '<span class="badge shadow-sm" style="background-color: var(--color-red); color: white; padding: 8px 15px; border-radius: 50px; font-size: 14px;"><i class="fas fa-door-closed"></i> Fechada Agora</span>'
+
 	root.innerHTML = `
     <div class="bg-top sobre"></div>  
     <div id="app-title-header"></div>
 
-    <section class="width-fix mt-5 mb-4">
+    <section class="width-fix mt-5 mb-4" style="position: relative;">
+      
+      <div style="position: absolute; right: 15px; top: 15px; z-index: 10;">
+        ${statusBadge}
+      </div>
+
       <div class="card" id="about-content"></div>
     </section>
 
