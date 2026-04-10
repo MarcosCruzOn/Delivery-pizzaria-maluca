@@ -247,16 +247,14 @@ function showTab(root: HTMLElement, tab: Tab) {
 function lerTodosOsCamposDaTela(root: HTMLElement) {
 	return {
 		nome: (root.querySelector('#companyName') as HTMLInputElement).value,
-		sobre: (root.querySelector('#companyAbout') as HTMLTextAreaElement)
-			.value,
+		sobre: (root.querySelector('#companyAbout') as HTMLTextAreaElement).value,
 		cep: (root.querySelector('#cep') as HTMLInputElement).value,
 		endereco: (root.querySelector('#rua') as HTMLInputElement).value,
 		numero: (root.querySelector('#numero') as HTMLInputElement).value,
 		bairro: (root.querySelector('#bairro') as HTMLInputElement).value,
 		cidade: (root.querySelector('#cidade') as HTMLInputElement).value,
 		estado: (root.querySelector('#uf') as HTMLInputElement).value,
-		complemento: (root.querySelector('#complemento') as HTMLInputElement)
-			.value,
+		complemento: (root.querySelector('#complemento') as HTMLInputElement).value,
 	}
 }
 
@@ -293,14 +291,11 @@ function setupActions(root: HTMLElement) {
 
 			// Preenche as caixinhas de texto com os dados que voltaram!
 			// O ViaCEP chama rua de "logradouro" e cidade de "localidade"
-			;(root.querySelector('#rua') as HTMLInputElement).value =
-				dadosEndereco.logradouro || ''
-			;(root.querySelector('#bairro') as HTMLInputElement).value =
-				dadosEndereco.bairro || ''
+			;(root.querySelector('#rua') as HTMLInputElement).value = dadosEndereco.logradouro || ''
+			;(root.querySelector('#bairro') as HTMLInputElement).value = dadosEndereco.bairro || ''
 			;(root.querySelector('#cidade') as HTMLInputElement).value =
 				dadosEndereco.localidade || ''
-			;(root.querySelector('#uf') as HTMLInputElement).value =
-				dadosEndereco.uf || ''
+			;(root.querySelector('#uf') as HTMLInputElement).value = dadosEndereco.uf || ''
 
 			// Foca no campo de Número para o usuário só digitar o número da casa e salvar
 			;(root.querySelector('#numero') as HTMLInputElement).focus()
@@ -318,18 +313,15 @@ function setupActions(root: HTMLElement) {
 	})
 
 	// Salvar Endereço
-	root.querySelector('#btnSaveAddress')?.addEventListener(
-		'click',
-		async () => {
-			try {
-				const dados = lerTodosOsCamposDaTela(root)
-				await atualizarEmpresa(dados)
-				alert('Endereço salvo com sucesso!')
-			} catch (error) {
-				alert('Erro ao salvar endereço')
-			}
+	root.querySelector('#btnSaveAddress')?.addEventListener('click', async () => {
+		try {
+			const dados = lerTodosOsCamposDaTela(root)
+			await atualizarEmpresa(dados)
+			alert('Endereço salvo com sucesso!')
+		} catch (error) {
+			alert('Erro ao salvar endereço')
 		}
-	)
+	})
 
 	// ===== LOGO UPLOAD (Agora chamando a API!) =====
 	const input = root.querySelector('#logoInput') as HTMLInputElement
@@ -400,26 +392,39 @@ function setupHorario(root: HTMLElement) {
 async function loadHorarios(root: HTMLElement) {
 	const tbody = root.querySelector<HTMLTableSectionElement>('#listaHorarios')!
 
+	// 1. O nosso dicionário tradutor de dias!
+	const nomesDias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']
+
 	try {
 		const horarios = await listarHorarios()
 		tbody.innerHTML = ''
 
 		horarios.forEach((h: any) => {
 			const row = document.createElement('tr')
+
+			// 2. Transforma o número que vem do banco (ex: 1) no nome (ex: Segunda)
+			const nomeDiaInicio = nomesDias[h.diainicio] || ''
+			const nomeDiaFim = nomesDias[h.diafim] || ''
+
+			// 3. Regra de visualização elegante
+			const labelDias =
+				h.diainicio === h.diafim ? nomeDiaInicio : `${nomeDiaInicio} a ${nomeDiaFim}`
+
 			row.innerHTML = `
-				<td>${h.diainicio} - ${h.diafim}</td>
+				<td>${labelDias}</td>
 				<td>${h.iniciohorarioum}</td>
 				<td>${h.fimhorarioum}</td>
-				<td>
-					<a href="#" data-id="${h.idhorario}" class="btn btn-sm btn-white" title="Em breve">X</a>
+				<td class="text-end">
+					<a href="#" data-id="${h.idhorario}" class="btn btn-sm btn-white text-danger" title="Excluir (em breve)">
+						<i class="fas fa-trash-alt"></i>
+					</a>
 				</td>
 			`
+
 			// OBSERVAÇÃO: Nós não criamos a rota DELETE no backend ainda!
 			row.querySelector('a')!.addEventListener('click', (e) => {
 				e.preventDefault()
-				alert(
-					'Ops! A rota de excluir horário ainda não foi construída no servidor!'
-				)
+				alert('Ops! A rota de excluir horário ainda não foi construída no servidor!')
 			})
 
 			tbody.appendChild(row)
@@ -448,24 +453,15 @@ async function loadCompanyData(root: HTMLElement) {
 		const company = await buscarDadosEmpresa()
 
 		// Preenche os inputs com o que veio do banco!
-		;(root.querySelector('#companyName') as HTMLInputElement).value =
-			company.nome || ''
-		;(root.querySelector('#companyAbout') as HTMLTextAreaElement).value =
-			company.sobre || ''
-		;(root.querySelector('#cep') as HTMLInputElement).value =
-			company.cep || ''
-		;(root.querySelector('#rua') as HTMLInputElement).value =
-			company.endereco || ''
-		;(root.querySelector('#numero') as HTMLInputElement).value =
-			company.numero || ''
-		;(root.querySelector('#complemento') as HTMLInputElement).value =
-			company.complemento || ''
-		;(root.querySelector('#bairro') as HTMLInputElement).value =
-			company.bairro || ''
-		;(root.querySelector('#cidade') as HTMLInputElement).value =
-			company.cidade || ''
-		;(root.querySelector('#uf') as HTMLInputElement).value =
-			company.estado || ''
+		;(root.querySelector('#companyName') as HTMLInputElement).value = company.nome || ''
+		;(root.querySelector('#companyAbout') as HTMLTextAreaElement).value = company.sobre || ''
+		;(root.querySelector('#cep') as HTMLInputElement).value = company.cep || ''
+		;(root.querySelector('#rua') as HTMLInputElement).value = company.endereco || ''
+		;(root.querySelector('#numero') as HTMLInputElement).value = company.numero || ''
+		;(root.querySelector('#complemento') as HTMLInputElement).value = company.complemento || ''
+		;(root.querySelector('#bairro') as HTMLInputElement).value = company.bairro || ''
+		;(root.querySelector('#cidade') as HTMLInputElement).value = company.cidade || ''
+		;(root.querySelector('#uf') as HTMLInputElement).value = company.estado || ''
 
 		// 🖼 logo preview
 		const preview = root.querySelector('#logoPreview') as HTMLElement
